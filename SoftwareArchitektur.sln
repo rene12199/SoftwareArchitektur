@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.ExcelDataReader", "SoftwareArchitektur.ExcelDataReader\SoftwareArchitektur.ExcelDataReader.csproj", "{FBCAA515-A4C9-4EDB-97AB-CB7C9C0FCD52}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.Utility", "SoftwareArchitektur.Utility\SoftwareArchitektur.Utility.csproj", "{19A0F1B9-5659-49A9-9010-CDADB3E3C956}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FBCAA515-A4C9-4EDB-97AB-CB7C9C0FCD52}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FBCAA515-A4C9-4EDB-97AB-CB7C9C0FCD52}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FBCAA515-A4C9-4EDB-97AB-CB7C9C0FCD52}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FBCAA515-A4C9-4EDB-97AB-CB7C9C0FCD52}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19A0F1B9-5659-49A9-9010-CDADB3E3C956}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19A0F1B9-5659-49A9-9010-CDADB3E3C956}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19A0F1B9-5659-49A9-9010-CDADB3E3C956}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19A0F1B9-5659-49A9-9010-CDADB3E3C956}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
