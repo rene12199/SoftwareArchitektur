@@ -15,11 +15,11 @@ void EncodeAndSaveDataToJson()
     var listDependencyRelation = JsonConvert.SerializeObject(DataHolder.DependencyList);
     var listChangeRelation = JsonConvert.SerializeObject(DataHolder.ChangedWithList);
 
-    WriteDataInFile(fullServiceListJsonEncoded, @"./FullServiceData.json");
+    WriteDataInFile(fullServiceListJsonEncoded, @"../../../../SoftwareArchitektur.ArchitekturSuggester/FullServiceData.json");
     
-    WriteDataInFile(listDependencyRelation, @"./DependencyRelation.json");
+    WriteDataInFile(listDependencyRelation, @"../../../../SoftwareArchitektur.ArchitekturSuggester/DependencyRelation.json");
     
-    WriteDataInFile(listChangeRelation, @"./FullRelationData.json");
+    WriteDataInFile(listChangeRelation, @"../../../../SoftwareArchitektur.ArchitekturSuggester/ChangeRelationData.json");
     
    
 }
@@ -40,7 +40,7 @@ void CreateChangeRelation(IWorkbook workbook4)
         }
 
         var numberOfChanges = ((XSSFRow)changesEnumerator.Current!).Cells[2].NumericCellValue;
-        var change = new CommonChangeRelation()
+        var change = new CommonChangeRelationModel()
         {
             NameOfCurrentService = name,
             NameOfOtherService = ((XSSFRow)changesEnumerator.Current).Cells[1].ToString()!,
@@ -68,7 +68,7 @@ void CreateDependencyRelation(IWorkbook workbook3)
         }
 
         var numberOfCalls = ((XSSFRow)dependencyEnumerator.Current!).Cells[2].NumericCellValue;
-        var dependency = new DependencyRelation()
+        var dependency = new DependencyRelationModel()
         {
             Caller = name,
             Callee = ((XSSFRow)dependencyEnumerator.Current).Cells[1].ToString()!,
@@ -95,10 +95,7 @@ void CreateServiceList(IWorkbook workbook2)
             continue;
         }
 
-        var newDependencyObject = new Service()
-        {
-            Name = ((XSSFRow)enumerator.Current).Cells.FirstOrDefault()?.ToString()
-        };
+        var newDependencyObject = new ServiceModel(((XSSFRow)enumerator.Current).Cells.FirstOrDefault()?.ToString());
         DataHolder.ServiceList.Add(newDependencyObject);
     }
 }

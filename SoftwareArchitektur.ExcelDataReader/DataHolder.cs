@@ -4,7 +4,7 @@ namespace SoftwareArchitektur.ExcelDataReader;
 
 public class DataHolder
 {
-    public static readonly List<Service> ServiceList= new List<Service>();
-    public static readonly List<DependencyRelation> DependencyList= new List<DependencyRelation>();
-    public static readonly List<CommonChangeRelation> ChangedWithList= new List<CommonChangeRelation>();
+    public static readonly List<ServiceModel> ServiceList= new List<ServiceModel>();
+    public static readonly List<DependencyRelationModel> DependencyList= new List<DependencyRelationModel>();
+    public static readonly List<CommonChangeRelationModel> ChangedWithList= new List<CommonChangeRelationModel>();
 }

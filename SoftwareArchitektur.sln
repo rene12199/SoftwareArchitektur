@@ -4,6 +4,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.ExcelDa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.Utility", "SoftwareArchitektur.Utility\SoftwareArchitektur.Utility.csproj", "{19A0F1B9-5659-49A9-9010-CDADB3E3C956}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.ArchitekturSuggester", "SoftwareArchitektur.ArchitekturSuggester\SoftwareArchitektur.ArchitekturSuggester.csproj", "{3FEC8FDF-2DC0-4F69-9ED0-A7F8EAC929A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.ArchitekturSuggester.Tests", "SoftwareArchitektur.ArchitekturSuggester.Tests\SoftwareArchitektur.ArchitekturSuggester.Tests.csproj", "{A1D58659-A7AF-4E9C-BC10-72BE70E4F298}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +22,13 @@ Global
 		{19A0F1B9-5659-49A9-9010-CDADB3E3C956}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{19A0F1B9-5659-49A9-9010-CDADB3E3C956}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{19A0F1B9-5659-49A9-9010-CDADB3E3C956}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FEC8FDF-2DC0-4F69-9ED0-A7F8EAC929A7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FEC8FDF-2DC0-4F69-9ED0-A7F8EAC929A7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FEC8FDF-2DC0-4F69-9ED0-A7F8EAC929A7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FEC8FDF-2DC0-4F69-9ED0-A7F8EAC929A7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A1D58659-A7AF-4E9C-BC10-72BE70E4F298}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A1D58659-A7AF-4E9C-BC10-72BE70E4F298}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A1D58659-A7AF-4E9C-BC10-72BE70E4F298}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A1D58659-A7AF-4E9C-BC10-72BE70E4F298}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
