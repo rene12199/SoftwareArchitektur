@@ -14,5 +14,8 @@ public class ServiceModel
     public bool IsRoot = false;
     public readonly List<DependencyRelationModel> DependsOn = new List<DependencyRelationModel>();
     public readonly List<CommonChangeRelationModel> ChangedWith = new List<CommonChangeRelationModel>();
-    public bool IsIsolated = false;
+    public bool IsIndependent  => IsLeaf && IsRoot;
+
+    public bool IsIsolated => IsIndependent && ChangedWith.Count == 0;
+
 }
