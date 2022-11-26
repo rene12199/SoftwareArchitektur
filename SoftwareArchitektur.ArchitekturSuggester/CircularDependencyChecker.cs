@@ -13,14 +13,9 @@ public class CircularDependencyChecker
         _dependentServices = dependentServices.Select(s => new CircularDependencyModel(s)).ToList();
     }
 
-    private PackageModel TransformInternalToExternalModel(CircularDependencyModel internalModel)
-    {
-
-        return internalModel.ToPackageModel();
-    }
-
     public List<PackageModel> CreatePackages()
     {
+        //todo ForEach until limit or no change
         var result = new List<PackageModel>();
         var origin = _dependentServices.MaxBy(d => d.DependsOn.Sum(dr => dr.NumberOfCalls));
         result.Add(CreatePackageRecursive(origin!).ToPackageModel());
@@ -65,6 +60,7 @@ public class CircularDependencyChecker
 
         public ServiceModel BaseServiceModel { get; private set; }
 
+        //todo Create Limit on minimum number of calls that it has to think about
         public readonly List<CircularDependencyRelationModel> DependsOn = new List<CircularDependencyRelationModel>();
 
         public CircularDependencyModel(ServiceModel model)
