@@ -12,4 +12,10 @@
       <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester\SoftwareArchitektur.ArchitekturSuggester.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <None Update="BestArchitecture.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+    </ItemGroup>
+
 </Project>

@@ -28,10 +28,16 @@ public class ArchitectureSuggester
 
         CreateOPackage(packages);
 
+        var ausPackage = new PackageModel("Aux");
+        
         while (_services.Count > 0)
         {
-            Move bestMove = new Move(_services[0]);
             Console.WriteLine($"Judging CCP moves for Service{_services[0]}, {_services.Count} remaining");
+            // ausPackage.AddService(_services[0]);
+            // _services.Remove(_services[0]);
+            
+            Move bestMove = new Move(_services[0]);
+           
             foreach (var package in packages)
             {
                 var newScore =
@@ -43,11 +49,11 @@ public class ArchitectureSuggester
                     bestMove.SetNewBestPackage(package, newScore);
                 }
             }
-
+            
             ExecuteMove(bestMove);
         }
 
-
+        packages.Add(ausPackage);
         return packages;
     }
 
@@ -60,9 +66,10 @@ public class ArchitectureSuggester
     private List<PackageModel> CreateInitalPackageModels()
     {
         //todo check Whether Root and Leaf Packages should be Included
-        var circularChecker = new CircularDependencyChecker(_services.Where(s => !s.IsLeaf && !s.IsRoot).ToList());
+        var nonIndependentServices = _services.Where(s => !s.IsIndependent).ToList();
+        var circularChecker = new CircularDependencyChecker(nonIndependentServices);
         var packages = circularChecker.CreatePackages();
-        var dupCounter = -_services.Where(s => !s.IsLeaf && !s.IsRoot).ToList().Count;
+        var dupCounter = -nonIndependentServices.Count;
         foreach (var package in packages)
         {
             foreach (var service in package.GetServices())
