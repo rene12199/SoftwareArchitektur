@@ -18,16 +18,16 @@
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="FullServiceData.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
       <None Update="FullRelationData.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-      <None Update="DependencyRelation.json">
+      <None Update="Data\DependencyRelation.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
-      <None Update="ChangeRelationData.json">
+      <None Update="Data\ChangeRelationData.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
+      <None Update="Data\FullServiceData.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
     </ItemGroup>

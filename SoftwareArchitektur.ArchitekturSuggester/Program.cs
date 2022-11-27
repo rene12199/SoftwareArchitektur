@@ -31,6 +31,6 @@ using SoftwareArchitektur.ArchitekturSuggester;
 // var communities = louvain.Apply(network);
 
 
-var suggester = new ArchitectureSuggester("FullServiceData.json", "DependencyRelation.json", "ChangeRelationData.json");
+var suggester = new ArchitectureSuggester("Data/FullServiceData.json", "Data/DependencyRelation.json", "Data/ChangeRelationData.json");
 
-suggester.CalculateArchitecture(3);
+suggester.CalculateArchitecture();

@@ -15,11 +15,11 @@ void EncodeAndSaveDataToJson()
     var listDependencyRelation = JsonConvert.SerializeObject(DataHolder.DependencyList);
     var listChangeRelation = JsonConvert.SerializeObject(DataHolder.ChangedWithList);
 
-    WriteDataInFile(fullServiceListJsonEncoded, @"../../../../SoftwareArchitektur.ArchitekturSuggester/FullServiceData.json");
+    WriteDataInFile(fullServiceListJsonEncoded, @"../../../../SoftwareArchitektur.ArchitekturSuggester/Data/FullServiceData.json");
     
-    WriteDataInFile(listDependencyRelation, @"../../../../SoftwareArchitektur.ArchitekturSuggester/DependencyRelation.json");
+    WriteDataInFile(listDependencyRelation, @"../../../../SoftwareArchitektur.ArchitekturSuggester/Data/DependencyRelation.json");
     
-    WriteDataInFile(listChangeRelation, @"../../../../SoftwareArchitektur.ArchitekturSuggester/ChangeRelationData.json");
+    WriteDataInFile(listChangeRelation, @"../../../../SoftwareArchitektur.ArchitekturSuggester/Data/ChangeRelationData.json");
     
    
 }

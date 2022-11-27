@@ -1,21 +1,27 @@
-﻿namespace SoftwareArchitektur.Utility.Models;
+﻿using Newtonsoft.Json;
+
+namespace SoftwareArchitektur.Utility.Models;
 
 public class ServiceModel
 {
-
     public ServiceModel(string name)
     {
         Name = name;
+        IsLeaf = true;
     }
+
     public string Name { get; private set; }
+
     //Leaf = Depends On Something but things dont depend on it
-    public bool IsLeaf = false;
+    [JsonIgnore] public bool IsLeaf = true;
+
     //Root = Doesnt Depend on Anything but things Depend on it
-    public bool IsRoot = false;
+    [JsonIgnore] public bool IsRoot = false;
     public readonly List<DependencyRelationModel> DependsOn = new List<DependencyRelationModel>();
     public readonly List<CommonChangeRelationModel> ChangedWith = new List<CommonChangeRelationModel>();
-    public bool IsIndependent  => IsLeaf && IsRoot;
+    public bool IsIndependent => IsLeaf && IsRoot;
+
+    public string InPackage = String.Empty;
 
     public bool IsIsolated => IsIndependent && ChangedWith.Count == 0;
-
 }

@@ -1,4 +1,4 @@
-﻿using MNCD.CommunityDetection.SingleLayer;
+﻿
 using MNCD.Core;
 using MNCD.Writers;
 using Newtonsoft.Json;
@@ -6,6 +6,7 @@ using SoftwareArchitektur.ArchitekturSuggester.Models;
 using SoftwareArchitektur.ArchitekturSuggester.Scoring;
 using SoftwareArchitektur.ArchitekturSuggester.Scoring.ScorerClasses;
 using SoftwareArchitektur.Utility.Models;
+
 
 namespace SoftwareArchitektur.ArchitekturSuggester;
 
@@ -27,13 +28,19 @@ public class ArchitectureSuggester
         CheckIfServiceIsLeafOrRoot();
     }
 
-    public void CalculateArchitecture(int numberOfPackages)
+    public void CalculateArchitecture()
     {
+        var circularChecker = new CircularDependencyChecker(_services.Where(s => !s.IsLeaf && !s.IsRoot).ToList());
+        var packages = circularChecker.CreatePackages();
 
-        //CreateOPackage();
-
-
-        CreatePackages();
+        foreach (var package in packages)
+        {
+            foreach (var service in package.GetServices())
+            {
+                _services.Remove(service);
+            }
+        }
+        
         var possibleMoves = new List<Move>();
         foreach (var service in _services)
         {
@@ -47,9 +54,9 @@ public class ArchitectureSuggester
             // }
         }
     }
+
     private void CreateOPackage()
     {
-
         var oPackage = new PackageModel("O-Package");
         var oServices = _services.Where(s => s.ChangedWith.Count == 0 && s.IsIndependent).ToList();
 
@@ -58,7 +65,7 @@ public class ArchitectureSuggester
             _services.Remove(oService);
         }
 
-        oPackage.Services.AddRange(oServices);
+        oPackage.AddServiceRange(oServices);
         _packageModels.Add(oPackage);
     }
 
@@ -73,7 +80,7 @@ public class ArchitectureSuggester
         moves.Clear();
         for (int i = 0; i < _packageModels.Count; i++)
         {
-            moves.Add(new Move(packageName: _packageModels[i].Name, serviceName: serviceName));
+            moves.Add(new Move(packageName: _packageModels[i].PackageName, serviceName: serviceName));
         }
     }
 
@@ -103,29 +110,25 @@ public class ArchitectureSuggester
     //
     // }
 
-    private void CreatePackages()
-    {
-        
-    }
     private List<ServiceModel> ConvertActorsIntoServices(List<Actor> communityActors)
     {
         var serviceList = new List<ServiceModel>();
         foreach (var actor in communityActors)
         {
             var service = _services.First(s => s.Name == actor.Name);
-           serviceList.Add(service);
-           _services.Remove(service);
+            serviceList.Add(service);
+            _services.Remove(service);
         }
 
         return serviceList;
     }
+
     private Network CreateNetWork(List<ServiceModel> isolatedServices)
     {
-
         Network network = new Network();
         var actors = new List<Actor>();
         var edges = new List<Edge>();
-        
+
         CreateActors(isolatedServices, actors);
 
         CreateEdges(isolatedServices, edges, actors);
@@ -136,9 +139,9 @@ public class ArchitectureSuggester
 
         return network;
     }
+
     private void CreateEdges(List<ServiceModel> isolatedServices, List<Edge> edges, List<Actor> actors)
     {
-
         foreach (var isolatedService in isolatedServices)
         {
             foreach (var changeRelation in isolatedService.ChangedWith)
@@ -148,6 +151,7 @@ public class ArchitectureSuggester
             }
         }
     }
+
     private void CreateActors(List<ServiceModel> isolatedServices, List<Actor> actors)
     {
         foreach (var isolatedService in isolatedServices)
@@ -161,9 +165,12 @@ public class ArchitectureSuggester
     {
         _services.Where(s => s.DependsOn.Count == 0).ToList().ForEach(i => i.IsRoot = true);
 
-        var allCallers = _dependencyRelations.Select(d => d.Callee).Distinct();
+        var allCallees = _dependencyRelations.Select(d => d.Callee).Distinct().ToList();
 
-        _services.Where(s => allCallers.Any(c => c != s.Name)).ToList().ForEach(s => s.IsLeaf = true);
+        foreach (var callee in allCallees)
+        {
+            _services.First(s => s.Name == callee).IsLeaf = false;
+        }
     }
 
     public void VisualizeCommunities(Network network, List<Community> communities)

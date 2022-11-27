@@ -5,20 +5,31 @@ namespace SoftwareArchitektur.ArchitekturSuggester;
 
 public class CircularDependencyChecker
 {
-    private readonly List<CircularDependencyModel> _dependentServices = new List<CircularDependencyModel>();
-
+    private readonly List<CircularDependencyModel> _dependentServices;
+  
+    
     public CircularDependencyChecker(List<ServiceModel> dependentServices)
     {
-
-        _dependentServices = dependentServices.Select(s => new CircularDependencyModel(s)).ToList();
+       _dependentServices = dependentServices.Select(s => new CircularDependencyModel(s)).ToList();
     }
 
     public List<PackageModel> CreatePackages()
     {
-        //todo ForEach until limit or no change
         var result = new List<PackageModel>();
-        var origin = _dependentServices.MaxBy(d => d.DependsOn.Sum(dr => dr.NumberOfCalls));
-        result.Add(CreatePackageRecursive(origin!).ToPackageModel());
+        //todo ForEach until limit or no change
+
+        while (_dependentServices.Any())
+        {
+            var origin = _dependentServices.MaxBy(d => d.DependsOn.Sum(dr => dr.NumberOfCalls));
+            var newPackage = CreatePackageRecursive(origin!).ToPackageModel();
+            result.Add(newPackage);
+            foreach (var service in newPackage.GetServices())
+            {
+                _dependentServices.Remove(_dependentServices.First( s=> s.BaseServiceModel.Name == service.Name));
+            }
+        }
+       
+       
         return result;
     }
 
@@ -30,11 +41,15 @@ public class CircularDependencyChecker
             var dependency = model.DependsOn[0];
             var calledService = _dependentServices.FirstOrDefault(s => s.BaseServiceModel.Name == dependency.Callee);
 
+            if (calledService == null)
+            {
+                model.DependsOn.Remove(dependency);
+                continue;
+            }
+            
             if (model.Visited.Any(d => dependency.Callee == d.BaseServiceModel.Name))
             {
                 model.EatDifferentModels(calledService);
-
-
             }
             else
             {
@@ -68,36 +83,48 @@ public class CircularDependencyChecker
             BaseServiceModel = model;
             counter++;
             PackageName = $"Package{counter}";
-            DependsOn = model.DependsOn.Select(d => new CircularDependencyRelationModel(d)).ToList();
+            DependsOn.AddRange(model.DependsOn.Select(d => new CircularDependencyRelationModel(d)).ToList());
             Visited.Add(this);
         }
 
         public PackageModel ToPackageModel()
         {
             var packageModel = new PackageModel(PackageName);
-            packageModel.Services.Add(BaseServiceModel);
             foreach (var eatenService in Eaten)
             {
-                packageModel.Services.Add(eatenService.BaseServiceModel);
+                packageModel.AddService(eatenService.BaseServiceModel);
+            }
+
+            if (packageModel.GetServices().Count == 0)
+            {
+                packageModel.AddService(BaseServiceModel);
             }
 
             return packageModel;
         }
 
-        public void EatDifferentModels(CircularDependencyModel model)
+        public void EatDifferentModels(CircularDependencyModel eatenModel)
         {
             Visited.Select(v => v.PackageName = this.PackageName);
-            Eaten.AddRange(Visited);
-            DigestDependencies(model);
+
+            foreach (var visited in Visited)
+            {
+                if (Eaten.FirstOrDefault(s => s.BaseServiceModel.Name == visited.BaseServiceModel.Name) == null)
+                {
+                    Eaten.Add(visited);
+                }
+            }
+            DigestDependencies(eatenModel);
         }
 
-        private void DigestDependencies(CircularDependencyModel model)
+        private void DigestDependencies(CircularDependencyModel eatenModel)
         {
-            foreach (var dependencyRelation in model.DependsOn)
+            for (int i = 0; i< eatenModel.DependsOn.Count; i++)
             {
-                if (!Eaten.Any(e => e.BaseServiceModel.Name == dependencyRelation.Callee))
+                var dependencyRelation = eatenModel.DependsOn[i];
+                if (!Eaten.Any(e => e.BaseServiceModel.Name == dependencyRelation.Callee) && DependsOn.FirstOrDefault(d => d.Callee == dependencyRelation.Callee) == null )
                 {
-                    model.DependsOn.Add(dependencyRelation);
+                    DependsOn.Add(dependencyRelation);
                 }
             }
         }

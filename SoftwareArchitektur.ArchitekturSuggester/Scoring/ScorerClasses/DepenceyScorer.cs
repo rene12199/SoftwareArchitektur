@@ -15,7 +15,7 @@ public class DependencyScorer
     public void ScoreByDependency(Move move, ServiceModel service)
     {
         long finalScore = 0;
-        var currentPackage = Packages.First(f => f.Name == move.PackageName);
+        var currentPackage = Packages.First(f => f.PackageName == move.PackageName);
         var dependenciesForService = service.DependsOn;
         finalScore = ScoreDependency(dependenciesForService, currentPackage, finalScore);
 
@@ -26,7 +26,7 @@ public class DependencyScorer
     {
         foreach(var dependency in dependenciesForService)
         {
-            if(!currentPackage.Services.Any(d => d.Name == dependency.Callee))
+            if(!currentPackage.GetServices().Any(d => d.Name == dependency.Callee))
             {
                 finalScore = finalScore + dependency.NumberOfCalls;
             }

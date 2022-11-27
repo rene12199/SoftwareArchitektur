@@ -4,17 +4,29 @@ namespace SoftwareArchitektur.ArchitekturSuggester.Models;
 
 public class PackageModel
 {
-    public PackageModel(string name)
+    public PackageModel(string packageName)
     {
-        Name = name;
+        PackageName = packageName;
     }
 
-    public string Name { get; set; }
-    
-    public List<ServiceModel> Services { get; set; } = new List<ServiceModel>();
+    public string PackageName { get; set; }
 
-    public IEnumerable<string> GetAllServiceNames()
+    private List<ServiceModel> Services = new List<ServiceModel>();
+
+    public void AddService(ServiceModel service)
     {
-        return Services.Select(s => s.Name).ToList();
+        Services.Add(service);
+        service.InPackage = PackageName;
+    }  
+    
+    public void AddServiceRange(IEnumerable<ServiceModel> service)
+    {
+        Services.AddRange(service);
+        service.ToList().ForEach(s => s.InPackage = PackageName) ;
+    }
+
+    public List<ServiceModel> GetServices()
+    {
+        return Services;
     }
 }
