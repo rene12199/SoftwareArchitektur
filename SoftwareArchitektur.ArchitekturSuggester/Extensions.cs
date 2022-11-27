@@ -6,6 +6,7 @@ public static class Extensions
 {
     public static void CreateDependenciesToPackages(this IEnumerable<PackageModel> values)
     {
+        //Todo Check Wether DependencyString are Created correctly
         foreach (var packageModel in values)
         {
             var externalDependencies =
@@ -22,6 +23,8 @@ public static class Extensions
                     packageModel.PackageDependencies.Add(foundPackage);
                 }
             }
+           
         }
+        values.ToList().ForEach(p => p.CleanPackageName());
     }
 }

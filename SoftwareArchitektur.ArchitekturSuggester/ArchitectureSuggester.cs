@@ -47,7 +47,6 @@ public class ArchitectureSuggester
             ExecuteMove(bestMove);
         }
 
-        packages.CreateDependenciesToPackages();
 
         return packages;
     }
@@ -60,23 +59,25 @@ public class ArchitectureSuggester
 
     private List<PackageModel> CreateInitalPackageModels()
     {
+        //todo check Whether Root and Leaf Packages should be Included
         var circularChecker = new CircularDependencyChecker(_services.Where(s => !s.IsLeaf && !s.IsRoot).ToList());
         var packages = circularChecker.CreatePackages();
-        var dupCounter = 0;
+        var dupCounter = -_services.Where(s => !s.IsLeaf && !s.IsRoot).ToList().Count;
         foreach (var package in packages)
         {
             foreach (var service in package.GetServices())
             {
-                if (!_services.Any(s => s.Name == service.Name))
+              
+                if (_services.Any(s => s.Name == service.Name))
                 {
-                    Console.WriteLine("Duplicate "  + service.Name +"in Package " + service.InPackage);
                     dupCounter++;
+                    _services.Remove(service);
                 }
-
-                _services.Remove(service);
+                    
             }
         }
 
+        packages.CreateDependenciesToPackages();
         return packages;
     }
 
@@ -99,32 +100,6 @@ public class ArchitectureSuggester
         var file = File.ReadAllText(fileName);
         return JsonConvert.DeserializeObject<T>(file)!;
     }
-
-    // private void CreatePackages()
-    // {
-    //     // _indipendantServices = _services.Where(s => s.IsIndependent)
-    //     //     .OrderBy(s => s.ChangedWith.Select(se => se.NumberOfChanges).Max()).ToList();
-    //     //
-    //     // var network = CreateNetWork(_indipendantServices);
-    //     //
-    //     // var louvain = new Louvain();
-    //     // var communities = louvain.Apply(network);
-    //     //
-    //     // int counter = 0;
-    //     //
-    //     // foreach (var community in communities)
-    //     // {
-    //     //     counter++;
-    //     //     
-    //     //     _packageModels.Add(new PackageModel($"Package: {counter}")
-    //     //     {
-    //     //         Services = ConvertActorsIntoServices(community.Actors)
-    //     //     });
-    //     // }
-    //     //
-    //     // VisualizeCommunities(network, communities);
-    //
-    // }
 
     private List<ServiceModel> ConvertActorsIntoServices(List<Actor> communityActors)
     {
