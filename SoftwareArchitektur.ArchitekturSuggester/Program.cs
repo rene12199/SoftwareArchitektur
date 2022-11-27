@@ -1,8 +1,11 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
+using System.Text;
 using MNCD.CommunityDetection.SingleLayer;
 using MNCD.Core;
+using Newtonsoft.Json;
 using SoftwareArchitektur.ArchitekturSuggester;
+using SoftwareArchitektur.Utility.Models;
 
 // Console.WriteLine("Hello, World!");
 // var actors = new List<Actor>
@@ -30,7 +33,12 @@ using SoftwareArchitektur.ArchitekturSuggester;
 // var louvain = new Louvain();
 // var communities = louvain.Apply(network);
 
-
 var suggester = new ArchitectureSuggester("Data/FullServiceData.json", "Data/DependencyRelation.json", "Data/ChangeRelationData.json");
 
-suggester.CalculateArchitecture();
+var bestArchitecture = suggester.CalculateArchitecture();
+
+var content = JsonConvert.SerializeObject(bestArchitecture);
+using (var fp  = File.Open("../../../BestArchitecture.json", FileMode.OpenOrCreate))
+{
+    fp.Write(Encoding.ASCII.GetBytes(content));
+}

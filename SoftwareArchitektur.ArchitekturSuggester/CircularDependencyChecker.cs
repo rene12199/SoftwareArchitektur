@@ -53,14 +53,19 @@ public class CircularDependencyChecker
             }
             else
             {
-                model.Visited.Add(calledService);
-                model.DependsOn.AddRange(calledService.DependsOn);
+                AddToVisited(model, calledService);
             }
 
             model.DependsOn.Remove(dependency);
         }
 
         return model;
+    }
+
+    private static void AddToVisited(CircularDependencyModel model, CircularDependencyModel calledService)
+    {
+        model.Visited.Add(calledService);
+        model.DependsOn.AddRange(calledService.DependsOn);
     }
 
     internal class CircularDependencyModel
@@ -106,15 +111,24 @@ public class CircularDependencyChecker
         public void EatDifferentModels(CircularDependencyModel eatenModel)
         {
             Visited.Select(v => v.PackageName = this.PackageName);
+            EatVisitedModel();
+            DigestDependencies(eatenModel);
+        }
 
+        private void EatVisitedModel()
+        {
             foreach (var visited in Visited)
             {
-                if (Eaten.FirstOrDefault(s => s.BaseServiceModel.Name == visited.BaseServiceModel.Name) == null)
-                {
-                    Eaten.Add(visited);
-                }
+                CheckForDuplicatesInEatenModel(visited);
             }
-            DigestDependencies(eatenModel);
+        }
+
+        private void CheckForDuplicatesInEatenModel(CircularDependencyModel visited)
+        {
+            if (Eaten.FirstOrDefault(s => s.BaseServiceModel.Name == visited.BaseServiceModel.Name) == null)
+            {
+                Eaten.Add(visited);
+            }
         }
 
         private void DigestDependencies(CircularDependencyModel eatenModel)
@@ -122,11 +136,21 @@ public class CircularDependencyChecker
             for (int i = 0; i< eatenModel.DependsOn.Count; i++)
             {
                 var dependencyRelation = eatenModel.DependsOn[i];
-                if (!Eaten.Any(e => e.BaseServiceModel.Name == dependencyRelation.Callee) && DependsOn.FirstOrDefault(d => d.Callee == dependencyRelation.Callee) == null )
+                if (CheckIfDependsOnEatenService(dependencyRelation) && CheckIfDuplicateDependency(dependencyRelation) )
                 {
                     DependsOn.Add(dependencyRelation);
                 }
             }
+        }
+
+        private bool CheckIfDependsOnEatenService(CircularDependencyRelationModel dependencyRelation)
+        {
+            return !Eaten.Any(e => e.BaseServiceModel.Name == dependencyRelation.Callee);
+        }
+
+        private bool CheckIfDuplicateDependency(CircularDependencyRelationModel dependencyRelation)
+        {
+            return DependsOn.FirstOrDefault(d => d.Callee == dependencyRelation.Callee) == null;
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using SoftwareArchitektur.Utility.Models;
+﻿using Newtonsoft.Json;
+using SoftwareArchitektur.Utility.Models;
 
 namespace SoftwareArchitektur.ArchitekturSuggester.Models;
 
@@ -11,22 +12,39 @@ public class PackageModel
 
     public string PackageName { get; set; }
 
-    private List<ServiceModel> Services = new List<ServiceModel>();
+    [JsonIgnore]
+    private readonly List<ServiceModel> _services = new List<ServiceModel>();
 
     public void AddService(ServiceModel service)
     {
-        Services.Add(service);
+        _services.Add(service);
         service.InPackage = PackageName;
-    }  
-    
+    }
+
     public void AddServiceRange(IEnumerable<ServiceModel> service)
     {
-        Services.AddRange(service);
-        service.ToList().ForEach(s => s.InPackage = PackageName) ;
+        _services.AddRange(service);
+        service.ToList().ForEach(s => s.InPackage = PackageName);
     }
 
     public List<ServiceModel> GetServices()
     {
-        return Services;
+        return _services;
+    }
+
+    public double AverageChangeRate => _services.Where(s => !double.IsNaN(s.AverageChange)).Sum(s => s.AverageChange) / _services.Count;
+
+    //Sourcehttps://socratic.org/statistics/random-variables/addition-rules-for-variances
+    public double StandardDeviationOfChangeRate =>
+        Math.Sqrt(_services.Sum(sd => sd.StandardDeviationChangeRate * sd.StandardDeviationChangeRate));
+    
+    public List<string> DependsOn => GetDependentPackages();
+
+    [JsonIgnore]
+    public List<PackageModel> PackageDependencies = new List<PackageModel>();
+
+    private  List<string> GetDependentPackages()
+    {
+        return _services.Select(d => d.Name).Distinct().ToList();
     }
 }

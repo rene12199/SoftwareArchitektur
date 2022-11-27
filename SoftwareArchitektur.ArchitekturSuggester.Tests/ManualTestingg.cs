@@ -4,6 +4,8 @@ namespace SoftwareArchitektur.ArchitekturSuggester.Tests;
 
 public class ManualTesting 
 {
+    
+    //todo Test if Louvian Network gets YOu The same as the shit you Programmed
     [Test]
     public void bla()
     {

@@ -15,20 +15,48 @@ public class ArchitectureSuggester
     private readonly List<ServiceModel> _services;
     private readonly List<DependencyRelationModel> _dependencyRelations;
     private List<CommonChangeRelationModel> _commonChangeRelations;
-    private readonly List<PackageModel> _packageModels = new List<PackageModel>();
-    private readonly DependencyScorer _dependencyScorer;
-    private List<ServiceModel> _indipendantServices;
 
     public ArchitectureSuggester(string completeDataFileAddress, string dependencyFileAddress, string changeFileAddress)
     {
         _services = ReadData<List<ServiceModel>>(completeDataFileAddress);
         _dependencyRelations = ReadData<List<DependencyRelationModel>>(dependencyFileAddress);
         _commonChangeRelations = ReadData<List<CommonChangeRelationModel>>(changeFileAddress);
-        _dependencyScorer = new DependencyScorer(_packageModels);
         CheckIfServiceIsLeafOrRoot();
     }
 
-    public void CalculateArchitecture()
+    public List<PackageModel> CalculateArchitecture()
+    {
+        var packages = CreateInitalPackageModels();
+
+        CreateOPackage(packages);
+        
+        while (_services.Count> 0)
+        {
+            Move bestMove = new Move(_services[0]);
+            foreach (var package in packages)
+            {
+                var newScore = Math.Abs(Math.Sqrt(Math.Pow(package.StandardDeviationOfChangeRate, 2) + Math.Pow(bestMove.Service.StandardDeviationChangeRate, 2)) - package.StandardDeviationOfChangeRate);
+                if (newScore < bestMove.Score)
+                {
+                    bestMove.SetNewBestPackage(package, newScore);
+                }
+            }
+
+            ExecuteMove(bestMove);
+        }
+        
+        packages.CreateDependenciesToPackages();
+
+        return packages;
+    }
+
+    private void ExecuteMove(Move bestMove)
+    {
+        bestMove.BestPackage.AddService(bestMove.Service);
+        _services.Remove(bestMove.Service);
+    }
+
+    private List<PackageModel> CreateInitalPackageModels()
     {
         var circularChecker = new CircularDependencyChecker(_services.Where(s => !s.IsLeaf && !s.IsRoot).ToList());
         var packages = circularChecker.CreatePackages();
@@ -40,25 +68,14 @@ public class ArchitectureSuggester
                 _services.Remove(service);
             }
         }
-        
-        var possibleMoves = new List<Move>();
-        foreach (var service in _services)
-        {
-            // CleanMoves(possibleMoves, service.Name);
-            // foreach (var move in possibleMoves)
-            // {
-            //     if (!service.IsIndependent)
-            //     {
-            //         _dependencyScorer.ScoreByDependency(move, service);
-            //     }
-            // }
-        }
+
+        return packages;
     }
 
-    private void CreateOPackage()
+    private void CreateOPackage(List<PackageModel> packageModels)
     {
         var oPackage = new PackageModel("O-Package");
-        var oServices = _services.Where(s => s.ChangedWith.Count == 0 && s.IsIndependent).ToList();
+        var oServices = _services.Where(s => s.IsIsolated).ToList();
 
         foreach (var oService in oServices)
         {
@@ -66,22 +83,13 @@ public class ArchitectureSuggester
         }
 
         oPackage.AddServiceRange(oServices);
-        _packageModels.Add(oPackage);
+        packageModels.Add(oPackage);
     }
 
     private T ReadData<T>(string fileName)
     {
         var file = File.ReadAllText(fileName);
         return JsonConvert.DeserializeObject<T>(file)!;
-    }
-
-    private void CleanMoves(List<Move> moves, string serviceName)
-    {
-        moves.Clear();
-        for (int i = 0; i < _packageModels.Count; i++)
-        {
-            moves.Add(new Move(packageName: _packageModels[i].PackageName, serviceName: serviceName));
-        }
     }
 
     // private void CreatePackages()

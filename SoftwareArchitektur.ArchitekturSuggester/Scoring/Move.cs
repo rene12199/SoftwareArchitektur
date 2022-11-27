@@ -1,22 +1,26 @@
-﻿namespace SoftwareArchitektur.ArchitekturSuggester.Scoring;
+﻿using SoftwareArchitektur.ArchitekturSuggester.Models;
+using SoftwareArchitektur.Utility.Models;
+
+namespace SoftwareArchitektur.ArchitekturSuggester.Scoring;
 
 public class Move
 {
-    public Move(string serviceName, string packageName)
+    public Move(ServiceModel service)
     {
-        ServiceName = serviceName;
-        PackageName = packageName;
+        Service = service;
+        Score = double.MaxValue;
     }
     
-    public string ServiceName { get; set; }
+    public ServiceModel Service { get; private set; }
     
-    public string PackageName { get; set; }
-    public long DependencyScore { get; set; } = 0;
-    public long ChangeScore { get; set; } = 0;
-    public long CircularScore { get; set; } = 0;
+    public PackageModel BestPackage { get; private set; }
+    public double Score { get; set; } = 0;
+  
 
-    public long TotalScore
+    public void SetNewBestPackage(PackageModel packageModel, double score)
     {
-        get => DependencyScore + ChangeScore + CircularScore;
+        BestPackage = packageModel;
+        Score = score;
+
     }
 }
