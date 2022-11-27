@@ -6,47 +6,87 @@ namespace SoftwareArchitektur.ArchitekturSuggester;
 public class CircularDependencyChecker
 {
     private readonly List<CircularDependencyModel> _dependentServices;
-  
-    
+
+    private readonly List<string> _packageNameLookUp;
+
+    private List<CircularDependencyModel> _packageModels;
+
+
     public CircularDependencyChecker(List<ServiceModel> dependentServices)
     {
-       _dependentServices = dependentServices.Select(s => new CircularDependencyModel(s)).ToList();
+        _dependentServices = dependentServices.Select(s => new CircularDependencyModel(s)).ToList();
+        _packageNameLookUp = dependentServices.Select(s => s.Name).ToList();
     }
 
     public List<PackageModel> CreatePackages()
     {
-        var result = new List<PackageModel>();
+        _packageModels = new List<CircularDependencyModel>();
         //todo ForEach until limit or no change
 
         while (_dependentServices.Any())
         {
             var origin = _dependentServices.MaxBy(d => d.DependsOn.Sum(dr => dr.NumberOfCalls));
-            var newPackage = CreatePackageRecursive(origin!).ToPackageModel();
-            result.Add(newPackage);
-            foreach (var service in newPackage.GetServices())
+            Console.WriteLine("Checking Dependencies for Service" + origin.BaseServiceModel.Name);
+            var newPackage = CreatePackageRecursive(origin!);
+            _packageModels.Add(newPackage);
+            newPackage.Eaten.Add(newPackage);
+            foreach (var service in newPackage.Eaten)
             {
-                _dependentServices.Remove(_dependentServices.First( s=> s.BaseServiceModel.Name == service.Name));
+                if (newPackage.Eaten.Count < 1)
+                {
+                    _dependentServices.Remove(_dependentServices.First(s =>
+                        s.BaseServiceModel.Name == newPackage.BaseServiceModel.Name));
+                }
+
+                _dependentServices.Remove(_dependentServices.FirstOrDefault(s =>
+                    s.BaseServiceModel.Name == service.BaseServiceModel.Name));
             }
         }
-       
-       
-        return result;
+
+        var packageLookUp = _packageModels.Select(p => p.PackageName);
+
+        foreach (var models in _packageModels)
+        {
+            var origin = models;
+            Console.WriteLine("Checking Dependencies for Service" + origin.BaseServiceModel.Name);
+            var newPackage = CreatePackageRecursive(origin!);
+        }
+
+        Console.WriteLine("Finished Circle Check");
+
+        return _packageModels.Select(cd => cd.ToPackageModel()).ToList();
     }
 
     private CircularDependencyModel CreatePackageRecursive(CircularDependencyModel model)
     {
-
+        var counter = 0;
         while (model.DependsOn.Count > 0)
         {
+            
             var dependency = model.DependsOn[0];
+            counter++;
+            Console.WriteLine($"Check Dependency: " + dependency.Callee+" " + counter);
             var calledService = _dependentServices.FirstOrDefault(s => s.BaseServiceModel.Name == dependency.Callee);
 
             if (calledService == null)
             {
+                var isAlreadyAdded =
+                    _packageNameLookUp.FirstOrDefault(s => s == dependency.Callee) != null;
+
+                if (isAlreadyAdded)
+                {
+                    var packageToEat =
+                        _packageModels.First(p => p.Eaten.Any(s => s.BaseServiceModel.Name == dependency.Callee));
+                    Console.WriteLine(
+                        $"Possible Circular Dependency For Package {model.PackageName} With Package {packageToEat.PackageName}, From Service {dependency.Caller} To {dependency.Callee}");
+
+                    model.EatDifferentModels(packageToEat);
+                }
+
                 model.DependsOn.Remove(dependency);
                 continue;
             }
-            
+
             if (model.Visited.Any(d => dependency.Callee == d.BaseServiceModel.Name))
             {
                 model.EatDifferentModels(calledService);
@@ -89,7 +129,8 @@ public class CircularDependencyChecker
             counter++;
             PackageName = $"Package{counter}";
             DependsOn.AddRange(model.DependsOn.Select(d => new CircularDependencyRelationModel(d)).ToList());
-            Visited.Add(this);
+            
+            Eaten.Add(this);
         }
 
         public PackageModel ToPackageModel()
@@ -110,8 +151,15 @@ public class CircularDependencyChecker
 
         public void EatDifferentModels(CircularDependencyModel eatenModel)
         {
+            if (BaseServiceModel == eatenModel.BaseServiceModel)
+            {
+                return;
+            }
+
             Visited.Select(v => v.PackageName = this.PackageName);
+            
             EatVisitedModel();
+            
             DigestDependencies(eatenModel);
         }
 
@@ -133,12 +181,12 @@ public class CircularDependencyChecker
 
         private void DigestDependencies(CircularDependencyModel eatenModel)
         {
-            for (int i = 0; i< eatenModel.DependsOn.Count; i++)
+            for (int i = 0; i < eatenModel.DependsOn.Count; i++)
             {
                 var dependencyRelation = eatenModel.DependsOn[i];
-                if (CheckIfDependsOnEatenService(dependencyRelation) && CheckIfDuplicateDependency(dependencyRelation) )
+                if (CheckIfDependsOnEatenService(dependencyRelation))
                 {
-                    DependsOn.Add(dependencyRelation);
+                    this.DependsOn.Add(dependencyRelation);
                 }
             }
         }
@@ -159,6 +207,7 @@ public class CircularDependencyChecker
         public readonly string Caller;
         public readonly string Callee;
         public readonly long NumberOfCalls;
+
         public CircularDependencyRelationModel(DependencyRelationModel dependencyRelationModel)
         {
             Callee = dependencyRelationModel.Callee;
@@ -166,6 +215,4 @@ public class CircularDependencyChecker
             NumberOfCalls = dependencyRelationModel.NumberOfCalls;
         }
     }
-
-
 }

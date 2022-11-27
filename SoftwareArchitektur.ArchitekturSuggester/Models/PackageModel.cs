@@ -11,8 +11,7 @@ public class PackageModel
     }
 
     public string PackageName { get; set; }
-
-    [JsonIgnore]
+    
     private readonly List<ServiceModel> _services = new List<ServiceModel>();
 
     public void AddService(ServiceModel service)
@@ -45,6 +44,6 @@ public class PackageModel
 
     private  List<string> GetDependentPackages()
     {
-        return _services.Select(d => d.Name).Distinct().ToList();
+        return PackageDependencies.Select(d => d.PackageName).Distinct().ToList();
     }
 }

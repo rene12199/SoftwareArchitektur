@@ -38,7 +38,7 @@ var suggester = new ArchitectureSuggester("Data/FullServiceData.json", "Data/Dep
 var bestArchitecture = suggester.CalculateArchitecture();
 
 var content = JsonConvert.SerializeObject(bestArchitecture);
-using (var fp  = File.Open("../../../BestArchitecture.json", FileMode.OpenOrCreate))
+using (var fp  = File.Open(@"../../../../SoftwareArchitektur.UMLVisualizer/BestArchitecture.json", FileMode.OpenOrCreate))
 {
     fp.Write(Encoding.ASCII.GetBytes(content));
 }

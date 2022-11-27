@@ -1,0 +1,9 @@
+@startuml
+'https://plantuml.com/deployment-diagram
+
+
+component component1
+component component2
+component1 --> component2
+
+@enduml
