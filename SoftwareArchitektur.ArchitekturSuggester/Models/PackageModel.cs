@@ -12,7 +12,7 @@ public class PackageModel
 
     public string PackageName { get; set; }
     
-    private readonly List<ServiceModel> _services = new List<ServiceModel>();
+    private readonly HashSet<ServiceModel> _services = new HashSet<ServiceModel>();
 
     public void AddService(ServiceModel service)
     {
@@ -22,11 +22,15 @@ public class PackageModel
 
     public void AddServiceRange(IEnumerable<ServiceModel> service)
     {
-        _services.AddRange(service);
+        foreach (var s in service)
+        {
+            _services.Add(s);
+
+        }
         service.ToList().ForEach(s => s.InPackage = PackageName);
     }
 
-    public List<ServiceModel> GetServices()
+    public HashSet<ServiceModel> GetServices()
     {
         return _services;
     }

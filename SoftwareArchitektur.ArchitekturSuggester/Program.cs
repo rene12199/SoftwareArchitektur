@@ -40,5 +40,6 @@ var bestArchitecture = suggester.CalculateArchitecture();
 var content = JsonConvert.SerializeObject(bestArchitecture);
 using (var fp  = File.Open(@"../../../../SoftwareArchitektur.UMLVisualizer/BestArchitecture.json", FileMode.OpenOrCreate))
 {
+    
     fp.Write(Encoding.ASCII.GetBytes(content));
 }

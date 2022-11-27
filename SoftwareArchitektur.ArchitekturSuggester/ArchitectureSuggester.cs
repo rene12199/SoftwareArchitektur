@@ -1,10 +1,8 @@
-﻿
-using MNCD.Core;
+﻿using MNCD.Core;
 using MNCD.Writers;
 using Newtonsoft.Json;
 using SoftwareArchitektur.ArchitekturSuggester.Models;
 using SoftwareArchitektur.ArchitekturSuggester.Scoring;
-using SoftwareArchitektur.ArchitekturSuggester.Scoring.ScorerClasses;
 using SoftwareArchitektur.Utility.Models;
 
 
@@ -29,13 +27,17 @@ public class ArchitectureSuggester
         var packages = CreateInitalPackageModels();
 
         CreateOPackage(packages);
-        
-        while (_services.Count> 0)
+
+        while (_services.Count > 0)
         {
             Move bestMove = new Move(_services[0]);
+            Console.WriteLine($"Judging CCP moves for Service{_services[0]}, {_services.Count} remaining");
             foreach (var package in packages)
             {
-                var newScore = Math.Abs(Math.Sqrt(Math.Pow(package.StandardDeviationOfChangeRate, 2) + Math.Pow(bestMove.Service.StandardDeviationChangeRate, 2)) - package.StandardDeviationOfChangeRate);
+                var newScore =
+                    Math.Abs(Math.Sqrt(Math.Pow(package.StandardDeviationOfChangeRate, 2) +
+                                       Math.Pow(bestMove.Service.StandardDeviationChangeRate, 2)) -
+                             package.StandardDeviationOfChangeRate);
                 if (newScore < bestMove.Score)
                 {
                     bestMove.SetNewBestPackage(package, newScore);
@@ -44,7 +46,7 @@ public class ArchitectureSuggester
 
             ExecuteMove(bestMove);
         }
-        
+
         packages.CreateDependenciesToPackages();
 
         return packages;
@@ -60,11 +62,17 @@ public class ArchitectureSuggester
     {
         var circularChecker = new CircularDependencyChecker(_services.Where(s => !s.IsLeaf && !s.IsRoot).ToList());
         var packages = circularChecker.CreatePackages();
-
+        var dupCounter = 0;
         foreach (var package in packages)
         {
             foreach (var service in package.GetServices())
             {
+                if (!_services.Any(s => s.Name == service.Name))
+                {
+                    Console.WriteLine("Duplicate "  + service.Name +"in Package " + service.InPackage);
+                    dupCounter++;
+                }
+
                 _services.Remove(service);
             }
         }
