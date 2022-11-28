@@ -72,11 +72,7 @@ public class CircularDependencyChecker
     {
         if (calledService == null)
         {
-            if (CheckIfDependencyIsAlreadyAdded(dependency) &&
-                !CheckIfDependencyIsAlreadyInternal(model, dependency))
-            {
-                ConsumePackageWithCircularDependency(model, dependency);
-            }
+            ProcessDependencyInDifferentPackage(model, dependency);
         }
         else if (model.Visited.Any(d => dependency.Callee == d.BaseServiceModel.Name))
         {
@@ -85,6 +81,16 @@ public class CircularDependencyChecker
         else
         {
             AddToVisited(model, calledService);
+        }
+    }
+
+    private void ProcessDependencyInDifferentPackage(CircularDependencyModel model,
+        CircularDependencyRelationModel dependency)
+    {
+        if (CheckIfDependencyIsAlreadyAdded(dependency) &&
+            !CheckIfDependencyIsAlreadyInternal(model, dependency))
+        {
+            ConsumePackageWithCircularDependency(model, dependency);
         }
     }
 

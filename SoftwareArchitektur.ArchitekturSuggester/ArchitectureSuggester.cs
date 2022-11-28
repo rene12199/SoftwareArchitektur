@@ -9,23 +9,27 @@ namespace SoftwareArchitektur.ArchitekturSuggester;
 public class ArchitectureSuggester
 {
     private readonly List<ServiceModel> _services;
+    private readonly List<ServiceModel> _servicesLookUp;
     private readonly List<DependencyRelationModel> _dependencyRelations;
+    private readonly List<CommonChangeRelationModel> _changeRelations;
 
     public ArchitectureSuggester(string completeDataFileAddress, string dependencyFileAddress, string changeFileAddress)
     {
         _services = ReadData<List<ServiceModel>>(completeDataFileAddress);
+        _servicesLookUp = ReadData<List<ServiceModel>>(completeDataFileAddress);
         _dependencyRelations = ReadData<List<DependencyRelationModel>>(dependencyFileAddress);
+        _changeRelations = ReadData<List<CommonChangeRelationModel>>(changeFileAddress);
         CheckIfServiceIsLeafOrRoot();
     }
 
     public List<PackageModel> CalculateArchitecture()
     {
-        var packages = CreateInitalPackageModels();
+        var packages = CreateInitialPackageModels();
 
         CreateOPackage(packages);
 
         DistributeRemainingPackagesByCcpScore(packages);
-        
+
         return packages;
     }
 
@@ -45,13 +49,24 @@ public class ArchitectureSuggester
 
     private void CalculateBestPackageForMove(List<PackageModel> packages, Move bestMove)
     {
-        foreach (var package in packages)
+        var mostChangedWith = bestMove.Service.ChangedWith.OrderBy(c => c.NumberOfChanges);
+
+        foreach (var changeRelation in mostChangedWith)
         {
-            var newScore = CalculateDifferenceInStandardDeviation(package, bestMove);
-            if (newScore < bestMove.Score)
+            foreach (var package in packages)
             {
-                bestMove.SetNewBestPackage(package, newScore);
+                if (package.GetServices().Any(s => s.Name == changeRelation.NameOfOtherService))
+                {
+                    bestMove.BestPackage = package;
+                    return;
+                }
             }
+        }
+
+        if (bestMove.BestPackage == null)
+        {
+            bestMove.BestPackage = packages.OrderBy(p => Math.Abs(p.AverageChangeRate - bestMove.Service.AverageChange))
+                .FirstOrDefault();
         }
     }
 
@@ -70,19 +85,20 @@ public class ArchitectureSuggester
         _services.Remove(bestMove.Service);
     }
 
-    private List<PackageModel> CreateInitalPackageModels()
+    private List<PackageModel> CreateInitialPackageModels()
     {
         //todo check Whether Root and Leaf Packages should be Included
         var nonIndependentServices = _services.Where(s => !s.IsIndependent).ToList();
         var circularChecker = new CircularDependencyChecker(nonIndependentServices);
         var packages = circularChecker.CreatePackages();
-        DeleteAddedServicesFromGlobalServicePool(nonIndependentServices, packages);
 
+        DeleteAddedServicesFromGlobalServicePool(nonIndependentServices, packages);
         packages.CreateDependenciesToPackages();
         return packages;
     }
 
-    private void DeleteAddedServicesFromGlobalServicePool(List<ServiceModel> nonIndependentServices, List<PackageModel> packages)
+    private void DeleteAddedServicesFromGlobalServicePool(List<ServiceModel> nonIndependentServices,
+        List<PackageModel> packages)
     {
         var dupCounter = -nonIndependentServices.Count;
         foreach (var package in packages)
@@ -129,7 +145,7 @@ public class ArchitectureSuggester
         var file = File.ReadAllText(fileName);
         return JsonConvert.DeserializeObject<T>(file)!;
     }
-    
+
     private void CheckIfServiceIsLeafOrRoot()
     {
         CheckIfRoot();

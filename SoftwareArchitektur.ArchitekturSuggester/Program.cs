@@ -1,11 +1,8 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 using System.Text;
-using MNCD.CommunityDetection.SingleLayer;
-using MNCD.Core;
 using Newtonsoft.Json;
 using SoftwareArchitektur.ArchitekturSuggester;
-using SoftwareArchitektur.Utility.Models;
 
 var suggester = new ArchitectureSuggester("Data/FullServiceData.json", "Data/DependencyRelation.json", "Data/ChangeRelationData.json");
 
