@@ -10,15 +10,11 @@ public class PackageVisualizerModel
     }
 
     public string PackageName { get; set; }
+    
+    public List<string> HasService = new List<string>();
 
-    private readonly List<ServiceModel> _services = new List<ServiceModel>();
-
-
-    public double AverageChangeRate;
 
     //Sourcehttps://socratic.org/statistics/random-variables/addition-rules-for-variances
-    public double StandardDeviationOfChangeRate =>
-        Math.Sqrt(_services.Sum(sd => sd.StandardDeviationChangeRate * sd.StandardDeviationChangeRate));
 
     public List<string> DependsOn = new List<string>();
 }

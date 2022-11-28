@@ -5,53 +5,67 @@ using Newtonsoft.Json;
 using SoftwareArchitektur.UMLVisualizer;
 
 
-List<PackageVisualizerModel> modelLookUp = new List<PackageVisualizerModel>();
-
-Console.WriteLine("Hello, World!");
-
-var file = File.ReadAllText(@"./BestArchitecture.json");
-var models = JsonConvert.DeserializeObject<List<PackageVisualizerModel>>(file)!;
-modelLookUp = models;
-var umlBuilder = new StringBuilder();
-var umlBuilderWithLimit = new StringBuilder();
-umlBuilder.Append("@startuml" + System.Environment.NewLine);
-umlBuilderWithLimit.Append("@startuml" + System.Environment.NewLine);
-
-//FindCicle(models);
-foreach (var model in models)
+StringBuilder CreateClassDiagram(List<PackageVisualizerModel> packageVisualizerModels)
 {
-    umlBuilder.Append($"component {model.PackageName}" + System.Environment.NewLine);
-    if (model.DependsOn.Count < 30)
+    var stringBuilder = new StringBuilder();
+
+    stringBuilder.Append("@startuml" + System.Environment.NewLine);
+
+    foreach (var package in packageVisualizerModels)
     {
-        umlBuilderWithLimit.Append($"component {model.PackageName}" + System.Environment.NewLine);
+        stringBuilder.Append($"class {package.PackageName}"+ "{"+ System.Environment.NewLine);
+
+        foreach (var service in package.HasService)
+        {
+            stringBuilder.Append($"string {service}" + Environment.NewLine);
+        }
+        
+        stringBuilder.Append("}"+ System.Environment.NewLine);
     }
+    
+    stringBuilder.Append("@enduml");
+    return stringBuilder;
 }
 
-foreach (var model in models)
+StringBuilder CreateDeploymentDiagram(List<PackageVisualizerModel> packageVisualizerModels)
 {
-    foreach (var dependency in model.DependsOn)
+    var dependencyUmlBuilder = new StringBuilder();
+    
+    dependencyUmlBuilder.Append("@startuml" + System.Environment.NewLine);
+    
+    foreach (var model in packageVisualizerModels)
     {
-        umlBuilder.Append($"{model.PackageName} --> {dependency}" + System.Environment.NewLine);
+        dependencyUmlBuilder.Append($"component {model.PackageName}" + System.Environment.NewLine);
     }
 
-    if (model.DependsOn.Count < 30)
+    foreach (var model in packageVisualizerModels)
     {
         foreach (var dependency in model.DependsOn)
         {
-            umlBuilderWithLimit.Append($"{model.PackageName} --> {dependency}" + System.Environment.NewLine);
+            dependencyUmlBuilder.Append($"{model.PackageName} --> {dependency}" + System.Environment.NewLine);
         }
     }
+
+    dependencyUmlBuilder.Append("@enduml");
+
+    return dependencyUmlBuilder;
 }
 
-umlBuilder.Append("@enduml");
-umlBuilderWithLimit.Append("@enduml");
+Console.WriteLine("Creating UML");
+
+var file = File.ReadAllText(@"./BestArchitecture.json");
+var models = JsonConvert.DeserializeObject<List<PackageVisualizerModel>>(file)!;
+
+var dependencyUmlBuilder = CreateDeploymentDiagram(models);
+
+var classUmlBuilder = CreateClassDiagram(models);
 
 using (var fp = File.Open(@"../../../ArchitectureDeployment.puml", FileMode.OpenOrCreate))
 {
-    fp.Write(Encoding.ASCII.GetBytes(umlBuilder.ToString()));
+    fp.Write(Encoding.ASCII.GetBytes(dependencyUmlBuilder.ToString()));
 }
 
-using (var fp = File.Open(@"../../../ArchitectureDeploymentLimit.puml", FileMode.OpenOrCreate))
+using (var fp = File.Open(@"../../../ArchitectureClass.puml", FileMode.OpenOrCreate))
 {
-    fp.Write(Encoding.ASCII.GetBytes(umlBuilderWithLimit.ToString()));
+    fp.Write(Encoding.ASCII.GetBytes(classUmlBuilder.ToString()));
 }
