@@ -180,7 +180,6 @@ component Package697
 component Package446
 component Package703
 component O-Package
-component Aux
 Package3 --> Package4
 Package3 --> Package5
 Package3 --> Package6

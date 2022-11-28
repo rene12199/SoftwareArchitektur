@@ -1,6 +1,4 @@
-﻿using MNCD.Core;
-using MNCD.Writers;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using SoftwareArchitektur.ArchitekturSuggester.Models;
 using SoftwareArchitektur.ArchitekturSuggester.Scoring;
 using SoftwareArchitektur.Utility.Models;
@@ -12,13 +10,11 @@ public class ArchitectureSuggester
 {
     private readonly List<ServiceModel> _services;
     private readonly List<DependencyRelationModel> _dependencyRelations;
-    private List<CommonChangeRelationModel> _commonChangeRelations;
 
     public ArchitectureSuggester(string completeDataFileAddress, string dependencyFileAddress, string changeFileAddress)
     {
         _services = ReadData<List<ServiceModel>>(completeDataFileAddress);
         _dependencyRelations = ReadData<List<DependencyRelationModel>>(dependencyFileAddress);
-        _commonChangeRelations = ReadData<List<CommonChangeRelationModel>>(changeFileAddress);
         CheckIfServiceIsLeafOrRoot();
     }
 
@@ -28,33 +24,44 @@ public class ArchitectureSuggester
 
         CreateOPackage(packages);
 
-        var ausPackage = new PackageModel("Aux");
+        DistributeRemainingPackagesByCcpScore(packages);
         
+        return packages;
+    }
+
+    private void DistributeRemainingPackagesByCcpScore(List<PackageModel> packages)
+    {
         while (_services.Count > 0)
         {
             Console.WriteLine($"Judging CCP moves for Service{_services[0]}, {_services.Count} remaining");
-            // ausPackage.AddService(_services[0]);
-            // _services.Remove(_services[0]);
-            
+
             Move bestMove = new Move(_services[0]);
-           
-            foreach (var package in packages)
-            {
-                var newScore =
-                    Math.Abs(Math.Sqrt(Math.Pow(package.StandardDeviationOfChangeRate, 2) +
-                                       Math.Pow(bestMove.Service.StandardDeviationChangeRate, 2)) -
-                             package.StandardDeviationOfChangeRate);
-                if (newScore < bestMove.Score)
-                {
-                    bestMove.SetNewBestPackage(package, newScore);
-                }
-            }
-            
+
+            CalculateBestPackageForMove(packages, bestMove);
+
             ExecuteMove(bestMove);
         }
+    }
 
-        packages.Add(ausPackage);
-        return packages;
+    private void CalculateBestPackageForMove(List<PackageModel> packages, Move bestMove)
+    {
+        foreach (var package in packages)
+        {
+            var newScore = CalculateDifferenceInStandardDeviation(package, bestMove);
+            if (newScore < bestMove.Score)
+            {
+                bestMove.SetNewBestPackage(package, newScore);
+            }
+        }
+    }
+
+    private double CalculateDifferenceInStandardDeviation(PackageModel package, Move bestMove)
+    {
+        var newScore =
+            Math.Abs(Math.Sqrt(Math.Pow(package.StandardDeviationOfChangeRate, 2) +
+                               Math.Pow(bestMove.Service.StandardDeviationChangeRate, 2)) -
+                     package.StandardDeviationOfChangeRate);
+        return newScore;
     }
 
     private void ExecuteMove(Move bestMove)
@@ -69,23 +76,38 @@ public class ArchitectureSuggester
         var nonIndependentServices = _services.Where(s => !s.IsIndependent).ToList();
         var circularChecker = new CircularDependencyChecker(nonIndependentServices);
         var packages = circularChecker.CreatePackages();
-        var dupCounter = -nonIndependentServices.Count;
-        foreach (var package in packages)
-        {
-            foreach (var service in package.GetServices())
-            {
-              
-                if (_services.Any(s => s.Name == service.Name))
-                {
-                    dupCounter++;
-                    _services.Remove(service);
-                }
-                    
-            }
-        }
+        DeleteAddedServicesFromGlobalServicePool(nonIndependentServices, packages);
 
         packages.CreateDependenciesToPackages();
         return packages;
+    }
+
+    private void DeleteAddedServicesFromGlobalServicePool(List<ServiceModel> nonIndependentServices, List<PackageModel> packages)
+    {
+        var dupCounter = -nonIndependentServices.Count;
+        foreach (var package in packages)
+        {
+            dupCounter = GetAndDeleteServicesFromPackage(package, dupCounter);
+        }
+    }
+
+    private int GetAndDeleteServicesFromPackage(PackageModel package, int dupCounter)
+    {
+        foreach (var service in package.GetServices())
+        {
+            if (CheckIfServiceIsStillRegistered(service))
+            {
+                dupCounter++;
+                _services.Remove(service);
+            }
+        }
+
+        return dupCounter;
+    }
+
+    private bool CheckIfServiceIsStillRegistered(ServiceModel service)
+    {
+        return _services.Any(s => s.Name == service.Name);
     }
 
     private void CreateOPackage(List<PackageModel> packageModels)
@@ -107,62 +129,21 @@ public class ArchitectureSuggester
         var file = File.ReadAllText(fileName);
         return JsonConvert.DeserializeObject<T>(file)!;
     }
-
-    private List<ServiceModel> ConvertActorsIntoServices(List<Actor> communityActors)
-    {
-        var serviceList = new List<ServiceModel>();
-        foreach (var actor in communityActors)
-        {
-            var service = _services.First(s => s.Name == actor.Name);
-            serviceList.Add(service);
-            _services.Remove(service);
-        }
-
-        return serviceList;
-    }
-
-    private Network CreateNetWork(List<ServiceModel> isolatedServices)
-    {
-        Network network = new Network();
-        var actors = new List<Actor>();
-        var edges = new List<Edge>();
-
-        CreateActors(isolatedServices, actors);
-
-        CreateEdges(isolatedServices, edges, actors);
-
-        network.Actors = actors;
-
-        network.Layers.Add(new Layer(edges));
-
-        return network;
-    }
-
-    private void CreateEdges(List<ServiceModel> isolatedServices, List<Edge> edges, List<Actor> actors)
-    {
-        foreach (var isolatedService in isolatedServices)
-        {
-            foreach (var changeRelation in isolatedService.ChangedWith)
-            {
-                edges.Add(new Edge(actors.First(a => a.Name == changeRelation.NameOfCurrentService),
-                    actors.First(a => a.Name == changeRelation.NameOfCurrentService), changeRelation.NumberOfChanges));
-            }
-        }
-    }
-
-    private void CreateActors(List<ServiceModel> isolatedServices, List<Actor> actors)
-    {
-        foreach (var isolatedService in isolatedServices)
-        {
-            var newActor = new Actor(isolatedService.Name);
-            actors.Add(newActor);
-        }
-    }
-
+    
     private void CheckIfServiceIsLeafOrRoot()
     {
-        _services.Where(s => s.DependsOn.Count == 0).ToList().ForEach(i => i.IsRoot = true);
+        CheckIfRoot();
 
+        CheckIfLeaf();
+    }
+
+    private void CheckIfRoot()
+    {
+        _services.Where(s => s.DependsOn.Count == 0).ToList().ForEach(i => i.IsRoot = true);
+    }
+
+    private void CheckIfLeaf()
+    {
         var allCallees = _dependencyRelations.Select(d => d.Callee).Distinct().ToList();
 
         foreach (var callee in allCallees)
@@ -171,19 +152,72 @@ public class ArchitectureSuggester
         }
     }
 
-    public void VisualizeCommunities(Network network, List<Community> communities)
-    {
-        var writer = new EdgeListWriter();
-        var edge_list = writer.ToString(network, true);
-        var communityWriter = new ActorCommunityListWriter();
-        var community_list = communityWriter.ToString(network.Actors, communities, true);
-        var body = new
-        {
-            edge_list = edge_list,
-            community_list = community_list,
-            image_format = "svg"
-        };
-        var json = JsonConvert.SerializeObject(body);
-        var content = new StringContent(json);
-    }
+    // private List<ServiceModel> ConvertActorsIntoServices(List<Actor> communityActors)
+    // {
+    //     var serviceList = new List<ServiceModel>();
+    //     foreach (var actor in communityActors)
+    //     {
+    //         var service = _services.First(s => s.Name == actor.Name);
+    //         serviceList.Add(service);
+    //         _services.Remove(service);
+    //     }
+    //
+    //     return serviceList;
+    // }
+    //
+    // private Network CreateNetWork(List<ServiceModel> isolatedServices)
+    // {
+    //     Network network = new Network();
+    //     var actors = new List<Actor>();
+    //     var edges = new List<Edge>();
+    //
+    //     CreateActors(isolatedServices, actors);
+    //
+    //     CreateEdges(isolatedServices, edges, actors);
+    //
+    //     network.Actors = actors;
+    //
+    //     network.Layers.Add(new Layer(edges));
+    //
+    //     return network;
+    // }
+    //
+    // private void CreateEdges(List<ServiceModel> isolatedServices, List<Edge> edges, List<Actor> actors)
+    // {
+    //     foreach (var isolatedService in isolatedServices)
+    //     {
+    //         foreach (var changeRelation in isolatedService.ChangedWith)
+    //         {
+    //             edges.Add(new Edge(actors.First(a => a.Name == changeRelation.NameOfCurrentService),
+    //                 actors.First(a => a.Name == changeRelation.NameOfCurrentService), changeRelation.NumberOfChanges));
+    //         }
+    //     }
+    // }
+    //
+    // private void CreateActors(List<ServiceModel> isolatedServices, List<Actor> actors)
+    // {
+    //     foreach (var isolatedService in isolatedServices)
+    //     {
+    //         var newActor = new Actor(isolatedService.Name);
+    //         actors.Add(newActor);
+    //     }
+    // }
+    //
+
+    //
+    // public void VisualizeCommunities(Network network, List<Community> communities)
+    // {
+    //     var writer = new EdgeListWriter();
+    //     var edge_list = writer.ToString(network, true);
+    //     var communityWriter = new ActorCommunityListWriter();
+    //     var community_list = communityWriter.ToString(network.Actors, communities, true);
+    //     var body = new
+    //     {
+    //         edge_list = edge_list,
+    //         community_list = community_list,
+    //         image_format = "svg"
+    //     };
+    //     var json = JsonConvert.SerializeObject(body);
+    //     var content = new StringContent(json);
+    // }
 }

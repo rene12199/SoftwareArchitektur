@@ -50,12 +50,4 @@ public class PackageModel
     {
         return PackageDependencies.Select(d => d.PackageName).Distinct().ToList();
     }
-
-    public void CleanPackageName()
-    {
-        foreach (var serviceModel in _services)
-        {
-            serviceModel.InPackage = PackageName;
-        }
-    }
 }
