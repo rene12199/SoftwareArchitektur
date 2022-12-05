@@ -30,11 +30,14 @@ public class ArchitectureSuggester
 
         DistributeRemainingPackagesByCcpScore(packages);
 
+        //todo Create Grouping Algorithm with focus on balancing
+        
         return packages;
     }
 
     private void DistributeRemainingPackagesByCcpScore(List<PackageModel> packages)
     {
+        //todo improve Distribution of Packages
         while (_services.Count > 0)
         {
             Console.WriteLine($"Judging CCP moves for Service{_services[0]}, {_services.Count} remaining");
@@ -167,73 +170,4 @@ public class ArchitectureSuggester
             _services.First(s => s.Name == callee).IsLeaf = false;
         }
     }
-
-    // private List<ServiceModel> ConvertActorsIntoServices(List<Actor> communityActors)
-    // {
-    //     var serviceList = new List<ServiceModel>();
-    //     foreach (var actor in communityActors)
-    //     {
-    //         var service = _services.First(s => s.Name == actor.Name);
-    //         serviceList.Add(service);
-    //         _services.Remove(service);
-    //     }
-    //
-    //     return serviceList;
-    // }
-    //
-    // private Network CreateNetWork(List<ServiceModel> isolatedServices)
-    // {
-    //     Network network = new Network();
-    //     var actors = new List<Actor>();
-    //     var edges = new List<Edge>();
-    //
-    //     CreateActors(isolatedServices, actors);
-    //
-    //     CreateEdges(isolatedServices, edges, actors);
-    //
-    //     network.Actors = actors;
-    //
-    //     network.Layers.Add(new Layer(edges));
-    //
-    //     return network;
-    // }
-    //
-    // private void CreateEdges(List<ServiceModel> isolatedServices, List<Edge> edges, List<Actor> actors)
-    // {
-    //     foreach (var isolatedService in isolatedServices)
-    //     {
-    //         foreach (var changeRelation in isolatedService.ChangedWith)
-    //         {
-    //             edges.Add(new Edge(actors.First(a => a.Name == changeRelation.NameOfCurrentService),
-    //                 actors.First(a => a.Name == changeRelation.NameOfCurrentService), changeRelation.NumberOfChanges));
-    //         }
-    //     }
-    // }
-    //
-    // private void CreateActors(List<ServiceModel> isolatedServices, List<Actor> actors)
-    // {
-    //     foreach (var isolatedService in isolatedServices)
-    //     {
-    //         var newActor = new Actor(isolatedService.Name);
-    //         actors.Add(newActor);
-    //     }
-    // }
-    //
-
-    //
-    // public void VisualizeCommunities(Network network, List<Community> communities)
-    // {
-    //     var writer = new EdgeListWriter();
-    //     var edge_list = writer.ToString(network, true);
-    //     var communityWriter = new ActorCommunityListWriter();
-    //     var community_list = communityWriter.ToString(network.Actors, communities, true);
-    //     var body = new
-    //     {
-    //         edge_list = edge_list,
-    //         community_list = community_list,
-    //         image_format = "svg"
-    //     };
-    //     var json = JsonConvert.SerializeObject(body);
-    //     var content = new StringContent(json);
-    // }
 }
