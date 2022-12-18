@@ -29,10 +29,16 @@ public class ArchitectureSuggester
         CreateOPackage(packages);
 
         DistributeRemainingPackagesByCcpScore(packages);
-
+        
         //todo Create Grouping Algorithm with focus on balancing
+        GroupPackages(packages);
         
         return packages;
+    }
+
+    private void GroupPackages(List<PackageModel> packageModels)
+    {
+        throw new NotImplementedException();
     }
 
     private void DistributeRemainingPackagesByCcpScore(List<PackageModel> packages)
