@@ -27,10 +27,7 @@ public static class Extensions
         }
     }
 
-    private static void AddPackageContainingDependency(
-        IEnumerable<PackageModel> values, 
-        PackageModel packageModel,
-        DependencyRelationModel externalDependency)
+    private static void AddPackageContainingDependency(IEnumerable<PackageModel> values, PackageModel packageModel, DependencyRelationModel externalDependency)
     {
         var searched = externalDependency.Callee;
 

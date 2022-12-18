@@ -16,6 +16,9 @@
       <None Update="BestArchitectureTruth.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+      <None Update="BestArchitectureFromLesson.json">
+        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      </None>
       <None Update="BestArchitecture.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>

@@ -2,7 +2,7 @@
 using SoftwareArchitektur.ArchitekturSuggester.Models;
 using SoftwareArchitektur.ArchitekturSuggester.Scoring;
 using SoftwareArchitektur.Utility.Models;
-
+using System.Linq;
 
 namespace SoftwareArchitektur.ArchitekturSuggester;
 
@@ -90,7 +90,6 @@ public class ArchitectureSuggester
 
     private List<PackageModel> CreateInitialPackageModels()
     {
-        //todo check Whether Root and Leaf Packages should be Included
         var nonIndependentServices = _services.Where(s => !s.IsIndependent).ToList();
         var circularChecker = new CircularDependencyChecker(nonIndependentServices);
         var packages = circularChecker.CreatePackages();
@@ -100,8 +99,7 @@ public class ArchitectureSuggester
         return packages;
     }
 
-    private void DeleteAddedServicesFromGlobalServicePool(List<ServiceModel> nonIndependentServices,
-        List<PackageModel> packages)
+    private void DeleteAddedServicesFromGlobalServicePool(List<ServiceModel> nonIndependentServices, List<PackageModel> packages)
     {
         var dupCounter = -nonIndependentServices.Count;
         foreach (var package in packages)
