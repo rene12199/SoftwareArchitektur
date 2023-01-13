@@ -1,7 +1,6 @@
-﻿using SoftwareArchitektur.ArchitekturSuggester.Models;
-using SoftwareArchitektur.Utility.Models;
+﻿using SoftwareArchitektur.Utility.Models;
 
-namespace SoftwareArchitektur.ArchitekturSuggester.Scoring;
+namespace SoftwareArchitektur.ArchitekturSuggester.CCPScoringEngine.Scoring;
 
 public class Move
 {

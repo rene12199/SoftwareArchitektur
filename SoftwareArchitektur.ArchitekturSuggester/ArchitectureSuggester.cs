@@ -1,22 +1,24 @@
-﻿using Newtonsoft.Json;
-using SoftwareArchitektur.ArchitekturSuggester.Models;
-using SoftwareArchitektur.ArchitekturSuggester.Scoring;
+﻿using System.Collections.ObjectModel;
+using Newtonsoft.Json;
 using SoftwareArchitektur.Utility.Models;
 using System.Linq;
+using SoftwareArchitektur.ArchitekturSuggester.CCPScoringEngine.Scoring;
+using SoftwareArchitektur.ArchitekturSuggester.CircularDependencyCheckerModule;
+using SoftwareArchitektur.ArchitekturSuggester.GroupingModule;
 
 namespace SoftwareArchitektur.ArchitekturSuggester;
 
 public class ArchitectureSuggester
 {
     private readonly List<ServiceModel> _services;
-    private readonly List<ServiceModel> _servicesLookUp;
+    private readonly ReadOnlyCollection<ServiceModel> _servicesLookUp;
     private readonly List<DependencyRelationModel> _dependencyRelations;
     private readonly List<CommonChangeRelationModel> _changeRelations;
 
     public ArchitectureSuggester(string completeDataFileAddress, string dependencyFileAddress, string changeFileAddress)
     {
         _services = ReadData<List<ServiceModel>>(completeDataFileAddress);
-        _servicesLookUp = ReadData<List<ServiceModel>>(completeDataFileAddress);
+        _servicesLookUp = ReadData<ReadOnlyCollection<ServiceModel>>(completeDataFileAddress);
         _dependencyRelations = ReadData<List<DependencyRelationModel>>(dependencyFileAddress);
         _changeRelations = ReadData<List<CommonChangeRelationModel>>(changeFileAddress);
         CheckIfServiceIsLeafOrRoot();
@@ -27,18 +29,20 @@ public class ArchitectureSuggester
         var packages = CreateInitialPackageModels();
 
         CreateOPackage(packages);
-
-        DistributeRemainingPackagesByCcpScore(packages);
         
+        DistributeRemainingPackagesByCcpScore(packages);
+
         //todo Create Grouping Algorithm with focus on balancing
         GroupPackages(packages);
-        
+
+       
+
         return packages;
     }
 
     private void GroupPackages(List<PackageModel> packageModels)
     {
-        throw new NotImplementedException();
+        var groupingEngine = new GroupingEngine(_servicesLookUp, _changeRelations );
     }
 
     private void DistributeRemainingPackagesByCcpScore(List<PackageModel> packages)
@@ -74,7 +78,8 @@ public class ArchitectureSuggester
 
         if (bestMove.BestPackage == null)
         {
-            bestMove.BestPackage = packages.OrderBy(p => Math.Abs(p.AverageChangeRate - bestMove.Service.AverageChange))
+            bestMove.BestPackage = packages
+                .OrderBy(p => Math.Abs(p.AverageChangeRate - bestMove.Service.AverageChange))
                 .FirstOrDefault();
         }
     }

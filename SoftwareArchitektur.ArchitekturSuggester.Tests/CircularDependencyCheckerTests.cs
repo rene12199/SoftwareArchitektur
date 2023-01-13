@@ -1,4 +1,5 @@
-﻿using SoftwareArchitektur.Utility.Models;
+﻿using SoftwareArchitektur.ArchitekturSuggester.CircularDependencyCheckerModule;
+using SoftwareArchitektur.Utility.Models;
 
 namespace SoftwareArchitektur.ArchitekturSuggester.Tests;
 

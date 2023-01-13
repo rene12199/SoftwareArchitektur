@@ -1,7 +1,6 @@
 ﻿using Newtonsoft.Json;
-using SoftwareArchitektur.Utility.Models;
 
-namespace SoftwareArchitektur.ArchitekturSuggester.Models;
+namespace SoftwareArchitektur.Utility.Models;
 
 public class PackageModel
 {

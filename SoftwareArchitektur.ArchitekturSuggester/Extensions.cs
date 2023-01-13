@@ -1,4 +1,3 @@
-using SoftwareArchitektur.ArchitekturSuggester.Models;
 using SoftwareArchitektur.Utility.Models;
 
 namespace SoftwareArchitektur.ArchitekturSuggester;
