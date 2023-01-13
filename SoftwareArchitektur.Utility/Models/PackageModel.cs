@@ -9,19 +9,17 @@ public class PackageModel
     //Sourcehttps://socratic.org/statistics/random-variables/addition-rules-for-variances
     public double StandardDeviationOfChangeRate =>
         Math.Sqrt(_services.Sum(sd => sd.StandardDeviationChangeRate * sd.StandardDeviationChangeRate));
-    
+
     public List<string> DependsOn => GetDependentPackages();
-    
+
     public List<string> HasService => GetServices().Select(s => s.Name).ToList();
 
-    [JsonIgnore]
-    public List<PackageModel> PackageDependencies = new List<PackageModel>();
-    
+    [JsonIgnore] public List<PackageModel> PackageDependencies = new();
+
     public string PackageName { get; set; }
-    
-    [JsonIgnore]
-    private readonly HashSet<ServiceModel> _services = new HashSet<ServiceModel>();
-    
+
+    [JsonIgnore] private readonly HashSet<ServiceModel> _services = new();
+
     public PackageModel(string packageName)
     {
         PackageName = packageName;
@@ -39,7 +37,6 @@ public class PackageModel
         {
             _services.Add(s);
             s.InPackage = PackageName;
-
         }
     }
 
@@ -48,8 +45,8 @@ public class PackageModel
         return _services;
     }
 
-    
-    private  List<string> GetDependentPackages()
+
+    private List<string> GetDependentPackages()
     {
         return PackageDependencies.Select(d => d.PackageName).Distinct().ToList();
     }

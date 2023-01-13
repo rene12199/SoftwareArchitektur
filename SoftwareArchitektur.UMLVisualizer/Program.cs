@@ -4,25 +4,21 @@ using System.Text;
 using Newtonsoft.Json;
 using SoftwareArchitektur.UMLVisualizer;
 
-
 StringBuilder CreateClassDiagram(List<PackageVisualizerModel> packageVisualizerModels)
 {
     var stringBuilder = new StringBuilder();
 
-    stringBuilder.Append("@startuml" + System.Environment.NewLine);
+    stringBuilder.Append("@startuml" + Environment.NewLine);
 
     foreach (var package in packageVisualizerModels)
     {
-        stringBuilder.Append($"class {package.PackageName}"+ "{"+ System.Environment.NewLine);
+        stringBuilder.Append($"class {package.PackageName}" + "{" + Environment.NewLine);
 
-        foreach (var service in package.HasService)
-        {
-            stringBuilder.Append($"string {service}" + Environment.NewLine);
-        }
-        
-        stringBuilder.Append("}"+ System.Environment.NewLine);
+        foreach (var service in package.HasService) stringBuilder.Append($"string {service}" + Environment.NewLine);
+
+        stringBuilder.Append("}" + Environment.NewLine);
     }
-    
+
     stringBuilder.Append("@enduml");
     return stringBuilder;
 }
@@ -30,21 +26,14 @@ StringBuilder CreateClassDiagram(List<PackageVisualizerModel> packageVisualizerM
 StringBuilder CreateDeploymentDiagram(List<PackageVisualizerModel> packageVisualizerModels)
 {
     var dependencyUmlBuilder = new StringBuilder();
-    
-    dependencyUmlBuilder.Append("@startuml" + System.Environment.NewLine);
-    
-    foreach (var model in packageVisualizerModels)
-    {
-        dependencyUmlBuilder.Append($"component {model.PackageName}" + System.Environment.NewLine);
-    }
+
+    dependencyUmlBuilder.Append("@startuml" + Environment.NewLine);
+
+    foreach (var model in packageVisualizerModels) dependencyUmlBuilder.Append($"component {model.PackageName}" + Environment.NewLine);
 
     foreach (var model in packageVisualizerModels)
-    {
-        foreach (var dependency in model.DependsOn)
-        {
-            dependencyUmlBuilder.Append($"{model.PackageName} --> {dependency}" + System.Environment.NewLine);
-        }
-    }
+    foreach (var dependency in model.DependsOn)
+        dependencyUmlBuilder.Append($"{model.PackageName} --> {dependency}" + Environment.NewLine);
 
     dependencyUmlBuilder.Append("@enduml");
 

@@ -1,11 +1,13 @@
 ﻿using System.Collections.ObjectModel;
 using Newtonsoft.Json;
-using SoftwareArchitektur.Utility.Models;
-using System.Linq;
-using SoftwareArchitektur.ArchitekturSuggester.CCPScoringEngine.Scoring;
 using SoftwareArchitektur.ArchitekturSuggester.CircularDependencyCheckerModule;
 using SoftwareArchitektur.ArchitekturSuggester.GroupingModule;
+using SoftwareArchitektur.Utility.Models;
 
+
+//todo Create LookUp Service in Utility
+//todo turn Modules into Seperate Projects
+//todo Create Basic Interface for Engines
 namespace SoftwareArchitektur.ArchitekturSuggester;
 
 public class ArchitectureSuggester
@@ -29,13 +31,12 @@ public class ArchitectureSuggester
         var packages = CreateInitialPackageModels();
 
         CreateOPackage(packages);
-        
+
         DistributeRemainingPackagesByCcpScore(packages);
 
         //todo Create Grouping Algorithm with focus on balancing
         GroupPackages(packages);
 
-       
 
         return packages;
     }
@@ -47,7 +48,7 @@ public class ArchitectureSuggester
 
     private void GroupPackages(List<PackageModel> packageModels)
     {
-        var groupingEngine = new GroupingEngine(_servicesLookUp, _changeRelations );
+        var groupingEngine = new GroupingEngine(_servicesLookUp, _changeRelations);
     }
 
     private List<PackageModel> CreateInitialPackageModels()
@@ -64,22 +65,17 @@ public class ArchitectureSuggester
     private void DeleteAddedServicesFromGlobalServicePool(List<ServiceModel> nonIndependentServices, List<PackageModel> packages)
     {
         var dupCounter = -nonIndependentServices.Count;
-        foreach (var package in packages)
-        {
-            dupCounter = GetAndDeleteServicesFromPackage(package, dupCounter);
-        }
+        foreach (var package in packages) dupCounter = GetAndDeleteServicesFromPackage(package, dupCounter);
     }
 
     private int GetAndDeleteServicesFromPackage(PackageModel package, int dupCounter)
     {
         foreach (var service in package.GetServices())
-        {
             if (CheckIfServiceIsStillRegistered(service))
             {
                 dupCounter++;
                 _services.Remove(service);
             }
-        }
 
         return dupCounter;
     }
@@ -94,10 +90,7 @@ public class ArchitectureSuggester
         var oPackage = new PackageModel("O-Package");
         var oServices = _services.Where(s => s.IsIsolated).ToList();
 
-        foreach (var oService in oServices)
-        {
-            _services.Remove(oService);
-        }
+        foreach (var oService in oServices) _services.Remove(oService);
 
         oPackage.AddServiceRange(oServices);
         packageModels.Add(oPackage);
@@ -125,9 +118,6 @@ public class ArchitectureSuggester
     {
         var allCallees = _dependencyRelations.Select(d => d.Callee).Distinct().ToList();
 
-        foreach (var callee in allCallees)
-        {
-            _services.First(s => s.Name == callee).IsLeaf = false;
-        }
+        foreach (var callee in allCallees) _services.First(s => s.Name == callee).IsLeaf = false;
     }
 }

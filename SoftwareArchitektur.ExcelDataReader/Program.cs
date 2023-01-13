@@ -7,8 +7,6 @@ using NPOI.XSSF.UserModel;
 using SoftwareArchitektur.ExcelDataReader;
 using SoftwareArchitektur.Utility.Models;
 
-
-
 void EncodeAndSaveDataToJson()
 {
     var fullServiceListJsonEncoded = JsonConvert.SerializeObject(DataHolder.ServiceList);
@@ -16,12 +14,10 @@ void EncodeAndSaveDataToJson()
     var listChangeRelation = JsonConvert.SerializeObject(DataHolder.ChangedWithList);
 
     WriteDataInFile(fullServiceListJsonEncoded, @"../../../../SoftwareArchitektur.ArchitekturSuggester/Data/FullServiceData.json");
-    
+
     WriteDataInFile(listDependencyRelation, @"../../../../SoftwareArchitektur.ArchitekturSuggester/Data/DependencyRelation.json");
-    
+
     WriteDataInFile(listChangeRelation, @"../../../../SoftwareArchitektur.ArchitekturSuggester/Data/ChangeRelationData.json");
-    
-   
 }
 
 void CreateChangeRelation(IWorkbook workbook4)
@@ -32,15 +28,11 @@ void CreateChangeRelation(IWorkbook workbook4)
     {
         var name = ((XSSFRow)changesEnumerator.Current!).Cells.FirstOrDefault()?.ToString();
         if (string.IsNullOrWhiteSpace(name))
-        {
             break;
-        }else if (name == "Service1")
-        {
-            continue;
-        }
+        if (name == "Service1") continue;
 
         var numberOfChanges = ((XSSFRow)changesEnumerator.Current!).Cells[2].NumericCellValue;
-        var change = new CommonChangeRelationModel()
+        var change = new CommonChangeRelationModel
         {
             NameOfCurrentService = name,
             NameOfOtherService = ((XSSFRow)changesEnumerator.Current).Cells[1].ToString()!,
@@ -60,15 +52,11 @@ void CreateDependencyRelation(IWorkbook workbook3)
     {
         var name = ((XSSFRow)dependencyEnumerator.Current!).Cells.FirstOrDefault()?.ToString();
         if (string.IsNullOrWhiteSpace(name))
-        {
             break;
-        }else if (name == "Caller")
-        {
-            continue;
-        }
+        if (name == "Caller") continue;
 
         var numberOfCalls = ((XSSFRow)dependencyEnumerator.Current!).Cells[2].NumericCellValue;
-        var dependency = new DependencyRelationModel()
+        var dependency = new DependencyRelationModel
         {
             Caller = name,
             Callee = ((XSSFRow)dependencyEnumerator.Current).Cells[1].ToString()!,
@@ -87,13 +75,8 @@ void CreateServiceList(IWorkbook workbook2)
     {
         var name = ((XSSFRow)enumerator.Current!).Cells.FirstOrDefault()?.ToString();
         if (string.IsNullOrWhiteSpace(name))
-        {
             break;
-        }
-        else if (name.Equals("Service"))
-        {
-            continue;
-        }
+        if (name.Equals("Service")) continue;
 
         var newDependencyObject = new ServiceModel(((XSSFRow)enumerator.Current).Cells.FirstOrDefault()?.ToString());
         DataHolder.ServiceList.Add(newDependencyObject);

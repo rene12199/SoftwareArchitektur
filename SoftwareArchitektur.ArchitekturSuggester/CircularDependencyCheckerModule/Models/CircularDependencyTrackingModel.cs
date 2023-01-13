@@ -43,6 +43,6 @@ internal class CircularDependencyTrackingModel
 
         var startIndex = Visited.FindIndex(d => duplicates.First().PackageName == d.PackageName);
         var lastIndex = Visited.FindLastIndex(d => duplicates.Last().PackageName == d.PackageName);
-        return Visited.GetRange(startIndex, lastIndex-startIndex);
+        return Visited.GetRange(startIndex, lastIndex - startIndex);
     }
 }

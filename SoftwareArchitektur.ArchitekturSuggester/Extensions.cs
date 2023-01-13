@@ -6,10 +6,7 @@ public static class Extensions
 {
     public static void CreateDependenciesToPackages(this IEnumerable<PackageModel> values)
     {
-        foreach (var packageModel in values)
-        {
-            CreateDependenciesToOtherPackages(values, packageModel);
-        }
+        foreach (var packageModel in values) CreateDependenciesToOtherPackages(values, packageModel);
         values.ToList();
     }
 
@@ -17,13 +14,9 @@ public static class Extensions
     {
         var externalDependencies =
             packageModel.GetServices()
-                .SelectMany(s => s.DependsOn).
-                DistinctBy(d => d.Callee);
+                .SelectMany(s => s.DependsOn).DistinctBy(d => d.Callee);
 
-        foreach (var externalDependency in externalDependencies)
-        {
-            AddPackageContainingDependency(values, packageModel, externalDependency);
-        }
+        foreach (var externalDependency in externalDependencies) AddPackageContainingDependency(values, packageModel, externalDependency);
     }
 
     private static void AddPackageContainingDependency(IEnumerable<PackageModel> values, PackageModel packageModel, DependencyRelationModel externalDependency)
@@ -32,9 +25,6 @@ public static class Extensions
 
         var foundPackage = values.First(p => p.GetServices().FirstOrDefault(s => s.Name == searched) != null);
 
-        if (!packageModel.PackageDependencies.Any(p => p.PackageName == foundPackage.PackageName))
-        {
-            packageModel.PackageDependencies.Add(foundPackage);
-        }
+        if (!packageModel.PackageDependencies.Any(p => p.PackageName == foundPackage.PackageName)) packageModel.PackageDependencies.Add(foundPackage);
     }
 }

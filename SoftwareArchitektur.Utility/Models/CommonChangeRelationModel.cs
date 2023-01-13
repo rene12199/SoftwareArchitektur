@@ -2,9 +2,9 @@
 
 public class CommonChangeRelationModel
 {
-    public string NameOfOtherService = String.Empty;
-    
-    public string NameOfCurrentService = String.Empty;
+    public string NameOfOtherService = string.Empty;
+
+    public string NameOfCurrentService = string.Empty;
 
     public long NumberOfChanges = 0;
 }

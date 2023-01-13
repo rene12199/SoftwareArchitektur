@@ -14,7 +14,7 @@ public class CircularDependencyCheckerTests
         {
             DependsOn =
             {
-                new DependencyRelationModel()
+                new DependencyRelationModel
                 {
                     Caller = "S1",
                     Callee = "S2"
@@ -40,11 +40,11 @@ public class CircularDependencyCheckerTests
         {
             DependsOn =
             {
-                new DependencyRelationModel()
+                new DependencyRelationModel
                 {
                     Caller = "S1",
                     Callee = "S2",
-                    NumberOfCalls = 10,
+                    NumberOfCalls = 10
                 }
             }
         });
@@ -52,7 +52,7 @@ public class CircularDependencyCheckerTests
         {
             DependsOn =
             {
-                new DependencyRelationModel()
+                new DependencyRelationModel
                 {
                     Caller = "S2",
                     Callee = "S3"
@@ -63,7 +63,7 @@ public class CircularDependencyCheckerTests
         {
             DependsOn =
             {
-                new DependencyRelationModel()
+                new DependencyRelationModel
                 {
                     Caller = "S3",
                     Callee = "S1"
@@ -91,11 +91,11 @@ public class CircularDependencyCheckerTests
         {
             DependsOn =
             {
-                new DependencyRelationModel()
+                new DependencyRelationModel
                 {
                     Caller = "S1",
                     Callee = "S2",
-                    NumberOfCalls = 10,
+                    NumberOfCalls = 10
                 }
             }
         });
@@ -105,7 +105,7 @@ public class CircularDependencyCheckerTests
         {
             DependsOn =
             {
-                new DependencyRelationModel()
+                new DependencyRelationModel
                 {
                     Caller = "S3",
                     Callee = "S4"
@@ -132,11 +132,11 @@ public class CircularDependencyCheckerTests
         {
             DependsOn =
             {
-                new DependencyRelationModel()
+                new DependencyRelationModel
                 {
                     Caller = "S1",
                     Callee = "S2",
-                    NumberOfCalls = 10,
+                    NumberOfCalls = 10
                 }
             }
         });
@@ -145,11 +145,11 @@ public class CircularDependencyCheckerTests
         {
             DependsOn =
             {
-                new DependencyRelationModel()
+                new DependencyRelationModel
                 {
                     Caller = "S2",
                     Callee = "S3",
-                    NumberOfCalls = 10,
+                    NumberOfCalls = 10
                 }
             }
         });
@@ -159,7 +159,7 @@ public class CircularDependencyCheckerTests
         {
             DependsOn =
             {
-                new DependencyRelationModel()
+                new DependencyRelationModel
                 {
                     Caller = "S3",
                     Callee = "S1"
@@ -186,11 +186,11 @@ public class CircularDependencyCheckerTests
         {
             DependsOn =
             {
-                new DependencyRelationModel()
+                new DependencyRelationModel
                 {
                     Caller = "S1",
                     Callee = "S2",
-                    NumberOfCalls = 10,
+                    NumberOfCalls = 10
                 }
             }
         });
@@ -212,68 +212,68 @@ public class CircularDependencyCheckerTests
         {
             DependsOn =
             {
-                new DependencyRelationModel()
+                new DependencyRelationModel
                 {
                     Caller = "S1",
                     Callee = "S2",
-                    NumberOfCalls = 20,
+                    NumberOfCalls = 20
                 }
             }
-        });       
-        
+        });
+
         serviceModels.Add(new ServiceModel("S2")
         {
             DependsOn =
             {
-                new DependencyRelationModel()
+                new DependencyRelationModel
                 {
                     Caller = "S2",
                     Callee = "S3",
-                    NumberOfCalls = 10,
+                    NumberOfCalls = 10
                 },
-                new DependencyRelationModel()
+                new DependencyRelationModel
                 {
                     Caller = "S2",
                     Callee = "S4",
-                    NumberOfCalls = 10,
+                    NumberOfCalls = 10
                 }
             }
         });
-        
+
         serviceModels.Add(new ServiceModel("S3")
         {
             DependsOn =
             {
-                new DependencyRelationModel()
+                new DependencyRelationModel
                 {
                     Caller = "S3",
                     Callee = "S1",
-                    NumberOfCalls = 20,
+                    NumberOfCalls = 20
                 }
             }
         });
-        
+
         serviceModels.Add(new ServiceModel("S4")
         {
             DependsOn =
             {
-                new DependencyRelationModel()
+                new DependencyRelationModel
                 {
                     Caller = "S4",
                     Callee = "S5",
-                    NumberOfCalls = 10,
+                    NumberOfCalls = 10
                 }
             }
-        });        
+        });
         serviceModels.Add(new ServiceModel("S5")
         {
             DependsOn =
             {
-                new DependencyRelationModel()
+                new DependencyRelationModel
                 {
                     Caller = "S5",
                     Callee = "S1",
-                    NumberOfCalls = 10,
+                    NumberOfCalls = 10
                 }
             }
         });

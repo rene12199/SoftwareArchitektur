@@ -8,7 +8,7 @@ public class GroupingEngine
     private readonly IList<ServiceModel> _serviceLookUp;
     private readonly IList<CommonChangeRelationModel> _commonChangeRelations;
 
-    public GroupingEngine(IList<ServiceModel> serviceLookUp, IList<CommonChangeRelationModel> commonChangeRelations )
+    public GroupingEngine(IList<ServiceModel> serviceLookUp, IList<CommonChangeRelationModel> commonChangeRelations)
     {
         _serviceLookUp = serviceLookUp;
         _commonChangeRelations = commonChangeRelations;

@@ -26,9 +26,9 @@ public class CircularDependencyChecker
             var origin = new CircularDependencyTrackingModel(GetServiceWithMostNumberOfCalls());
             Console.WriteLine("Checking Dependencies for Service" + origin.GetBaseModelName);
             var newPackage = CreatePackage(origin!);
-             
+
             _packageModels.Add(newPackage.GetBaseModel);
-             RemoveServicesContainedInPackage(newPackage.GetBaseModel);
+            RemoveServicesContainedInPackage(newPackage.GetBaseModel);
         }
 
         return _packageModels.Select(cd => cd.ToPackageModel()).ToList();
@@ -53,13 +53,9 @@ public class CircularDependencyChecker
             if (calledService == null)
             {
                 if (_packageNameLookUp.Any(s => s == dependency.Callee))
-                {
                     calledService = _packageModels.FirstOrDefault(c => c.Contains.Any(p => p.BaseServiceModel.Name == dependency.Callee));
-                }
                 else
-                {
                     continue;
-                }
             }
 
             checkerModel.AddToVisited(calledService);
@@ -71,7 +67,7 @@ public class CircularDependencyChecker
                 foreach (var dependencyCheckerModel in duplicateSlice)
                 {
                     checkerModel.GetBaseModel.EatDifferentModels(dependencyCheckerModel);
-                    checkerModel.Visited.RemoveAt(checkerModel.Visited.Count-1);
+                    checkerModel.Visited.RemoveAt(checkerModel.Visited.Count - 1);
                 }
             }
             else
@@ -80,22 +76,17 @@ public class CircularDependencyChecker
             }
         }
 
-        if (checkerModel.Visited.Count > 1)
-        {
-            checkerModel.Visited.RemoveAt(checkerModel.Visited.Count-1);
-        }
-    
+        if (checkerModel.Visited.Count > 1) checkerModel.Visited.RemoveAt(checkerModel.Visited.Count - 1);
+
 
         return checkerModel;
     }
-    
+
     private void RemoveServicesContainedInPackage(CircularDependencyCheckerModel newPackage)
     {
         foreach (var service in newPackage.Contains)
-        {
             _dependentServices.Remove(_dependentServices.FirstOrDefault(s =>
                 s.BaseServiceModel.Name == service.BaseServiceModel.Name));
-        }
     }
 
 
@@ -128,22 +119,19 @@ public class CircularDependencyChecker
 
         public List<CircularDependencyCheckerModel> Contains => GetAllContained();
 
-        public readonly List<CircularDependencyCheckerModel> Eaten = new List<CircularDependencyCheckerModel>();
+        public readonly List<CircularDependencyCheckerModel> Eaten = new();
 
-        private static int _counter = 0;
+        private static int _counter;
 
         public ServiceModel BaseServiceModel { get; private set; }
 
         //todo Create Limit on minimum number of calls that it has to think about
 
-        public readonly List<CircularDependencyRelationModel> DependsOn = new List<CircularDependencyRelationModel>();
+        public readonly List<CircularDependencyRelationModel> DependsOn = new();
 
         public bool Equals(CircularDependencyCheckerModel? other)
         {
-            if (other == null)
-            {
-                return false;
-            }
+            if (other == null) return false;
 
             return BaseServiceModel.Name == other.BaseServiceModel.Name;
         }
@@ -167,22 +155,16 @@ public class CircularDependencyChecker
         public PackageModel ToPackageModel()
         {
             var packageModel = new PackageModel(PackageName);
-            foreach (var eatenService in Contains)
-            {
-                packageModel.AddService(eatenService.BaseServiceModel);
-            }
+            foreach (var eatenService in Contains) packageModel.AddService(eatenService.BaseServiceModel);
 
             return packageModel;
         }
 
         public void EatDifferentModels(CircularDependencyCheckerModel eatenCheckerModel)
         {
-            if (BaseServiceModel == eatenCheckerModel.BaseServiceModel)
-            {
-                return;
-            }
+            if (BaseServiceModel == eatenCheckerModel.BaseServiceModel) return;
 
-            eatenCheckerModel.Eaten.ForEach(v => v.PackageName = this.PackageName);
+            eatenCheckerModel.Eaten.ForEach(v => v.PackageName = PackageName);
 
             ConsumeModelAndVisited(eatenCheckerModel);
 

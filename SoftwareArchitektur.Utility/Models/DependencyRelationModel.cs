@@ -2,7 +2,7 @@
 
 public class DependencyRelationModel
 {
-    public string Caller = String.Empty;
-    public string Callee = String.Empty;
+    public string Caller = string.Empty;
+    public string Callee = string.Empty;
     public long NumberOfCalls = 0;
 }
