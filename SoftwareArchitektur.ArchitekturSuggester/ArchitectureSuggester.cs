@@ -40,63 +40,14 @@ public class ArchitectureSuggester
         return packages;
     }
 
+    private void DistributeRemainingPackagesByCcpScore(List<PackageModel> packages)
+    {
+        throw new NotImplementedException();
+    }
+
     private void GroupPackages(List<PackageModel> packageModels)
     {
         var groupingEngine = new GroupingEngine(_servicesLookUp, _changeRelations );
-    }
-
-    private void DistributeRemainingPackagesByCcpScore(List<PackageModel> packages)
-    {
-        //todo improve Distribution of Packages
-        while (_services.Count > 0)
-        {
-            Console.WriteLine($"Judging CCP moves for Service{_services[0]}, {_services.Count} remaining");
-
-            Move bestMove = new Move(_services[0]);
-
-            CalculateBestPackageForMove(packages, bestMove);
-
-            ExecuteMove(bestMove);
-        }
-    }
-
-    private void CalculateBestPackageForMove(List<PackageModel> packages, Move bestMove)
-    {
-        var mostChangedWith = bestMove.Service.ChangedWith.OrderBy(c => c.NumberOfChanges);
-
-        foreach (var changeRelation in mostChangedWith)
-        {
-            foreach (var package in packages)
-            {
-                if (package.GetServices().Any(s => s.Name == changeRelation.NameOfOtherService))
-                {
-                    bestMove.BestPackage = package;
-                    return;
-                }
-            }
-        }
-
-        if (bestMove.BestPackage == null)
-        {
-            bestMove.BestPackage = packages
-                .OrderBy(p => Math.Abs(p.AverageChangeRate - bestMove.Service.AverageChange))
-                .FirstOrDefault();
-        }
-    }
-
-    private double CalculateDifferenceInStandardDeviation(PackageModel package, Move bestMove)
-    {
-        var newScore =
-            Math.Abs(Math.Sqrt(Math.Pow(package.StandardDeviationOfChangeRate, 2) +
-                               Math.Pow(bestMove.Service.StandardDeviationChangeRate, 2)) -
-                     package.StandardDeviationOfChangeRate);
-        return newScore;
-    }
-
-    private void ExecuteMove(Move bestMove)
-    {
-        bestMove.BestPackage.AddService(bestMove.Service);
-        _services.Remove(bestMove.Service);
     }
 
     private List<PackageModel> CreateInitialPackageModels()
