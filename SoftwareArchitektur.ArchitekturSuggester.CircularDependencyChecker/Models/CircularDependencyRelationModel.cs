@@ -1,6 +1,6 @@
 using SoftwareArchitektur.Utility.Models;
 
-namespace SoftwareArchitektur.ArchitekturSuggester.CircularDependencyCheckerModule.Models;
+namespace SoftwareArchitektur.ArchitekturSuggester.CircularDependencyChecker.Models;
 
 internal class CircularDependencyRelationModel
 {

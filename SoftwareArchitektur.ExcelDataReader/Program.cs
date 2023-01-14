@@ -108,7 +108,7 @@ Console.WriteLine("Reading Excel");
 
 var newFile = @".\Data.xlsx";
 
-IWorkbook workbook = null;
+IWorkbook workbook = null!;
 workbook = CreateWorkBook(newFile);
 
 CreateServiceList(workbook);

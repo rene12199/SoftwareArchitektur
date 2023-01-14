@@ -1,29 +1,29 @@
-﻿using System.Collections.ObjectModel;
-using Newtonsoft.Json;
-using SoftwareArchitektur.ArchitekturSuggester.CircularDependencyCheckerModule;
-using SoftwareArchitektur.ArchitekturSuggester.GroupingModule;
+﻿using Autofac;
+using SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.Interfaces;
+using SoftwareArchitektur.ArchitekturSuggester.CircularDependencyChecker.Interfaces;
+using SoftwareArchitektur.Utility.Interface;
 using SoftwareArchitektur.Utility.Models;
 
-
-//todo Create LookUp Service in Utility
-//todo turn Modules into Seperate Projects
 //todo Create Basic Interface for Engines
 namespace SoftwareArchitektur.ArchitekturSuggester;
 
 public class ArchitectureSuggester
 {
-    private readonly List<ServiceModel> _services;
-    private readonly ReadOnlyCollection<ServiceModel> _servicesLookUp;
-    private readonly List<DependencyRelationModel> _dependencyRelations;
-    private readonly List<CommonChangeRelationModel> _changeRelations;
+    private readonly IContainer _container;
+    private readonly IDataProvider _dataProvider;
+    private readonly ICircularDependencyChecker _circularDependencyChecker;
+    private readonly ICcpScoringEngine _ccpScoringEngine;
 
-    public ArchitectureSuggester(string completeDataFileAddress, string dependencyFileAddress, string changeFileAddress)
+    private readonly IList<ServiceModel> _services;
+
+    public ArchitectureSuggester(IContainer container)
     {
-        _services = ReadData<List<ServiceModel>>(completeDataFileAddress);
-        _servicesLookUp = ReadData<ReadOnlyCollection<ServiceModel>>(completeDataFileAddress);
-        _dependencyRelations = ReadData<List<DependencyRelationModel>>(dependencyFileAddress);
-        _changeRelations = ReadData<List<CommonChangeRelationModel>>(changeFileAddress);
-        CheckIfServiceIsLeafOrRoot();
+        _container = container;
+        _dataProvider = container.Resolve<IDataProvider>();
+        _services = _dataProvider.GetServices();
+        _circularDependencyChecker = container.Resolve<ICircularDependencyChecker>();
+        _ccpScoringEngine = container.Resolve<ICcpScoringEngine>();
+        ;
     }
 
     public List<PackageModel> CalculateArchitecture()
@@ -48,16 +48,15 @@ public class ArchitectureSuggester
 
     private void GroupPackages(List<PackageModel> packageModels)
     {
-        var groupingEngine = new GroupingEngine(_servicesLookUp, _changeRelations);
+        throw new NotImplementedException();
     }
 
     private List<PackageModel> CreateInitialPackageModels()
     {
-        var nonIndependentServices = _services.Where(s => !s.IsIndependent).ToList();
-        var circularChecker = new CircularDependencyChecker(nonIndependentServices);
+        var circularChecker = new CircularDependencyChecker.CircularDependencyChecker(_dataProvider);
         var packages = circularChecker.CreatePackages();
 
-        DeleteAddedServicesFromGlobalServicePool(nonIndependentServices, packages);
+        DeleteAddedServicesFromGlobalServicePool(_dataProvider.GetServices().ToList(), packages);
         packages.CreateDependenciesToPackages();
         return packages;
     }
@@ -94,30 +93,5 @@ public class ArchitectureSuggester
 
         oPackage.AddServiceRange(oServices);
         packageModels.Add(oPackage);
-    }
-
-    private T ReadData<T>(string fileName)
-    {
-        var file = File.ReadAllText(fileName);
-        return JsonConvert.DeserializeObject<T>(file)!;
-    }
-
-    private void CheckIfServiceIsLeafOrRoot()
-    {
-        CheckIfRoot();
-
-        CheckIfLeaf();
-    }
-
-    private void CheckIfRoot()
-    {
-        _services.Where(s => s.DependsOn.Count == 0).ToList().ForEach(i => i.IsRoot = true);
-    }
-
-    private void CheckIfLeaf()
-    {
-        var allCallees = _dependencyRelations.Select(d => d.Callee).Distinct().ToList();
-
-        foreach (var callee in allCallees) _services.First(s => s.Name == callee).IsLeaf = false;
     }
 }

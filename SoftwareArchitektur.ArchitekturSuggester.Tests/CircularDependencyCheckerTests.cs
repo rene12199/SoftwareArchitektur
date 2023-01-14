@@ -1,10 +1,19 @@
-﻿using SoftwareArchitektur.ArchitekturSuggester.CircularDependencyCheckerModule;
+﻿using Moq;
+using SoftwareArchitektur.Utility.Interface;
 using SoftwareArchitektur.Utility.Models;
 
 namespace SoftwareArchitektur.ArchitekturSuggester.Tests;
 
 public class CircularDependencyCheckerTests
 {
+    private Mock<IDataProvider> _dataProvider;
+
+    [SetUp]
+    public void SetUp()
+    {
+        _dataProvider = new Mock<IDataProvider>();
+    }
+
     [Test]
     public void CircularDependencyCheckerTests_Only2Dependencies_ReturnsPackageWith2Services()
     {
@@ -21,8 +30,11 @@ public class CircularDependencyCheckerTests
                 }
             }
         });
+
+        _dataProvider.Setup(s => s.GetServices()).Returns(serviceModels);
+
         serviceModels.Add(new ServiceModel("S2"));
-        var checker = new CircularDependencyChecker(serviceModels);
+        var checker = new CircularDependencyChecker.CircularDependencyChecker(_dataProvider.Object);
         //Assert
         var result = checker.CreatePackages();
 
@@ -32,7 +44,7 @@ public class CircularDependencyCheckerTests
     }
 
     [Test]
-    public void CircularDependencyCheckerTests_Only3DependenciesWithCiruclarDependency_Returns4PackageWith1Services()
+    public void CircularDependencyCheckerTests_Only3DependenciesWithCircularDependency_Returns4PackageWith1Services()
     {
         //Arrange
         var serviceModels = new List<ServiceModel>();
@@ -71,7 +83,10 @@ public class CircularDependencyCheckerTests
             }
         });
 
-        var checker = new CircularDependencyChecker(serviceModels);
+        _dataProvider.Setup(s => s.GetServices()).Returns(serviceModels);
+
+
+        var checker = new CircularDependencyChecker.CircularDependencyChecker(_dataProvider.Object);
         //Assert
         var result = checker.CreatePackages();
 
@@ -83,7 +98,7 @@ public class CircularDependencyCheckerTests
     }
 
     [Test]
-    public void CircularDependencyCheckerTests_Only4DependenciesWithNoCiruclarDependency_Returns2PackageWith2Services()
+    public void CircularDependencyCheckerTests_Only4DependenciesWithNoCircularDependency_Returns2PackageWith2Services()
     {
         //Arrange
         var serviceModels = new List<ServiceModel>();
@@ -114,8 +129,10 @@ public class CircularDependencyCheckerTests
         });
 
         serviceModels.Add(new ServiceModel("S4"));
+        _dataProvider.Setup(s => s.GetServices()).Returns(serviceModels);
 
-        var checker = new CircularDependencyChecker(serviceModels);
+
+        var checker = new CircularDependencyChecker.CircularDependencyChecker(_dataProvider.Object);
         //Assert
         var result = checker.CreatePackages();
 
@@ -124,7 +141,7 @@ public class CircularDependencyCheckerTests
     }
 
     [Test]
-    public void CircularDependencyCheckerTests_Only4DependenciesWithCiruclarDependency_Returns2Packages()
+    public void CircularDependencyCheckerTests_Only4DependenciesWithCircularDependency_Returns2Packages()
     {
         //Arrange
         var serviceModels = new List<ServiceModel>();
@@ -168,8 +185,9 @@ public class CircularDependencyCheckerTests
         });
 
         serviceModels.Add(new ServiceModel("S4"));
+        _dataProvider.Setup(s => s.GetServices()).Returns(serviceModels);
 
-        var checker = new CircularDependencyChecker(serviceModels);
+        var checker = new CircularDependencyChecker.CircularDependencyChecker(_dataProvider.Object);
         //Assert
         var result = checker.CreatePackages();
 
@@ -195,7 +213,95 @@ public class CircularDependencyCheckerTests
             }
         });
 
-        var checker = new CircularDependencyChecker(serviceModels);
+
+        _dataProvider.Setup(s => s.GetServices()).Returns(serviceModels);
+
+        var checker = new CircularDependencyChecker.CircularDependencyChecker(_dataProvider.Object);
+        //Assert
+        var result = checker.CreatePackages();
+
+        //Act
+        Assert.That(result.Count, Is.EqualTo(1));
+    }
+
+    [Test]
+    public void CircularDependencyCheckerTests_2CircularDependenciesInATree_Returns1Package()
+    {
+        //Arrange
+        var serviceModels = new List<ServiceModel>();
+        serviceModels.Add(new ServiceModel("S1")
+        {
+            DependsOn =
+            {
+                new DependencyRelationModel
+                {
+                    Caller = "S1",
+                    Callee = "S2",
+                    NumberOfCalls = 20
+                }
+            }
+        });
+
+        serviceModels.Add(new ServiceModel("S2")
+        {
+            DependsOn =
+            {
+                new DependencyRelationModel
+                {
+                    Caller = "S2",
+                    Callee = "S3",
+                    NumberOfCalls = 10
+                },
+                new DependencyRelationModel
+                {
+                    Caller = "S2",
+                    Callee = "S4",
+                    NumberOfCalls = 10
+                }
+            }
+        });
+
+        serviceModels.Add(new ServiceModel("S3")
+        {
+            DependsOn =
+            {
+                new DependencyRelationModel
+                {
+                    Caller = "S3",
+                    Callee = "S1",
+                    NumberOfCalls = 20
+                }
+            }
+        });
+
+        serviceModels.Add(new ServiceModel("S4")
+        {
+            DependsOn =
+            {
+                new DependencyRelationModel
+                {
+                    Caller = "S4",
+                    Callee = "S5",
+                    NumberOfCalls = 10
+                }
+            }
+        });
+        serviceModels.Add(new ServiceModel("S5")
+        {
+            DependsOn =
+            {
+                new DependencyRelationModel
+                {
+                    Caller = "S5",
+                    Callee = "S1",
+                    NumberOfCalls = 10
+                }
+            }
+        });
+        _dataProvider.Setup(s => s.GetServices()).Returns(serviceModels);
+
+
+        var checker = new CircularDependencyChecker.CircularDependencyChecker(_dataProvider.Object);
         //Assert
         var result = checker.CreatePackages();
 
@@ -274,15 +380,26 @@ public class CircularDependencyCheckerTests
                     Caller = "S5",
                     Callee = "S1",
                     NumberOfCalls = 10
+                },
+
+                new DependencyRelationModel
+                {
+                    Caller = "S5",
+                    Callee = "S6",
+                    NumberOfCalls = 10
                 }
             }
         });
 
-        var checker = new CircularDependencyChecker(serviceModels);
+        serviceModels.Add(new ServiceModel("S6"));
+        _dataProvider.Setup(s => s.GetServices()).Returns(serviceModels);
+
+
+        var checker = new CircularDependencyChecker.CircularDependencyChecker(_dataProvider.Object);
         //Assert
         var result = checker.CreatePackages();
 
         //Act
-        Assert.That(result.Count, Is.EqualTo(1));
+        Assert.That(result.Count, Is.EqualTo(2));
     }
 }

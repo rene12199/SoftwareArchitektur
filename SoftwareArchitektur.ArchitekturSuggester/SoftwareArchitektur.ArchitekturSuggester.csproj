@@ -9,11 +9,16 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="Autofac" Version="6.5.0" />
+      <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
+      <PackageReference Include="AutoMapper" Version="12.0.0" />
       <PackageReference Include="MNCD" Version="1.1.0" />
       <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine\SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.csproj" />
+      <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.CircularDependencyChecker\SoftwareArchitektur.ArchitekturSuggester.CircularDependencyChecker.csproj" />
       <ProjectReference Include="..\SoftwareArchitektur.Utility\SoftwareArchitektur.Utility.csproj" />
     </ItemGroup>
 
@@ -30,6 +35,10 @@
       <None Update="Data\FullServiceData.json">
         <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="CCPScoringEngine" />
     </ItemGroup>
 
 </Project>

@@ -1,6 +1,6 @@
 using SoftwareArchitektur.Utility.Models;
 
-namespace SoftwareArchitektur.ArchitekturSuggester.CCPScoringEngine.Models;
+namespace SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.Models;
 
 public class CcpScoringCommonChangeClass
 {

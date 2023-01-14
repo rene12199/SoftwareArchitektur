@@ -4,7 +4,7 @@ namespace SoftwareArchitektur.ArchitekturSuggester.GroupingModule;
 
 public class GroupingEngine
 {
-    private readonly IList<PackageModel> _packages;
+    private readonly IList<PackageModel> _packages = null!;
     private readonly IList<ServiceModel> _serviceLookUp;
     private readonly IList<CommonChangeRelationModel> _commonChangeRelations;
 

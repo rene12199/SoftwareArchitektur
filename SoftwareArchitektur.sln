@@ -10,6 +10,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.Archite
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.UMLVisualizer", "SoftwareArchitektur.UMLVisualizer\SoftwareArchitektur.UMLVisualizer.csproj", "{3E100405-D8F6-4813-B650-1A5672497CA3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.ArchitekturSuggester.CircularDependencyChecker", "SoftwareArchitektur.ArchitekturSuggester.CircularDependencyChecker\SoftwareArchitektur.ArchitekturSuggester.CircularDependencyChecker.csproj", "{58A371DB-A5DC-4FE1-BADC-E41F765B8FDB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine", "SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine\SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.csproj", "{9CACE249-D537-46FD-AA96-8F02AB8CEDBE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +40,13 @@ Global
 		{3E100405-D8F6-4813-B650-1A5672497CA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E100405-D8F6-4813-B650-1A5672497CA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E100405-D8F6-4813-B650-1A5672497CA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{58A371DB-A5DC-4FE1-BADC-E41F765B8FDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{58A371DB-A5DC-4FE1-BADC-E41F765B8FDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{58A371DB-A5DC-4FE1-BADC-E41F765B8FDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{58A371DB-A5DC-4FE1-BADC-E41F765B8FDB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9CACE249-D537-46FD-AA96-8F02AB8CEDBE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9CACE249-D537-46FD-AA96-8F02AB8CEDBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9CACE249-D537-46FD-AA96-8F02AB8CEDBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9CACE249-D537-46FD-AA96-8F02AB8CEDBE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
