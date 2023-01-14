@@ -4,18 +4,13 @@ using SoftwareArchitektur.Utility.Models;
 
 namespace SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.Converter;
 
-public class CommonChangeToCcpCommonChageConverter
+public class CommonChangeToCcpCommonChangeConverter
 {
-    public CommonChangeToCcpCommonChageConverter(IDataProvider _dataProvider)
-    {
-        _serviceModelLookup = _dataProvider.GetServices().ToList().AsReadOnly();
-    }
-
     private readonly IList<ServiceModel> _serviceModelLookup;
 
-    public CommonChangeToCcpCommonChageConverter(IList<ServiceModel> serviceModelLookup)
+    public CommonChangeToCcpCommonChangeConverter(IDataProvider _dataProvider)
     {
-        _serviceModelLookup = serviceModelLookup;
+        _serviceModelLookup = _dataProvider.GetServices().ToList().AsReadOnly();
     }
 
     public IList<CcpScoringCommonChangeClass> CreateCcpCommonChangeList(IList<CommonChangeRelationModel> commonChangeList)
@@ -32,19 +27,19 @@ public class CommonChangeToCcpCommonChageConverter
         foreach (var commonChange in commonChangeList)
             if (CcpCommonChangeExists(commonChange, commonCcpChangeList))
             {
-                commonCcpChangeList.Add(new CcpScoringCommonChangeClass(
-                    GetServiceFromLookUp(commonChange.NameOfCurrentService),
-                    GetServiceFromLookUp(commonChange.NameOfCurrentService),
-                    commonChange.NumberOfChanges));
-            }
-            else
-            {
                 var existingCommonChange = commonCcpChangeList.Single(cc =>
                     cc.Equals(
                         GetServiceFromLookUp(commonChange.NameOfCurrentService).InPackage,
-                        GetServiceFromLookUp(commonChange.NameOfCurrentService).InPackage));
+                        GetServiceFromLookUp(commonChange.NameOfOtherService).InPackage));
 
                 existingCommonChange.AddChanges(commonChange.NumberOfChanges);
+            }
+            else
+            {
+                commonCcpChangeList.Add(new CcpScoringCommonChangeClass(
+                    GetServiceFromLookUp(commonChange.NameOfCurrentService),
+                    GetServiceFromLookUp(commonChange.NameOfOtherService),
+                    commonChange.NumberOfChanges));
             }
     }
 

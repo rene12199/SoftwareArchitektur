@@ -12,13 +12,13 @@ public class CcpScoringEngine : ICcpScoringEngine
 
     private ReadOnlyCollection<PackageModel> _packageModels = null!;
 
-    private readonly CommonChangeToCcpCommonChageConverter _converter;
+    private readonly CommonChangeToCcpCommonChangeConverter _converter;
 
 
     public CcpScoringEngine(IDataProvider dataProvider)
     {
         _serviceModelLookup = dataProvider.GetServices().ToList().AsReadOnly();
-        _converter = new CommonChangeToCcpCommonChageConverter(dataProvider);
+        _converter = new CommonChangeToCcpCommonChangeConverter(dataProvider);
     }
 
     public void SetPossiblePackages(IList<PackageModel> packagesModels)

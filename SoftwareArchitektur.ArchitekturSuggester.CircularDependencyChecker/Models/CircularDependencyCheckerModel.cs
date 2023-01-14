@@ -14,8 +14,6 @@ internal class CircularDependencyCheckerModel : IEquatable<CircularDependencyChe
 
     public ServiceModel BaseServiceModel { get; private set; }
 
-    //todo Create Limit on minimum number of calls that it has to think about
-
     public readonly List<CircularDependencyRelationModel> DependsOn = new();
 
     public bool Equals(CircularDependencyCheckerModel? other)

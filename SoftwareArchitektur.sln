@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.Archite
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine", "SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine\SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.csproj", "{9CACE249-D537-46FD-AA96-8F02AB8CEDBE}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.Tests", "SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.Tests\SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.Tests.csproj", "{1A7E8D58-53BF-4DC7-A86C-3BDC53F26D3B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -48,5 +50,9 @@ Global
 		{9CACE249-D537-46FD-AA96-8F02AB8CEDBE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9CACE249-D537-46FD-AA96-8F02AB8CEDBE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9CACE249-D537-46FD-AA96-8F02AB8CEDBE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1A7E8D58-53BF-4DC7-A86C-3BDC53F26D3B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1A7E8D58-53BF-4DC7-A86C-3BDC53F26D3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1A7E8D58-53BF-4DC7-A86C-3BDC53F26D3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1A7E8D58-53BF-4DC7-A86C-3BDC53F26D3B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
