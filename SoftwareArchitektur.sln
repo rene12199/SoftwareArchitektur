@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.Utility
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.ArchitekturSuggester", "SoftwareArchitektur.ArchitekturSuggester\SoftwareArchitektur.ArchitekturSuggester.csproj", "{3FEC8FDF-2DC0-4F69-9ED0-A7F8EAC929A7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.ArchitekturSuggester.Tests", "SoftwareArchitektur.ArchitekturSuggester.Tests\SoftwareArchitektur.ArchitekturSuggester.Tests.csproj", "{A1D58659-A7AF-4E9C-BC10-72BE70E4F298}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.ArchitekturSuggester.CircularDependencyChecker.Tests", "SoftwareArchitektur.ArchitekturSuggester.CircularDependencyChecker.Tests\SoftwareArchitektur.ArchitekturSuggester.CircularDependencyChecker.Tests.csproj", "{A1D58659-A7AF-4E9C-BC10-72BE70E4F298}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.UMLVisualizer", "SoftwareArchitektur.UMLVisualizer\SoftwareArchitektur.UMLVisualizer.csproj", "{3E100405-D8F6-4813-B650-1A5672497CA3}"
 EndProject
@@ -15,6 +15,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine", "SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine\SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.csproj", "{9CACE249-D537-46FD-AA96-8F02AB8CEDBE}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.Tests", "SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.Tests\SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.Tests.csproj", "{1A7E8D58-53BF-4DC7-A86C-3BDC53F26D3B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SoftwareArchitektur.ArchitekturSuggester.CcpScorer", "SoftwareArchitektur.ArchitekturSuggester.CcpScorer", "{E0B42734-9BBC-434B-826D-CC87733D91E2}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SoftwareArchitektur.ArchitekturSuggester", "SoftwareArchitektur.ArchitekturSuggester", "{D3363ABA-397E-458D-910C-A2218EC5D482}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SoftwareArchitektur.ArchitekturSuggester.CircularDependencyChecker", "SoftwareArchitektur.ArchitekturSuggester.CircularDependencyChecker", "{341A0A7E-B102-46F5-BA7E-6E346FFFFF02}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -54,5 +60,15 @@ Global
 		{1A7E8D58-53BF-4DC7-A86C-3BDC53F26D3B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1A7E8D58-53BF-4DC7-A86C-3BDC53F26D3B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1A7E8D58-53BF-4DC7-A86C-3BDC53F26D3B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1A7E8D58-53BF-4DC7-A86C-3BDC53F26D3B} = {E0B42734-9BBC-434B-826D-CC87733D91E2}
+		{9CACE249-D537-46FD-AA96-8F02AB8CEDBE} = {E0B42734-9BBC-434B-826D-CC87733D91E2}
+		{E0B42734-9BBC-434B-826D-CC87733D91E2} = {D3363ABA-397E-458D-910C-A2218EC5D482}
+		{3FEC8FDF-2DC0-4F69-9ED0-A7F8EAC929A7} = {D3363ABA-397E-458D-910C-A2218EC5D482}
+		{19A0F1B9-5659-49A9-9010-CDADB3E3C956} = {D3363ABA-397E-458D-910C-A2218EC5D482}
+		{341A0A7E-B102-46F5-BA7E-6E346FFFFF02} = {D3363ABA-397E-458D-910C-A2218EC5D482}
+		{58A371DB-A5DC-4FE1-BADC-E41F765B8FDB} = {341A0A7E-B102-46F5-BA7E-6E346FFFFF02}
+		{A1D58659-A7AF-4E9C-BC10-72BE70E4F298} = {341A0A7E-B102-46F5-BA7E-6E346FFFFF02}
 	EndGlobalSection
 EndGlobal

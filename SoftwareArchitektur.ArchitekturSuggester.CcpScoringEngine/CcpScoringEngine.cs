@@ -8,7 +8,6 @@ namespace SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine;
 
 public class CcpScoringEngine : ICcpScoringEngine
 {
-    private readonly ReadOnlyCollection<ServiceModel> _serviceModelLookup;
 
     private ReadOnlyCollection<PackageModel> _packageModels = null!;
 
@@ -17,7 +16,6 @@ public class CcpScoringEngine : ICcpScoringEngine
 
     public CcpScoringEngine(IDataProvider dataProvider)
     {
-        _serviceModelLookup = dataProvider.GetServices().ToList().AsReadOnly();
         _converter = new CommonChangeToCcpCommonChangeConverter(dataProvider);
     }
 
@@ -28,18 +26,14 @@ public class CcpScoringEngine : ICcpScoringEngine
 
     public IList<PackageModel> DistributePackages(IList<ServiceModel> remainingServices)
     {
-        if (_packageModels == null) throw new ApplicationException("No Packagemodel List set");
+        if (_packageModels == null || _packageModels.Count == 0) throw new ApplicationException("No Packagemodel List set");
 
         foreach (var remainingService in remainingServices)
         {
-            var bestPackage = _converter.CreateCcpCommonChangeList(remainingService.ChangedWith);
+            var bestPackage = _converter.CreateCcpCommonChangeList(remainingService.ChangedWith).OrderByDescending(d => d.NumberOfChanges).First();
+            _packageModels.Single(s => s.PackageName == bestPackage.OtherPackage).AddService(remainingService);
         }
 
         return _packageModels;
-    }
-
-    private ServiceModel GetServiceFromLookUp(string serviceName)
-    {
-        return _serviceModelLookup.Single(s => s.Name == serviceName);
     }
 }
