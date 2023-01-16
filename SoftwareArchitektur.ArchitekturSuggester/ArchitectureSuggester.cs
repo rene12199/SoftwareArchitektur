@@ -35,7 +35,6 @@ public class ArchitectureSuggester
         //todo Create Grouping Algorithm with focus on balancing
         GroupPackages(packages);
 
-
         return packages;
     }
 

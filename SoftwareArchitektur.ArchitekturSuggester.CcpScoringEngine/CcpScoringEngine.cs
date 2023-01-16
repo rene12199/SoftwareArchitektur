@@ -13,13 +13,12 @@ namespace SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine;
 
 public class CcpScoringEngine : ICcpScoringEngine
 {
-
     private ReadOnlyCollection<PackageModel> _packageModels = null!;
 
     private readonly CommonChangeToCcpCommonChangeConverter _converter;
 
     private byte[] _snapShotHash = null!;
-    
+
     private bool _lenientMode = false;
 
 
@@ -35,56 +34,56 @@ public class CcpScoringEngine : ICcpScoringEngine
 
     public IList<PackageModel> DistributeRemainingServices(IList<ServiceModel> remainingServices)
     {
-        if (_packageModels == null || _packageModels.Count == 0) throw new ApplicationException("No Packagemodel List set");
+        if (_packageModels == null || _packageModels.Count == 0) throw new ApplicationException("No PackageModel List set");
 
         _snapShotHash = CreateShaFromRemainingServices(remainingServices);
-
-        //IList<Tuple<ServiceModel, IList<CcpScoringCommonChangeClass>>> change = new List<Tuple<ServiceModel, IList<CcpScoringCommonChangeClass>>>();
         
+        var remainingServicesTuple = remainingServices.Select(s => new Tuple<ServiceModel, List<CcpScoringCommonChangeClass>>(s, new List<CcpScoringCommonChangeClass>())).ToList();
+
+        var t = Task.Run(async () => await DistributePackages(remainingServicesTuple));
+        Task.WaitAll(t);
+        return _packageModels;
+    }
+
+    private async Task DistributePackages(List<Tuple<ServiceModel, List<CcpScoringCommonChangeClass>>> remainingServicesTuple)
+    {
         int iterator = 0;
-        while (remainingServices.Count > 0)
+        await CalculateChangesByPackageAsync(remainingServicesTuple);
+        while (remainingServicesTuple.Count > 0)
         {
-            Console.WriteLine($"Checking Common Changes for Service {remainingServices[iterator].Name}");
-            if (remainingServices[iterator].ChangedWith.Count == 0)
+            Console.WriteLine($"Checking Common Changes for Service {remainingServicesTuple[iterator].Item1.Name}");
+            if (remainingServicesTuple[iterator].Item1.ChangedWith.Count == 0)
             {
-                Console.WriteLine($"Warning: {remainingServices[iterator].Name} has no Changes, Service removed without being added to Package");
-                remainingServices.RemoveAt(iterator);
+                Console.WriteLine($"Warning: {remainingServicesTuple[iterator].Item1.Name} has no Changes, Service removed without being added to Package");
+                remainingServicesTuple.RemoveAt(iterator);
                 continue;
             }
             
-            //todo maybe add MultiThreading
-            var changedWithPackage = _converter.CreateCcpCommonChangeList(remainingServices[iterator].ChangedWith).OrderByDescending(d => d.NumberOfChanges);
             CcpScoringCommonChangeClass bestPackage = null!;
-            if (_lenientMode)
-            {
-                bestPackage = changedWithPackage.FirstOrDefault(package => !string.IsNullOrWhiteSpace(package.OtherPackage));
-            }
-            else
-            {
-                bestPackage = changedWithPackage.First();
-            }
-            
-            
+
+            bestPackage = GetBestPackage(remainingServicesTuple, iterator);
+
+
             if (bestPackage == null || bestPackage.OtherPackage == String.Empty)
             {
-                Console.WriteLine($"No Package found for {remainingServices[iterator].Name}, skipping");
+                Console.WriteLine($"No Package found for {remainingServicesTuple[iterator].Item1.Name}, skipping");
                 iterator++;
             }
             else
             {
-                Console.WriteLine($"Package {bestPackage.OtherPackage} found for {remainingServices[iterator].Name}, Service gets added");
-                _packageModels.Single(s => s.PackageName == bestPackage.OtherPackage).AddService(remainingServices[iterator]);
-                remainingServices.RemoveAt(iterator);
+                Console.WriteLine($"Package {bestPackage.OtherPackage} found for {remainingServicesTuple[iterator].Item1.Name}, Service gets added");
+                _packageModels.Single(s => s.PackageName == bestPackage.OtherPackage).AddService(remainingServicesTuple[iterator].Item1);
+                remainingServicesTuple.RemoveAt(iterator);
             }
-            
-            if (iterator >= remainingServices.Count)
+
+            if (iterator >= remainingServicesTuple.Count)
             {
+                await CalculateChangesByPackageAsync(remainingServicesTuple);
                 iterator = 0;
-                var currentSnapShotHash = CreateShaFromRemainingServices(remainingServices);
+                var currentSnapShotHash = CreateShaFromRemainingServices(remainingServicesTuple.Select(s => s.Item1).ToList());
 
                 if (_snapShotHash.SequenceEqual(currentSnapShotHash))
                 {
-
                     if (!_lenientMode)
                     {
                         Console.WriteLine($"Warning Could Not Find more Common Changes, Activating LenientMode");
@@ -95,8 +94,6 @@ public class CcpScoringEngine : ICcpScoringEngine
                         Console.WriteLine($"Warning Could Not Find more Common Changes, Aborting Operation");
                         break;
                     }
-                   
-                    
                 }
                 else
                 {
@@ -104,8 +101,32 @@ public class CcpScoringEngine : ICcpScoringEngine
                 }
             }
         }
+    }
 
-        return _packageModels;
+    private CcpScoringCommonChangeClass? GetBestPackage(List<Tuple<ServiceModel, List<CcpScoringCommonChangeClass>>> remainingServicesTuple, int iterator)
+    {
+        CcpScoringCommonChangeClass? bestPackage;
+        if (_lenientMode)
+        {
+            bestPackage = remainingServicesTuple[iterator].Item2.FirstOrDefault(package => !string.IsNullOrWhiteSpace(package.OtherPackage));
+        }
+        else
+        {
+            bestPackage = remainingServicesTuple[iterator].Item2.First();
+        }
+
+        return bestPackage;
+    }
+
+    private async Task CalculateChangesByPackageAsync(IEnumerable<Tuple<ServiceModel, List<CcpScoringCommonChangeClass>>> remainingServicesTuple)
+    {
+        await Parallel.ForEachAsync(remainingServicesTuple, (tuple, token) =>
+        {
+            Console.WriteLine($"Updating {tuple.Item1.Name}");
+            tuple?.Item2?.Clear();
+            tuple.Item2.AddRange(_converter.CreateCcpCommonChangeList(tuple.Item1.ChangedWith).OrderByDescending(d => d.NumberOfChanges).ToList());
+            return ValueTask.CompletedTask;
+        });
     }
 
     private static byte[] CreateShaFromRemainingServices(IList<ServiceModel> remainingServices)
@@ -119,6 +140,7 @@ public class CcpScoringEngine : ICcpScoringEngine
             {
                 sb.Append(remainingService.Name);
             }
+
             // ComputeHash - returns byte array  
             currentSnapShot = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(sb.ToString()));
             // Convert byte array to a string   

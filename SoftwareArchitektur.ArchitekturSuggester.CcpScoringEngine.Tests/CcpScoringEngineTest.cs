@@ -293,6 +293,7 @@ public class CcpScoringEngineTest
         _dataProvider.Setup(d => d.GetServices()).Returns(serviceModelFactory.ServiceModels);
         var ccpScoringEngine = new CcpScoringEngine(_dataProvider.Object);
         ccpScoringEngine.SetPossiblePackages(packages);
+        
         //Act 
         var result = ccpScoringEngine.DistributeRemainingServices(remainingServices);
 
