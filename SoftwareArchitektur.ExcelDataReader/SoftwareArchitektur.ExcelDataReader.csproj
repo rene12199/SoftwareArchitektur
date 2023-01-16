@@ -23,7 +23,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SoftwareArchitektur.Utility\SoftwareArchitektur.Utility.csproj" />
+      <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.Utility\SoftwareArchitektur.ArchitekturSuggester.Utility.csproj" />
     </ItemGroup>
 
 </Project>

@@ -19,7 +19,7 @@
     <ItemGroup>
       <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine\SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.csproj" />
       <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.CircularDependencyChecker\SoftwareArchitektur.ArchitekturSuggester.CircularDependencyChecker.csproj" />
-      <ProjectReference Include="..\SoftwareArchitektur.Utility\SoftwareArchitektur.Utility.csproj" />
+      <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.Utility\SoftwareArchitektur.ArchitekturSuggester.Utility.csproj" />
     </ItemGroup>
 
     <ItemGroup>
