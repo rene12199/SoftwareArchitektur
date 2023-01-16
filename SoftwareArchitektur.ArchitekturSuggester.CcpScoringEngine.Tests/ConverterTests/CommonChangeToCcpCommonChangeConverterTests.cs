@@ -16,7 +16,7 @@ public class CommonChangeToCcpCommonChangeConverterTests
         _dataProvider = new Mock<IDataProvider>();
     }
 
-    [Test]
+    [Test,MaxTime(2000)]
     public void CommonChangeToCcpCommonChangeConverterTests_2PackagesWith3Services_Returns1CcpScoreWithValue2()
     {
         var commonChange = new List<CommonChangeRelationModel>()
@@ -90,7 +90,7 @@ public class CommonChangeToCcpCommonChangeConverterTests
 
     }
     
-      [Test]
+      [Test,MaxTime(2000)]
     public void CommonChangeToCcpCommonChangeConverterTests_3PackagesWith3Services_Returns1CcpScoreWithValue3()
     {
         

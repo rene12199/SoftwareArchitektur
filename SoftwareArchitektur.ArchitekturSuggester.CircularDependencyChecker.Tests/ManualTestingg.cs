@@ -3,7 +3,7 @@
 public class ManualTesting
 {
     //todo Test if Louvian Network gets YOu The same as the shit you Programmed
-    [Test]
+    [Test,MaxTime(2000)]
     public void bla()
     {
         var _services = new List<string>();

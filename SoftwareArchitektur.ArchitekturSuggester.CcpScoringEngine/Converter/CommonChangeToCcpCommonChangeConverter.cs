@@ -8,9 +8,9 @@ public class CommonChangeToCcpCommonChangeConverter
 {
     private readonly IList<ServiceModel> _serviceModelLookup;
 
-    public CommonChangeToCcpCommonChangeConverter(IDataProvider _dataProvider)
+    public CommonChangeToCcpCommonChangeConverter(IDataProvider dataProvider)
     {
-        _serviceModelLookup = _dataProvider.GetServices().ToList().AsReadOnly();
+        _serviceModelLookup = dataProvider.GetServices().ToList().AsReadOnly();
     }
 
     public IList<CcpScoringCommonChangeClass> CreateCcpCommonChangeList(IList<CommonChangeRelationModel> commonChangeList)
@@ -36,10 +36,11 @@ public class CommonChangeToCcpCommonChangeConverter
             }
             else
             {
-                commonCcpChangeList.Add(new CcpScoringCommonChangeClass(
+                var commonCcpChange = new CcpScoringCommonChangeClass(
                     GetServiceFromLookUp(commonChange.NameOfCurrentService),
                     GetServiceFromLookUp(commonChange.NameOfOtherService),
-                    commonChange.NumberOfChanges));
+                    commonChange.NumberOfChanges);
+                commonCcpChangeList.Add(commonCcpChange);
             }
     }
 
@@ -51,6 +52,6 @@ public class CommonChangeToCcpCommonChangeConverter
 
     private ServiceModel GetServiceFromLookUp(string commonChangeNameOfCurrentService)
     {
-        return _serviceModelLookup.Single(s => s.Name == commonChangeNameOfCurrentService);
+        return _serviceModelLookup.SingleOrDefault(s => s.Name == commonChangeNameOfCurrentService);
     }
 }

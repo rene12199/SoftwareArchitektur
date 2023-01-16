@@ -43,7 +43,8 @@ public class ArchitectureSuggester
 
     private void DistributeRemainingPackagesByCcpScore(List<PackageModel> packages)
     {
-        throw new NotImplementedException();
+        _ccpScoringEngine.SetPossiblePackages(packages);
+        _ccpScoringEngine.DistributeRemainingServices(_services);
     }
 
     private void GroupPackages(List<PackageModel> packageModels)
