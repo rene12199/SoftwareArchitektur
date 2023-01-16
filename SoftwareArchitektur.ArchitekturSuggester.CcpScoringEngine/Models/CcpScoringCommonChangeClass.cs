@@ -21,15 +21,15 @@ public class CcpScoringCommonChangeClass
         OtherPackage = differentPackage != null ? differentPackage.InPackage : String.Empty;
         NumberOfChanges = numberOfChanges;
     }
-
-    protected bool Equals(CcpScoringCommonChangeClass? other)
+    
+    
+    public bool Equals(CcpScoringCommonChangeClass? other)
     {
-        return other != null && ((ThisPackage.Equals(other.ThisPackage) && OtherPackage.Equals(other.OtherPackage)) ||
-                                 (ThisPackage.Equals(other.OtherPackage) && OtherPackage.Equals(other.ThisPackage)));
+        return other != null && ThisPackage.Equals(other.ThisPackage) && OtherPackage.Equals(other.OtherPackage);
     }
 
-    public bool Equals(string package1, string package2)
+    public bool Equals(string ownPackage, string otherPackage)
     {
-        return (ThisPackage.Equals(package1) && OtherPackage.Equals(package2)) || (ThisPackage.Equals(package2) && OtherPackage.Equals(package1));
+        return ThisPackage.Equals(ownPackage) && OtherPackage.Equals(otherPackage);
     }
 }

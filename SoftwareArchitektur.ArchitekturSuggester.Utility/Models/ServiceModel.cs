@@ -22,11 +22,15 @@ public class ServiceModel
 
     public readonly List<CommonChangeRelationModel> ChangedWith = new();
 
+    public bool IsStatic => ChangedWith.Count == 0;
+
+    public bool HasChangeRelation = false;
+
     public bool IsIndependent => IsLeaf && IsRoot;
 
     public string InPackage = string.Empty;
 
-    public bool IsIsolated => IsIndependent && ChangedWith.Count == 0;
+    public bool IsIsolated => IsIndependent && IsStatic && !HasChangeRelation;
 
     public double AverageChange => ChangedWith.Count > 1 ? ChangedWith.Average(s => s.NumberOfChanges) : double.NaN;
 

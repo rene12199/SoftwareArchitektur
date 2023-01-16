@@ -2,8 +2,10 @@ using System.Collections.ObjectModel;
 using System.Runtime.Intrinsics.Arm;
 using System.Security.Cryptography;
 using System.Text;
+using Autofac.Core;
 using SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.Converter;
 using SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.Interfaces;
+using SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.Models;
 using SoftwareArchitektur.Utility.Interface;
 using SoftwareArchitektur.Utility.Models;
 
@@ -16,7 +18,9 @@ public class CcpScoringEngine : ICcpScoringEngine
 
     private readonly CommonChangeToCcpCommonChangeConverter _converter;
 
-    private byte[] _snapShotHash = null;
+    private byte[] _snapShotHash = null!;
+    
+    private bool _lenientMode = false;
 
 
     public CcpScoringEngine(IDataProvider dataProvider)
@@ -34,6 +38,8 @@ public class CcpScoringEngine : ICcpScoringEngine
         if (_packageModels == null || _packageModels.Count == 0) throw new ApplicationException("No Packagemodel List set");
 
         _snapShotHash = CreateShaFromRemainingServices(remainingServices);
+
+        //IList<Tuple<ServiceModel, IList<CcpScoringCommonChangeClass>>> change = new List<Tuple<ServiceModel, IList<CcpScoringCommonChangeClass>>>();
         
         int iterator = 0;
         while (remainingServices.Count > 0)
@@ -46,8 +52,20 @@ public class CcpScoringEngine : ICcpScoringEngine
                 continue;
             }
             
-            var bestPackage = _converter.CreateCcpCommonChangeList(remainingServices[iterator].ChangedWith).OrderByDescending(d => d.NumberOfChanges).First();
-            if (bestPackage.OtherPackage == String.Empty)
+            //todo maybe add MultiThreading
+            var changedWithPackage = _converter.CreateCcpCommonChangeList(remainingServices[iterator].ChangedWith).OrderByDescending(d => d.NumberOfChanges);
+            CcpScoringCommonChangeClass bestPackage = null!;
+            if (_lenientMode)
+            {
+                bestPackage = changedWithPackage.FirstOrDefault(package => !string.IsNullOrWhiteSpace(package.OtherPackage));
+            }
+            else
+            {
+                bestPackage = changedWithPackage.First();
+            }
+            
+            
+            if (bestPackage == null || bestPackage.OtherPackage == String.Empty)
             {
                 Console.WriteLine($"No Package found for {remainingServices[iterator].Name}, skipping");
                 iterator++;
@@ -66,8 +84,19 @@ public class CcpScoringEngine : ICcpScoringEngine
 
                 if (_snapShotHash.SequenceEqual(currentSnapShotHash))
                 {
-                    Console.WriteLine($"Warning Could Not Find more Common Changes, Aborting Operation");
-                    break;
+
+                    if (!_lenientMode)
+                    {
+                        Console.WriteLine($"Warning Could Not Find more Common Changes, Activating LenientMode");
+                        _lenientMode = true;
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Warning Could Not Find more Common Changes, Aborting Operation");
+                        break;
+                    }
+                   
+                    
                 }
                 else
                 {

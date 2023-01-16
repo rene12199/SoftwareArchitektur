@@ -12,7 +12,7 @@ using SoftwareArchitektur.Utility.Interface;
 using SoftwareArchitektur.Utility.Services;
 
 var builder = new ContainerBuilder();
-builder.RegisterType<DataProvider>().As<IDataProvider>()
+builder.RegisterType<DataProvider>().As<IDataProvider>().SingleInstance()
     .WithParameter("completeDataFileAddress", "Data/FullServiceData.json")
     .WithParameter("dependencyFileAddress", "Data/DependencyRelation.json")
     .WithParameter("changeFileAddress", "Data/ChangeRelationData.json");

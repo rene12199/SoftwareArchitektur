@@ -12,6 +12,16 @@ public class TestServiceModelFactory
         var newServiceModel = new ServiceModel(name);
         ServiceModels.Add(newServiceModel);
         return newServiceModel;
+    }  
+    
+    public ServiceModel CreateServiceModel(string name, string packageName)
+    {
+        var newServiceModel = new ServiceModel(name)
+        {
+            InPackage = packageName
+        };
+        ServiceModels.Add(newServiceModel);
+        return newServiceModel;
     }
 
     public ServiceModel CreateServiceModel(string name, Func<ServiceModel, int> expression)

@@ -27,10 +27,8 @@ public class CommonChangeToCcpCommonChangeConverter
         foreach (var commonChange in commonChangeList)
             if (CcpCommonChangeExists(commonChange, commonCcpChangeList))
             {
-                var existingCommonChange = commonCcpChangeList.Single(cc =>
-                    cc.Equals(
-                        GetServiceFromLookUp(commonChange.NameOfCurrentService).InPackage,
-                        GetServiceFromLookUp(commonChange.NameOfOtherService).InPackage));
+                var existingCommonChange = commonCcpChangeList.Single(cc => (
+                    GetServiceFromLookUp(commonChange.NameOfOtherService).InPackage == cc.OtherPackage )) ;
 
                 existingCommonChange.AddChanges(commonChange.NumberOfChanges);
             }
