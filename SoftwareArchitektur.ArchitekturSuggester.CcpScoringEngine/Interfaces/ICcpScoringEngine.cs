@@ -1,5 +1,4 @@
-﻿using SoftwareArchitektur.Utility.Interface;
-using SoftwareArchitektur.Utility.Models;
+﻿using SoftwareArchitektur.Utility.Models;
 
 namespace SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.Interfaces;
 

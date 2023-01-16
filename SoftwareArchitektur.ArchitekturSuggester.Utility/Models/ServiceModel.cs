@@ -32,7 +32,7 @@ public class ServiceModel
 
     public bool IsIsolated => IsIndependent && IsStatic && !HasChangeRelation;
 
-    public double AverageChange => ChangedWith.Count > 1 ? ChangedWith.Average(s => s.NumberOfChanges) : double.NaN;
+    public double AverageChange => ChangedWith.Count > 1 ? ChangedWith.Average(s => s.NumberOfChanges) : 0;
 
     public double StandardDeviationChangeRate => ChangedWith.Select(ch => (double)ch.NumberOfChanges).StandardDeviation();
 }

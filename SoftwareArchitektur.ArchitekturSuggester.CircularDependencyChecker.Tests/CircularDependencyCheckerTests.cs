@@ -14,7 +14,8 @@ public class CircularDependencyCheckerTests
         _dataProvider = new Mock<IDataProvider>();
     }
 
-    [Test,MaxTime(2000)]
+    [Test]
+    [MaxTime(2000)]
     public void CircularDependencyCheckerTests_Only2Dependencies_ReturnsPackageWith2Services()
     {
         //Arrange
@@ -43,7 +44,8 @@ public class CircularDependencyCheckerTests
         Assert.NotNull(result.First().GetServices().FirstOrDefault(s => s.Name == "S1"));
     }
 
-    [Test,MaxTime(2000)]
+    [Test]
+    [MaxTime(2000)]
     public void CircularDependencyCheckerTests_Only3DependenciesWithCircularDependency_Returns4PackageWith1Services()
     {
         //Arrange
@@ -97,7 +99,8 @@ public class CircularDependencyCheckerTests
         Assert.NotNull(result.First().GetServices().FirstOrDefault(s => s.Name == "S3"));
     }
 
-    [Test,MaxTime(2000)]
+    [Test]
+    [MaxTime(2000)]
     public void CircularDependencyCheckerTests_Only4DependenciesWithNoCircularDependency_Returns2PackageWith2Services()
     {
         //Arrange
@@ -140,7 +143,8 @@ public class CircularDependencyCheckerTests
         Assert.That(result.Count, Is.EqualTo(4));
     }
 
-    [Test,MaxTime(2000)]
+    [Test]
+    [MaxTime(2000)]
     public void CircularDependencyCheckerTests_Only4DependenciesWithCircularDependency_Returns2Packages()
     {
         //Arrange
@@ -195,7 +199,8 @@ public class CircularDependencyCheckerTests
         Assert.That(result.Count, Is.EqualTo(2));
     }
 
-    [Test,MaxTime(2000)]
+    [Test]
+    [MaxTime(2000)]
     public void CircularDependencyCheckerTests_DependencyToANonRegisteredService_ReturnOnePackage()
     {
         //Arrange
@@ -224,7 +229,8 @@ public class CircularDependencyCheckerTests
         Assert.That(result.Count, Is.EqualTo(1));
     }
 
-    [Test,MaxTime(2000)]
+    [Test]
+    [MaxTime(2000)]
     public void CircularDependencyCheckerTests_2CircularDependenciesInATree_Returns1Package()
     {
         //Arrange
@@ -309,7 +315,8 @@ public class CircularDependencyCheckerTests
         Assert.That(result.Count, Is.EqualTo(1));
     }
 
-    [Test,MaxTime(2000)]
+    [Test]
+    [MaxTime(2000)]
     public void CircularDependencyCheckerTests_2CircularDependenciesInATree()
     {
         //Arrange

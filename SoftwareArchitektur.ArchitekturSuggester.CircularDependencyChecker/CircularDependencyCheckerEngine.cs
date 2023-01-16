@@ -87,9 +87,11 @@ public class CircularDependencyChecker : ICircularDependencyChecker
     private void RemoveServicesContainedInPackage(CircularDependencyCheckerModel newPackage)
     {
         foreach (var service in newPackage.Contains)
+        {
             _dependentServices.Remove(
                 _dependentServices.First(s =>
                     s.BaseServiceModel.Name == service.BaseServiceModel.Name));
+        }
     }
 
 

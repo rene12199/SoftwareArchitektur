@@ -13,7 +13,7 @@ public class ArchitectureSuggester
     private readonly IDataProvider _dataProvider;
     private readonly ICircularDependencyChecker _circularDependencyChecker;
     private readonly ICcpScoringEngine _ccpScoringEngine;
-    
+
 
     public ArchitectureSuggester(IContainer container)
     {
@@ -41,13 +41,12 @@ public class ArchitectureSuggester
     private void DistributeRemainingPackagesByCcpScore(List<PackageModel> packages)
     {
         _ccpScoringEngine.SetPossiblePackages(packages);
-        
-        _ccpScoringEngine.DistributeRemainingServices(_dataProvider.GetServices().Where(s => s.InPackage == String.Empty).ToList());
+
+        _ccpScoringEngine.DistributeRemainingServices(_dataProvider.GetServices().Where(s => s.InPackage == string.Empty).ToList());
     }
 
     private void GroupPackages(List<PackageModel> packageModels)
     {
-        
     }
 
     private List<PackageModel> CreateInitialPackageModels()
@@ -63,23 +62,22 @@ public class ArchitectureSuggester
     private void DeleteAddedServicesFromGlobalServicePool(List<ServiceModel> nonIndependentServices, List<PackageModel> packages)
     {
         var dupCounter = -nonIndependentServices.Count;
-        var registeredServices = _dataProvider.GetServices().Where(s => s.InPackage != String.Empty).ToList();
+        var registeredServices = _dataProvider.GetServices().Where(s => s.InPackage != string.Empty).ToList();
         foreach (var package in packages) dupCounter = GetAndDeleteServicesFromPackage(package, dupCounter, registeredServices);
     }
 
     private int GetAndDeleteServicesFromPackage(PackageModel package, int dupCounter, IList<ServiceModel> registeredServices)
     {
-    
         foreach (var service in package.GetServices())
-            if (CheckIfServiceIsStillRegistered(service , registeredServices))
-            {
+        {
+            if (CheckIfServiceIsStillRegistered(service, registeredServices))
                 dupCounter++;
-            }
+        }
 
         return dupCounter;
     }
 
-    private bool CheckIfServiceIsStillRegistered(ServiceModel service, IList<ServiceModel>registeredServices)
+    private bool CheckIfServiceIsStillRegistered(ServiceModel service, IList<ServiceModel> registeredServices)
     {
         return registeredServices.Any(s => s.Name == service.Name);
     }

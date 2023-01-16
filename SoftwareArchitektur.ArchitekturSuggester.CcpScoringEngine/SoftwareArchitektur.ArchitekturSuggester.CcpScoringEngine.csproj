@@ -10,4 +10,8 @@
       <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.Utility\SoftwareArchitektur.ArchitekturSuggester.Utility.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="System.Runtime" Version="4.1.0" />
+    </ItemGroup>
+
 </Project>

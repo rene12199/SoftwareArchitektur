@@ -18,11 +18,11 @@ public class CcpScoringCommonChangeClass
     public CcpScoringCommonChangeClass(ServiceModel ownPackage, ServiceModel? differentPackage, long numberOfChanges)
     {
         ThisPackage = ownPackage.InPackage;
-        OtherPackage = differentPackage != null ? differentPackage.InPackage : String.Empty;
+        OtherPackage = differentPackage != null ? differentPackage.InPackage : string.Empty;
         NumberOfChanges = numberOfChanges;
     }
-    
-    
+
+
     public bool Equals(CcpScoringCommonChangeClass? other)
     {
         return other != null && ThisPackage.Equals(other.ThisPackage) && OtherPackage.Equals(other.OtherPackage);

@@ -36,12 +36,9 @@ public class DataProvider : IDataProvider
 
     private void CheckIfHasChangeRelation()
     {
-        var hasNoChangeRelationServiceModels = _servicesLookUp.Where(s => _changeRelations.Any(cc => cc.NameOfCurrentService ==s.Name || cc.NameOfOtherService == s.Name));
+        var hasNoChangeRelationServiceModels = _servicesLookUp.Where(s => _changeRelations.Any(cc => cc.NameOfCurrentService == s.Name || cc.NameOfOtherService == s.Name));
 
-        foreach (var serviceModel in hasNoChangeRelationServiceModels)
-        {
-            serviceModel.HasChangeRelation = true;
-        }
+        foreach (var serviceModel in hasNoChangeRelationServiceModels) serviceModel.HasChangeRelation = true;
     }
 
     private void CheckIfRoot()
@@ -53,10 +50,7 @@ public class DataProvider : IDataProvider
     {
         var allCallees = _dependencyRelations.Select(d => d.Callee).Distinct().ToList();
 
-        foreach (var callee in allCallees)
-        {
-            _servicesLookUp.First(s => s.Name == callee).IsLeaf = false;
-        }
+        foreach (var callee in allCallees) _servicesLookUp.First(s => s.Name == callee).IsLeaf = false;
     }
 
     public IList<ServiceModel> GetServices()
