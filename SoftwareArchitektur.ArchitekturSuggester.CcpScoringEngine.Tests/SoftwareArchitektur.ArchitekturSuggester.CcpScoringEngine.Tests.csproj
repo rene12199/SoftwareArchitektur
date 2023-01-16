@@ -19,6 +19,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine\SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.csproj" />
+      <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester\SoftwareArchitektur.ArchitekturSuggester.TestUtility\SoftwareArchitektur.ArchitekturSuggester.TestUtility.csproj" />
       <ProjectReference Include="..\SoftwareArchitektur.Utility\SoftwareArchitektur.Utility.csproj" />
     </ItemGroup>
 

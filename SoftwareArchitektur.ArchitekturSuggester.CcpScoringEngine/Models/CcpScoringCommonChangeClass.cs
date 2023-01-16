@@ -15,10 +15,10 @@ public class CcpScoringCommonChangeClass
         NumberOfChanges += numberOfChanges;
     }
 
-    public CcpScoringCommonChangeClass(ServiceModel serviceModel1, ServiceModel serviceModel2, long numberOfChanges)
+    public CcpScoringCommonChangeClass(ServiceModel ownPackage, ServiceModel differentPackage, long numberOfChanges)
     {
-        ThisPackage = serviceModel2.InPackage;
-        OtherPackage = serviceModel1.InPackage;
+        ThisPackage = ownPackage.InPackage;
+        OtherPackage = differentPackage.InPackage;
         NumberOfChanges = numberOfChanges;
     }
 
