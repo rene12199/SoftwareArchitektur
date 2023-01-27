@@ -5,16 +5,32 @@ namespace SoftwareArchitektur.ArchitekturSuggester.GroupingEngine.Model;
 
 public class GroupingCommonChangeModel
 {
-    public string NameOfCurrentService { get; private set; } = null!;
-    
-    public string OtherService { get; private set; } = null!;
-    
-    public long NumberOfChanges { get; set; }
+    public string ThisPackage { get; private set; }
 
-    public GroupingCommonChangeModel(CommonChangeRelationModel model)
+    public string OtherPackage { get; private set; }
+
+    public long NumberOfChanges { get; private set; }
+
+    public void AddChanges(long numberOfChanges)
     {
-        NameOfCurrentService = model.NameOfCurrentService;
-        NameOfCurrentService = model.NameOfOtherService;
-        NumberOfChanges = model.NumberOfChanges;
+        NumberOfChanges += numberOfChanges;
+    }
+
+    public GroupingCommonChangeModel(ServiceModel ownPackage, ServiceModel? differentPackage, long numberOfChanges)
+    {
+        ThisPackage = ownPackage.InPackage;
+        OtherPackage = differentPackage != null ? differentPackage.InPackage : string.Empty;
+        NumberOfChanges = numberOfChanges;
+    }
+
+
+    public bool Equals(GroupingCommonChangeModel? other)
+    {
+        return other != null && ThisPackage.Equals(other.ThisPackage) && OtherPackage.Equals(other.OtherPackage);
+    }
+
+    public bool Equals(string ownPackage, string otherPackage)
+    {
+        return ThisPackage.Equals(ownPackage) && OtherPackage.Equals(otherPackage);
     }
 }

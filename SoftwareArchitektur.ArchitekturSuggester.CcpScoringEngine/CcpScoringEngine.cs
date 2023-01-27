@@ -36,7 +36,6 @@ public class CcpScoringEngine : ICcpScoringEngine
 
     public IList<PackageModel> DistributeRemainingServices(IList<ServiceModel> remainingServices)
     {
-        //todo implement Batching
         if (_packageModels == null || _packageModels.Count == 0)
         {
             throw new ApplicationException("No PackageModel List set");
@@ -58,14 +57,11 @@ public class CcpScoringEngine : ICcpScoringEngine
         int counter = 0;
         while (remainingServicesTuple.Count > 0)
         {
-            if (counter == _batchSize)
-            {
-                counter = 0;
-                await CalculateChangesByPackageAsync(remainingServicesTuple.Slice(iterator,iterator+_batchSize));
-            }
-            counter++;
-
+            //todo implement future Batching
+            counter =  await CalculateNextBatch(remainingServicesTuple, iterator,  counter);
            
+            counter++;
+            
             Console.WriteLine($"Checking Common Changes for Service {remainingServicesTuple[iterator].Item1.Name}");
             if (CheckIfServiceHasChanges(remainingServicesTuple, iterator))
             {
@@ -78,8 +74,6 @@ public class CcpScoringEngine : ICcpScoringEngine
 
             iterator = RegisterServiceInBestPackage(remainingServicesTuple, bestPackage, iterator);
 
-           
-
             if (iterator >= remainingServicesTuple.Count)
             {
                 await CalculateChangesByPackageAsync(remainingServicesTuple);
@@ -87,6 +81,18 @@ public class CcpScoringEngine : ICcpScoringEngine
                 if (CheckIfLastRunChangedRemainingServices(remainingServicesTuple)) break;
             }
         }
+    }
+
+    private async Task<int> CalculateNextBatch(List<Tuple<ServiceModel, List<CcpScoringCommonChangeClass>>> remainingServicesTuple, int iterator, int counter)
+    {
+        if (counter == _batchSize)
+        {
+            counter = 0;
+            await CalculateChangesByPackageAsync(remainingServicesTuple.Slice(iterator, iterator + _batchSize));
+            return 0;
+        }
+
+        return counter;
     }
 
     private bool CheckIfLastRunChangedRemainingServices(List<Tuple<ServiceModel, List<CcpScoringCommonChangeClass>>> remainingServicesTuple)
