@@ -37,4 +37,13 @@
       </None>
     </ItemGroup>
 
+    <ItemGroup>
+      <Compile Update="SoftwareArchitektur.ArchitekturSuggester.GroupingEngineTests\Usings.cs">
+        <Link>SoftwareArchitektur.ArchitekturSuggester.GroupingEngine\Usings.cs</Link>
+      </Compile>
+      <Compile Update="SoftwareArchitektur.ArchitekturSuggester.GroupingEngineTests\UnitTest1.cs">
+        <Link>SoftwareArchitektur.ArchitekturSuggester.GroupingEngine\UnitTest1.cs</Link>
+      </Compile>
+    </ItemGroup>
+
 </Project>
