@@ -6,4 +6,8 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\..\SoftwareArchitektur.ArchitekturSuggester.Utility\SoftwareArchitektur.ArchitekturSuggester.Utility.csproj" />
+    </ItemGroup>
+
 </Project>

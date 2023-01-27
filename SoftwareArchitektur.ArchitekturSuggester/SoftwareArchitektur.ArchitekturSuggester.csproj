@@ -1,49 +1,54 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
+        <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    </PropertyGroup>
+    <PropertyGroup>
         <OutputType>Exe</OutputType>
         <TargetFramework>net6.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <LangVersion>10</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="Autofac" Version="6.5.0" />
-      <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
-      <PackageReference Include="AutoMapper" Version="12.0.0" />
-      <PackageReference Include="MNCD" Version="1.1.0" />
-      <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+        <PackageReference Include="Autofac" Version="6.5.0" />
+        <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="8.0.0" />
+        <PackageReference Include="AutoMapper" Version="12.0.0" />
+        <PackageReference Include="MNCD" Version="1.1.0" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
+        <PackageReference Include="NUnit" Version="3.13.3" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine\SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.csproj" />
-      <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.CircularDependencyChecker\SoftwareArchitektur.ArchitekturSuggester.CircularDependencyChecker.csproj" />
-      <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.Utility\SoftwareArchitektur.ArchitekturSuggester.Utility.csproj" />
+        <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine\SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.csproj" />
+        <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.CircularDependencyChecker\SoftwareArchitektur.ArchitekturSuggester.CircularDependencyChecker.csproj" />
+        <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.Utility\SoftwareArchitektur.ArchitekturSuggester.Utility.csproj" />
     </ItemGroup>
 
     <ItemGroup>
-      <None Update="FullRelationData.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Data\DependencyRelation.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Data\ChangeRelationData.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="Data\FullServiceData.json">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
+        <None Update="FullRelationData.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\DependencyRelation.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\ChangeRelationData.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Update="Data\FullServiceData.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="SoftwareArchitektur.ArchitekturSuggester.GroupingEngineTests\Usings.cs">
-        <Link>SoftwareArchitektur.ArchitekturSuggester.GroupingEngine\Usings.cs</Link>
-      </Compile>
-      <Compile Update="SoftwareArchitektur.ArchitekturSuggester.GroupingEngineTests\UnitTest1.cs">
-        <Link>SoftwareArchitektur.ArchitekturSuggester.GroupingEngine\UnitTest1.cs</Link>
-      </Compile>
+        <Compile Update="SoftwareArchitektur.ArchitekturSuggester.GroupingEngineTests\Usings.cs">
+            <Link>SoftwareArchitektur.ArchitekturSuggester.GroupingEngine\Usings.cs</Link>
+        </Compile>
+        <Compile Update="SoftwareArchitektur.ArchitekturSuggester.GroupingEngineTests\UnitTest1.cs">
+            <Link>SoftwareArchitektur.ArchitekturSuggester.GroupingEngine\UnitTest1.cs</Link>
+        </Compile>
     </ItemGroup>
 
 </Project>
