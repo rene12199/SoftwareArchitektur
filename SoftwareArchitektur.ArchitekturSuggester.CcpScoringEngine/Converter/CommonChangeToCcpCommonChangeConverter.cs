@@ -28,15 +28,16 @@ public class CommonChangeToCcpCommonChangeConverter
         {
             if (CcpCommonChangeExists(commonChange, commonCcpChangeList))
             {
-                var existingCommonChange = commonCcpChangeList.Single(cc => GetServiceFromLookUp(commonChange.NameOfOtherService).InPackage == cc.OtherPackage);
+                var existingCommonChange = commonCcpChangeList.Single(cc => commonChange.OtherService.InPackage == cc.OtherPackage);
 
                 existingCommonChange.AddChanges(commonChange.NumberOfChanges);
             }
             else
             {
+               
                 var commonCcpChange = new CcpScoringCommonChangeClass(
-                    GetServiceFromLookUp(commonChange.NameOfCurrentService),
-                    GetServiceFromLookUp(commonChange.NameOfOtherService),
+                    commonChange.CurrentService,
+                    commonChange.OtherService,
                     commonChange.NumberOfChanges);
                 commonCcpChangeList.Add(commonCcpChange);
             }
@@ -46,7 +47,7 @@ public class CommonChangeToCcpCommonChangeConverter
     private bool CcpCommonChangeExists(CommonChangeRelationModel commonChange, IList<CcpScoringCommonChangeClass> commonCcpChangeList)
     {
         return commonCcpChangeList.Any(cc =>
-            cc.Equals(GetServiceFromLookUp(commonChange.NameOfCurrentService).InPackage, GetServiceFromLookUp(commonChange.NameOfOtherService).InPackage));
+            cc.Equals(commonChange.CurrentService.InPackage, commonChange.OtherService.InPackage));
     }
 
     private ServiceModel GetServiceFromLookUp(string commonChangeNameOfCurrentService)

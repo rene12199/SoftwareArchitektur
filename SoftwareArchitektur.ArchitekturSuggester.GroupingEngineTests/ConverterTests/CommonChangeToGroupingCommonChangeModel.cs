@@ -1,5 +1,6 @@
 ﻿using Moq;
 using SoftwareArchitektur.ArchitekturSuggester.GroupingEngine.Converter;
+using SoftwareArchitektur.ArchitekturSuggester.TestUtility;
 using SoftwareArchitektur.Utility.Interface;
 using SoftwareArchitektur.Utility.Models;
 
@@ -19,44 +20,24 @@ public class CommonChangeToGroupingCommonChangeModel
     [MaxTime(2000)]
     public void CommonChangeToCcpCommonChangeConverterTests_2PackagesWith3Services_Returns1CcpScoreWithValue2()
     {
+        var serviceFactory = new TestServiceModelFactory();
+        var s1 = serviceFactory.CreateServiceModel("S1");
+        var s2 = serviceFactory.CreateServiceModel("S2");
+        s2.InPackage = "P2";
+        var s3 = serviceFactory.CreateServiceModel("S3");
+        s3.InPackage = "P2";
+
         var commonChange = new List<CommonChangeRelationModel>
         {
-            new()
-            {
-                NameOfCurrentService = "S1",
-                NameOfOtherService = "S2",
-                NumberOfChanges = 1
-            },
-            new()
-            {
-                NameOfCurrentService = "S1",
-                NameOfOtherService = "S3",
-                NumberOfChanges = 1
-            }
+            new(s1, s2, 1),
+            new(s1, s3, 1)
         };
 
-        var serviceModels = new List<ServiceModel>();
-        var s1 = new ServiceModel("S1")
-        {
-            InPackage = "P1",
-            ChangedWith =
-            {
-                new CommonChangeRelationModel
-                {
-                    NameOfCurrentService = "S1",
-                    NameOfOtherService = "S2",
-                    NumberOfChanges = 1
-                },
-                new CommonChangeRelationModel
-                {
-                    NameOfCurrentService = "S1",
-                    NameOfOtherService = "S3",
-                    NumberOfChanges = 1
-                }
-            }
-        };
 
-        serviceModels.Add(s1);
+        s1.InPackage = "P1";
+        s1.ChangedWith.Add(new(s1, s2, 1));
+        s1.ChangedWith.Add(new(s1, s3, 1));
+
 
         var packages = new List<PackageModel>();
 
@@ -65,19 +46,11 @@ public class CommonChangeToGroupingCommonChangeModel
         packages.Add(package1);
 
         var package2 = new PackageModel("P2");
-
-        for (int i = 2; i < 4; i++)
-        {
-            var newService = new ServiceModel($"S{i}")
-            {
-                InPackage = "P2"
-            };
-            serviceModels.Add(newService);
-            package2.AddService(newService);
-        }
+        package2.AddService(s2);
+        package2.AddService(s3);
 
         //Arrange
-        _dataProvider.Setup(s => s.GetServices()).Returns(serviceModels);
+        _dataProvider.Setup(s => s.GetServices()).Returns(serviceFactory.ServiceModels);
 
         var converter = new GroupingEngine.Converter.CommonChangeToGroupingCommonChangeModel(_dataProvider.Object);
         //Act
@@ -94,44 +67,22 @@ public class CommonChangeToGroupingCommonChangeModel
     public void CommonChangeToCcpCommonChangeConverterTests_3PackagesWith3Services_Returns1CcpScoreWithValue3()
     {
         //Arrange
+        var serviceFactory = new TestServiceModelFactory();
+        var s1 = serviceFactory.CreateServiceModel("S1");
+        var s2 = serviceFactory.CreateServiceModel("S2");
+        s2.InPackage = "P2";
+        var s3 = serviceFactory.CreateServiceModel("S3");
+        s3.InPackage = "P3";
         var commonChange = new List<CommonChangeRelationModel>
         {
-            new()
-            {
-                NameOfCurrentService = "S1",
-                NameOfOtherService = "S2",
-                NumberOfChanges = 1
-            },
-            new()
-            {
-                NameOfCurrentService = "S1",
-                NameOfOtherService = "S3",
-                NumberOfChanges = 1
-            }
+            new(s1, s2, 1),
+            new(s1, s3, 1)
         };
 
-        var serviceModels = new List<ServiceModel>();
-        var s1 = new ServiceModel("S1")
-        {
-            InPackage = "P1",
-            ChangedWith =
-            {
-                new CommonChangeRelationModel
-                {
-                    NameOfCurrentService = "S1",
-                    NameOfOtherService = "S2",
-                    NumberOfChanges = 1
-                },
-                new CommonChangeRelationModel
-                {
-                    NameOfCurrentService = "S1",
-                    NameOfOtherService = "S3",
-                    NumberOfChanges = 1
-                }
-            }
-        };
 
-        serviceModels.Add(s1);
+        s1.InPackage = "P1";
+        s1.ChangedWith.Add(new(s1, s2, 1));
+        s1.ChangedWith.Add(new(s1, s3, 1));
 
         var packages = new List<PackageModel>();
 
@@ -139,21 +90,14 @@ public class CommonChangeToGroupingCommonChangeModel
         package1.AddService(s1);
         packages.Add(package1);
 
-
-        for (int i = 2; i < 4; i++)
-        {
-            var package = new PackageModel($"P{i}");
-            var newService = new ServiceModel($"S{i}")
-            {
-                InPackage = $"P{i}"
-            };
-            serviceModels.Add(newService);
-            package.AddService(newService);
-            packages.Add(package);
-        }
+        var package2 = new PackageModel("P2");
+        package2.AddService(s2);
+        
+        var package3 = new PackageModel("P3");
+        package3.AddService(s3);
 
 
-        _dataProvider.Setup(s => s.GetServices()).Returns(serviceModels);
+        _dataProvider.Setup(s => s.GetServices()).Returns(serviceFactory.ServiceModels);
 
         var converter = new GroupingEngine.Converter.CommonChangeToGroupingCommonChangeModel(_dataProvider.Object);
         //Act
@@ -164,5 +108,4 @@ public class CommonChangeToGroupingCommonChangeModel
         Assert.That(result.Count, Is.EqualTo(2));
         Assert.That(result.First().NumberOfChanges, Is.EqualTo(1));
     }
-    
 }

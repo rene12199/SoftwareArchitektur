@@ -1,4 +1,5 @@
 ﻿using Moq;
+using SoftwareArchitektur.ArchitekturSuggester.TestUtility;
 using SoftwareArchitektur.Utility.Interface;
 using SoftwareArchitektur.Utility.Models;
 
@@ -19,22 +20,14 @@ public class CircularDependencyCheckerTests
     public void CircularDependencyCheckerTests_Only2Dependencies_ReturnsPackageWith2Services()
     {
         //Arrange
-        var serviceModels = new List<ServiceModel>();
-        serviceModels.Add(new ServiceModel("S1")
-        {
-            DependsOn =
-            {
-                new DependencyRelationModel
-                {
-                    Caller = "S1",
-                    Callee = "S2"
-                }
-            }
-        });
+        var serviceFactory = new TestServiceModelFactory();
+        var s1 = serviceFactory.CreateServiceModel("S1");
+        var s2 = serviceFactory.CreateServiceModel("S2");
 
-        _dataProvider.Setup(s => s.GetServices()).Returns(serviceModels);
+        s1.DependsOn.Add(new(s1, s2, 1));
 
-        serviceModels.Add(new ServiceModel("S2"));
+        _dataProvider.Setup(s => s.GetServices()).Returns(serviceFactory.ServiceModels);
+
         var checker = new CircularDependencyChecker.CircularDependencyChecker(_dataProvider.Object);
         //Assert
         var result = checker.CreatePackages();
@@ -49,43 +42,17 @@ public class CircularDependencyCheckerTests
     public void CircularDependencyCheckerTests_Only3DependenciesWithCircularDependency_Returns4PackageWith1Services()
     {
         //Arrange
-        var serviceModels = new List<ServiceModel>();
-        serviceModels.Add(new ServiceModel("S1")
-        {
-            DependsOn =
-            {
-                new DependencyRelationModel
-                {
-                    Caller = "S1",
-                    Callee = "S2",
-                    NumberOfCalls = 10
-                }
-            }
-        });
-        serviceModels.Add(new ServiceModel("S2")
-        {
-            DependsOn =
-            {
-                new DependencyRelationModel
-                {
-                    Caller = "S2",
-                    Callee = "S3"
-                }
-            }
-        });
-        serviceModels.Add(new ServiceModel("S3")
-        {
-            DependsOn =
-            {
-                new DependencyRelationModel
-                {
-                    Caller = "S3",
-                    Callee = "S1"
-                }
-            }
-        });
+        var serviceFactory = new TestServiceModelFactory();
+        var s1 = serviceFactory.CreateServiceModel("S1");
+        var s2 = serviceFactory.CreateServiceModel("S2");
+        var s3 = serviceFactory.CreateServiceModel("S3");
+        s1.DependsOn.Add(new DependencyRelationModel(s1, s2, 10));
 
-        _dataProvider.Setup(s => s.GetServices()).Returns(serviceModels);
+
+        s2.DependsOn.Add(new DependencyRelationModel(s2, s3, 1));
+        s3.DependsOn.Add(new DependencyRelationModel(s3, s1, 1));
+
+        _dataProvider.Setup(s => s.GetServices()).Returns(serviceFactory.ServiceModels);
 
 
         var checker = new CircularDependencyChecker.CircularDependencyChecker(_dataProvider.Object);
@@ -104,35 +71,19 @@ public class CircularDependencyCheckerTests
     public void CircularDependencyCheckerTests_Only4DependenciesWithNoCircularDependency_Returns2PackageWith2Services()
     {
         //Arrange
-        var serviceModels = new List<ServiceModel>();
-        serviceModels.Add(new ServiceModel("S1")
-        {
-            DependsOn =
-            {
-                new DependencyRelationModel
-                {
-                    Caller = "S1",
-                    Callee = "S2",
-                    NumberOfCalls = 10
-                }
-            }
-        });
-        serviceModels.Add(new ServiceModel("S2"));
+        var serviceFactory = new TestServiceModelFactory();
+        var s1 = serviceFactory.CreateServiceModel("S1");
+        var s2 = serviceFactory.CreateServiceModel("S2");
+        var s3 = serviceFactory.CreateServiceModel("S3");
+        var s4 = serviceFactory.CreateServiceModel("S4");
+        s1.DependsOn.Add(new DependencyRelationModel(s1, s2, 10));
 
-        serviceModels.Add(new ServiceModel("S3")
-        {
-            DependsOn =
-            {
-                new DependencyRelationModel
-                {
-                    Caller = "S3",
-                    Callee = "S4"
-                }
-            }
-        });
+       
 
-        serviceModels.Add(new ServiceModel("S4"));
-        _dataProvider.Setup(s => s.GetServices()).Returns(serviceModels);
+       s3.DependsOn.Add(new DependencyRelationModel(s3,s4,1));
+
+     
+        _dataProvider.Setup(s => s.GetServices()).Returns(serviceFactory.ServiceModels);
 
 
         var checker = new CircularDependencyChecker.CircularDependencyChecker(_dataProvider.Object);
@@ -148,48 +99,21 @@ public class CircularDependencyCheckerTests
     public void CircularDependencyCheckerTests_Only4DependenciesWithCircularDependency_Returns2Packages()
     {
         //Arrange
-        var serviceModels = new List<ServiceModel>();
-        serviceModels.Add(new ServiceModel("S1")
-        {
-            DependsOn =
-            {
-                new DependencyRelationModel
-                {
-                    Caller = "S1",
-                    Callee = "S2",
-                    NumberOfCalls = 10
-                }
-            }
-        });
-
-        serviceModels.Add(new ServiceModel("S2")
-        {
-            DependsOn =
-            {
-                new DependencyRelationModel
-                {
-                    Caller = "S2",
-                    Callee = "S3",
-                    NumberOfCalls = 10
-                }
-            }
-        });
+        var serviceFactory = new TestServiceModelFactory();
+        var s1 = serviceFactory.CreateServiceModel("S1");
+        var s2 = serviceFactory.CreateServiceModel("S2");
+        var s3 = serviceFactory.CreateServiceModel("S3");
+        var s4 = serviceFactory.CreateServiceModel("S4");
+        
+        s1.DependsOn.Add(new DependencyRelationModel(s1, s2, 10));
+        s2.DependsOn.Add(new DependencyRelationModel(s2, s3, 10));
+        s3.DependsOn.Add(new DependencyRelationModel(s3, s1,1));
+        s4.DependsOn.Add(new DependencyRelationModel(s3, s1,1));
 
 
-        serviceModels.Add(new ServiceModel("S3")
-        {
-            DependsOn =
-            {
-                new DependencyRelationModel
-                {
-                    Caller = "S3",
-                    Callee = "S1"
-                }
-            }
-        });
 
-        serviceModels.Add(new ServiceModel("S4"));
-        _dataProvider.Setup(s => s.GetServices()).Returns(serviceModels);
+        
+        _dataProvider.Setup(s => s.GetServices()).Returns(serviceFactory.ServiceModels);
 
         var checker = new CircularDependencyChecker.CircularDependencyChecker(_dataProvider.Object);
         //Assert
@@ -204,22 +128,13 @@ public class CircularDependencyCheckerTests
     public void CircularDependencyCheckerTests_DependencyToANonRegisteredService_ReturnOnePackage()
     {
         //Arrange
-        var serviceModels = new List<ServiceModel>();
-        serviceModels.Add(new ServiceModel("S1")
-        {
-            DependsOn =
-            {
-                new DependencyRelationModel
-                {
-                    Caller = "S1",
-                    Callee = "S2",
-                    NumberOfCalls = 10
-                }
-            }
-        });
+        var serviceFactory = new TestServiceModelFactory();
+        var s1 = serviceFactory.CreateServiceModel("S1");
+        var s2 =new ServiceModel("Unknown");
 
-
-        _dataProvider.Setup(s => s.GetServices()).Returns(serviceModels);
+        s1.DependsOn.Add(new DependencyRelationModel(s1, s2, 10));
+        
+        _dataProvider.Setup(s => s.GetServices()).Returns(serviceFactory.ServiceModels);
 
         var checker = new CircularDependencyChecker.CircularDependencyChecker(_dataProvider.Object);
         //Assert
@@ -234,84 +149,28 @@ public class CircularDependencyCheckerTests
     public void CircularDependencyCheckerTests_2CircularDependenciesInATree_Returns1Package()
     {
         //Arrange
-        var serviceModels = new List<ServiceModel>();
-        serviceModels.Add(new ServiceModel("S1")
-        {
-            DependsOn =
-            {
-                new DependencyRelationModel
-                {
-                    Caller = "S1",
-                    Callee = "S2",
-                    NumberOfCalls = 20
-                }
-            }
-        });
-
-        serviceModels.Add(new ServiceModel("S2")
-        {
-            DependsOn =
-            {
-                new DependencyRelationModel
-                {
-                    Caller = "S2",
-                    Callee = "S3",
-                    NumberOfCalls = 10
-                },
-                new DependencyRelationModel
-                {
-                    Caller = "S2",
-                    Callee = "S4",
-                    NumberOfCalls = 10
-                }
-            }
-        });
-
-        serviceModels.Add(new ServiceModel("S3")
-        {
-            DependsOn =
-            {
-                new DependencyRelationModel
-                {
-                    Caller = "S3",
-                    Callee = "S1",
-                    NumberOfCalls = 20
-                }
-            }
-        });
-
-        serviceModels.Add(new ServiceModel("S4")
-        {
-            DependsOn =
-            {
-                new DependencyRelationModel
-                {
-                    Caller = "S4",
-                    Callee = "S5",
-                    NumberOfCalls = 10
-                }
-            }
-        });
-        serviceModels.Add(new ServiceModel("S5")
-        {
-            DependsOn =
-            {
-                new DependencyRelationModel
-                {
-                    Caller = "S5",
-                    Callee = "S1",
-                    NumberOfCalls = 10
-                }
-            }
-        });
-        _dataProvider.Setup(s => s.GetServices()).Returns(serviceModels);
+        var serviceFactory = new TestServiceModelFactory();
+        var s1 = serviceFactory.CreateServiceModel("S1");
+        var s2 = serviceFactory.CreateServiceModel("S2");
+        var s3 = serviceFactory.CreateServiceModel("S3");
+        var s4 = serviceFactory.CreateServiceModel("S4");
+        var s5 = serviceFactory.CreateServiceModel("S5");
+        
+        s1.DependsOn.Add(new DependencyRelationModel(s1, s2, 222));
+        s2.DependsOn.Add(new DependencyRelationModel(s2, s3, 20));
+        s2.DependsOn.Add(new DependencyRelationModel(s2, s4, 20));
+        s3.DependsOn.Add(new DependencyRelationModel(s3, s1, 20));
+        s4.DependsOn.Add(new DependencyRelationModel(s4, s5, 20));
+        s5.DependsOn.Add(new DependencyRelationModel(s5 ,s1, 20));
+        
+        _dataProvider.Setup(s => s.GetServices()).Returns(serviceFactory.ServiceModels);
 
 
         var checker = new CircularDependencyChecker.CircularDependencyChecker(_dataProvider.Object);
-        //Assert
+        //act
         var result = checker.CreatePackages();
 
-        //Act
+        //Asster
         Assert.That(result.Count, Is.EqualTo(1));
     }
 
@@ -320,86 +179,25 @@ public class CircularDependencyCheckerTests
     public void CircularDependencyCheckerTests_2CircularDependenciesInATree()
     {
         //Arrange
-        var serviceModels = new List<ServiceModel>();
-        serviceModels.Add(new ServiceModel("S1")
-        {
-            DependsOn =
-            {
-                new DependencyRelationModel
-                {
-                    Caller = "S1",
-                    Callee = "S2",
-                    NumberOfCalls = 20
-                }
-            }
-        });
+        var serviceFactory = new TestServiceModelFactory();
+        var s1 = serviceFactory.CreateServiceModel("S1");
+        var s2 = serviceFactory.CreateServiceModel("S2");
+        var s3 = serviceFactory.CreateServiceModel("S3");
+        var s4 = serviceFactory.CreateServiceModel("S4");
+        var s5 = serviceFactory.CreateServiceModel("S5");
+        var s6 = serviceFactory.CreateServiceModel("S6");
+        
+        s1.DependsOn.Add(new DependencyRelationModel(s1, s2, 10));
+        s2.DependsOn.Add(new DependencyRelationModel(s2, s3, 110));
+        s2.DependsOn.Add(new DependencyRelationModel(s2, s4, 110));
+        s3.DependsOn.Add(new DependencyRelationModel(s3, s4, 110));
+        s4.DependsOn.Add(new DependencyRelationModel(s4, s5, 110));
+        s5.DependsOn.Add(new DependencyRelationModel(s5, s1, 110));
+        s5.DependsOn.Add(new DependencyRelationModel(s5, s6, 110));
+        
 
-        serviceModels.Add(new ServiceModel("S2")
-        {
-            DependsOn =
-            {
-                new DependencyRelationModel
-                {
-                    Caller = "S2",
-                    Callee = "S3",
-                    NumberOfCalls = 10
-                },
-                new DependencyRelationModel
-                {
-                    Caller = "S2",
-                    Callee = "S4",
-                    NumberOfCalls = 10
-                }
-            }
-        });
-
-        serviceModels.Add(new ServiceModel("S3")
-        {
-            DependsOn =
-            {
-                new DependencyRelationModel
-                {
-                    Caller = "S3",
-                    Callee = "S1",
-                    NumberOfCalls = 20
-                }
-            }
-        });
-
-        serviceModels.Add(new ServiceModel("S4")
-        {
-            DependsOn =
-            {
-                new DependencyRelationModel
-                {
-                    Caller = "S4",
-                    Callee = "S5",
-                    NumberOfCalls = 10
-                }
-            }
-        });
-        serviceModels.Add(new ServiceModel("S5")
-        {
-            DependsOn =
-            {
-                new DependencyRelationModel
-                {
-                    Caller = "S5",
-                    Callee = "S1",
-                    NumberOfCalls = 10
-                },
-
-                new DependencyRelationModel
-                {
-                    Caller = "S5",
-                    Callee = "S6",
-                    NumberOfCalls = 10
-                }
-            }
-        });
-
-        serviceModels.Add(new ServiceModel("S6"));
-        _dataProvider.Setup(s => s.GetServices()).Returns(serviceModels);
+        
+        _dataProvider.Setup(s => s.GetServices()).Returns(serviceFactory.ServiceModels);
 
 
         var checker = new CircularDependencyChecker.CircularDependencyChecker(_dataProvider.Object);

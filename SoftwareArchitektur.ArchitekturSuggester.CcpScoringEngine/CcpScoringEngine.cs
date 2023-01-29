@@ -59,9 +59,7 @@ public class CcpScoringEngine : ICcpScoringEngine
         {
             //todo implement future Batching
             counter =  await CalculateNextBatch(remainingServicesTuple, iterator,  counter);
-           
             counter++;
-            
             Console.WriteLine($"Checking Common Changes for Service {remainingServicesTuple[iterator].Item1.Name}");
             if (CheckIfServiceHasChanges(remainingServicesTuple, iterator))
             {
@@ -73,13 +71,14 @@ public class CcpScoringEngine : ICcpScoringEngine
             bestPackage = GetBestPackage(remainingServicesTuple, iterator);
 
             iterator = RegisterServiceInBestPackage(remainingServicesTuple, bestPackage, iterator);
-
-            if (iterator >= remainingServicesTuple.Count)
+            
+             if (iterator >= remainingServicesTuple.Count)
             {
                 await CalculateChangesByPackageAsync(remainingServicesTuple);
                 iterator = 0;
                 if (CheckIfLastRunChangedRemainingServices(remainingServicesTuple)) break;
             }
+            
         }
     }
 
@@ -87,7 +86,6 @@ public class CcpScoringEngine : ICcpScoringEngine
     {
         if (counter == _batchSize)
         {
-            counter = 0;
             await CalculateChangesByPackageAsync(remainingServicesTuple.Slice(iterator, iterator + _batchSize));
             return 0;
         }

@@ -28,15 +28,15 @@ public class DependencyModelToGroupingDependencyModel
         {
             if (GroupingDependencyExists(dependencyRelation, groupingDependencyList))
             {
-                var existingRelationDependency = groupingDependencyList.Single(cc => GetServiceFromLookUp(dependencyRelation.Callee).InPackage == cc.Callee);
+                var existingRelationDependency = groupingDependencyList.Single(cc =>dependencyRelation.CalleeService.InPackage == cc.Callee);
 
                 existingRelationDependency.AddCalls(dependencyRelation.NumberOfCalls);
             }
             else
             {
                 var groupingDependencyRelation = new GroupingDependendencyModel(
-                    GetServiceFromLookUp(dependencyRelation.Caller),
-                    GetServiceFromLookUp(dependencyRelation.Callee),
+                    dependencyRelation.CallerService,
+                   dependencyRelation.CalleeService,
                     dependencyRelation.NumberOfCalls);
                 groupingDependencyList.Add(groupingDependencyRelation);
             }
@@ -46,7 +46,7 @@ public class DependencyModelToGroupingDependencyModel
     private bool GroupingDependencyExists(DependencyRelationModel commonChange, IList<GroupingDependendencyModel> commonCcpChangeList)
     {
         return commonCcpChangeList.Any(cc =>
-            cc.Equals(GetServiceFromLookUp(commonChange.Caller).InPackage, GetServiceFromLookUp(commonChange.Callee).InPackage));
+            cc.Equals(commonChange.CallerService.InPackage, commonChange.CalleeService.InPackage));
     }
 
     private ServiceModel GetServiceFromLookUp(string commonChangeNameOfCurrentService)

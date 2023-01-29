@@ -26,6 +26,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.TestUtility\SoftwareArchitektur.ArchitekturSuggester.TestUtility.csproj" />
       <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester\SoftwareArchitektur.ArchitekturSuggester.csproj" />
     </ItemGroup>
 

@@ -2,9 +2,24 @@
 
 public class CommonChangeRelationModel
 {
-    public string NameOfOtherService = string.Empty;
+    public ServiceModel OtherService { get; }
 
-    public string NameOfCurrentService = string.Empty;
+    public ServiceModel CurrentService { get; }
 
     public long NumberOfChanges = 0;
+
+    public string NameOfCurrentService => CurrentService.Name;
+    
+    public string NameOfOtherService => OtherService.Name;
+    
+    
+    public CommonChangeRelationModel(ServiceModel currentService, ServiceModel otherService, long numberOfChanges)
+    {
+        OtherService = otherService;
+        CurrentService = currentService;
+        NumberOfChanges = numberOfChanges;
+    }
+    
+    
+
 }

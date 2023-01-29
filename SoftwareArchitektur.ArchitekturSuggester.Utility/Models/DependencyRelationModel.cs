@@ -2,7 +2,20 @@
 
 public class DependencyRelationModel
 {
-    public string Caller = string.Empty;
-    public string Callee = string.Empty;
-    public long NumberOfCalls = 0;
+    public DependencyRelationModel(ServiceModel callerService, ServiceModel calleeService, long numberOfCalls)
+    {
+        CallerService = callerService;
+        CalleeService = calleeService;
+        NumberOfCalls = numberOfCalls;
+    }
+
+    public ServiceModel CallerService { get; }
+
+    public string Caller => CallerService.Name;
+    
+    public ServiceModel CalleeService { get; }
+    
+    public string Callee => CalleeService.Name;
+    
+    public long NumberOfCalls { get; }
 }

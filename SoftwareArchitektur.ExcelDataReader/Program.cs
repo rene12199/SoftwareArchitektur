@@ -32,13 +32,7 @@ void CreateChangeRelation(IWorkbook workbook4)
         if (name == "Service1") continue;
 
         var numberOfChanges = ((XSSFRow)changesEnumerator.Current!).Cells[2].NumericCellValue;
-        var change = new CommonChangeRelationModel
-        {
-            NameOfCurrentService = name,
-            NameOfOtherService = ((XSSFRow)changesEnumerator.Current).Cells[1].ToString()!,
-            NumberOfChanges = (long)numberOfChanges
-        };
-
+        var change = new CommonChangeRelationModel(new ServiceModel(name),new ServiceModel(((XSSFRow)changesEnumerator.Current).Cells[1].ToString()),(long)numberOfChanges);
         DataHolder.ChangedWithList.Add(change);
         DataHolder.ServiceList.First(lm => lm.Name == name).ChangedWith.Add(change);
     }
@@ -56,12 +50,7 @@ void CreateDependencyRelation(IWorkbook workbook3)
         if (name == "Caller") continue;
 
         var numberOfCalls = ((XSSFRow)dependencyEnumerator.Current!).Cells[2].NumericCellValue;
-        var dependency = new DependencyRelationModel
-        {
-            Caller = name,
-            Callee = ((XSSFRow)dependencyEnumerator.Current).Cells[1].ToString()!,
-            NumberOfCalls = (long)numberOfCalls
-        };
+        var dependency = new DependencyRelationModel(new ServiceModel(name), new ServiceModel(((XSSFRow)dependencyEnumerator.Current).Cells[1].ToString()), (long)numberOfCalls);
         DataHolder.DependencyList.Add(dependency);
         DataHolder.ServiceList.First(lm => lm.Name == name).DependsOn.Add(dependency);
     }

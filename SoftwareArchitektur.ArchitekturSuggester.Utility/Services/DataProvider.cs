@@ -48,9 +48,9 @@ public class DataProvider : IDataProvider
 
     private void CheckIfLeaf()
     {
-        var allCallees = _dependencyRelations.Select(d => d.Callee).Distinct().ToList();
+        var allCallees = _dependencyRelations.Select(d => d.CalleeService).Distinct().ToList();
 
-        foreach (var callee in allCallees) _servicesLookUp.First(s => s.Name == callee).IsLeaf = false;
+        foreach (var callee in allCallees) _servicesLookUp.First(s => s.Name == callee.Name).IsLeaf = false;
     }
 
     public IList<ServiceModel> GetServices()

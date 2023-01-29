@@ -34,33 +34,26 @@ public class CcpScoringEngineTest
     public void CcpScoringEngineTest_2PackagesWithDifferentCallNumber_AddedToPackageWithHigherCallNumber()
     {
         var serviceModelFactory = new TestServiceModelFactory();
+        var s1 = serviceModelFactory.CreateServiceModel("S1");
+        var s2 = serviceModelFactory.CreateServiceModel("S2");
+        var rs1 = serviceModelFactory.CreateServiceModel("RS1");
 
         //Arrange
         var packages = new List<PackageModel>();
         for (int i = 1; i < 3; i++) packages.Add(new PackageModel($"P{i}"));
 
 
-        packages.First().AddService(serviceModelFactory.CreateServiceModel("S1"));
-        packages.Last().AddService(serviceModelFactory.CreateServiceModel("S2"));
+        packages.First().AddService(s1);
+        packages.Last().AddService(s2);
 
         var remainingServices = new List<ServiceModel>();
 
-        remainingServices.Add(serviceModelFactory.CreateServiceModel("RS1", sm =>
+        remainingServices.Add(serviceModelFactory.CreateServiceModel(rs1.Name, sm =>
         {
             sm.ChangedWith.AddRange(new List<CommonChangeRelationModel>
             {
-                new()
-                {
-                    NameOfCurrentService = "RS1",
-                    NameOfOtherService = "S1",
-                    NumberOfChanges = 1
-                },
-                new()
-                {
-                    NameOfCurrentService = "RS1",
-                    NameOfOtherService = "S2",
-                    NumberOfChanges = 2
-                }
+                new(rs1, s1, 1),
+                new(rs1, s2, 2)
             });
             sm.InPackage = "P3";
             return 0;
@@ -87,44 +80,27 @@ public class CcpScoringEngineTest
     {
         //Arrange
         var serviceModelFactory = new TestServiceModelFactory();
+        var s1 = serviceModelFactory.CreateServiceModel("S1");
+        var s2 = serviceModelFactory.CreateServiceModel("S2");
+        var s3 = serviceModelFactory.CreateServiceModel("S4");
+        var rs1 = serviceModelFactory.CreateServiceModel("RS1");
+
         var packages = new List<PackageModel>();
         for (int i = 1; i < 3; i++) packages.Add(new PackageModel($"P{i}"));
 
 
-        packages.First().AddService(serviceModelFactory.CreateServiceModel("S1"));
-        packages.Last().AddService(serviceModelFactory.CreateServiceModel("S2"));
-        packages.Last().AddService(serviceModelFactory.CreateServiceModel("S3"));
+        packages.First().AddService(s1);
+        packages.Last().AddService(s2);
+        packages.Last().AddService(s3);
 
+        s1.InPackage = "P3";
+        s1.ChangedWith.Add(new(rs1, s1, 1));
+        s1.ChangedWith.Add(new(rs1, s2, 2));
+        s1.ChangedWith.Add(new(rs1, s3, 2));
 
         var remainingServices = new List<ServiceModel>();
 
-        remainingServices.Add(serviceModelFactory.CreateServiceModel("RS1", sm =>
-            {
-                sm.InPackage = "P3";
-                sm.ChangedWith.AddRange(new[]
-                {
-                    new()
-                    {
-                        NameOfCurrentService = "RS1",
-                        NameOfOtherService = "S1",
-                        NumberOfChanges = 1
-                    },
-                    new CommonChangeRelationModel
-                    {
-                        NameOfCurrentService = "RS1",
-                        NameOfOtherService = "S2",
-                        NumberOfChanges = 2
-                    },
-                    new CommonChangeRelationModel
-                    {
-                        NameOfCurrentService = "RS1",
-                        NameOfOtherService = "S3",
-                        NumberOfChanges = 2
-                    }
-                });
-                return 0;
-            })
-        );
+        remainingServices.Add(s1);
 
         _dataProvider.Setup(d => d.GetServices()).Returns(serviceModelFactory.ServiceModels);
         var ccpScoringEngine = new CcpScoringEngine(_dataProvider.Object);
@@ -148,52 +124,43 @@ public class CcpScoringEngineTest
     {
         //Arrange
         var serviceModelFactory = new TestServiceModelFactory();
+
         var packages = new List<PackageModel>();
         for (int i = 1; i < 3; i++) packages.Add(new PackageModel($"P{i}"));
-
-
-        packages.First().AddService(serviceModelFactory.CreateServiceModel("S1"));
-
+        var s1 = serviceModelFactory.CreateServiceModel("S1");
+        s1.InPackage = "P1";
+        packages.First().AddService(s1);
+        
         var remainingServices = new List<ServiceModel>();
-
-        remainingServices.Add(serviceModelFactory.CreateServiceModel("RS1", sm =>
-            {
-                sm.ChangedWith.AddRange(new[]
-                {
-                    new CommonChangeRelationModel()
-                    {
-                        NameOfCurrentService = "RS1",
-                        NameOfOtherService = "S1",
-                        NumberOfChanges = 1
-                    }
-                });
-                return 0;
-            })
-        );
-
-        for (int i = 2; i < 4; i++)
+        var rs1 = serviceModelFactory.CreateServiceModel("RS1");
+        var rs2 = serviceModelFactory.CreateServiceModel($"RS2");
+        var rs3 = serviceModelFactory.CreateServiceModel($"RS3");
+    
+        rs1.ChangedWith.AddRange(new[]
         {
-            remainingServices.Add(serviceModelFactory.CreateServiceModel($"RS{i}", sm =>
-                {
-                    sm.ChangedWith.AddRange(new[]
-                    {
-                        new CommonChangeRelationModel()
-                        {
-                            NameOfCurrentService = $"RS{i}",
-                            NameOfOtherService = $"RS{i - 1}",
-                            NumberOfChanges = 1
-                        }
-                    });
-                    return 0;
-                })
-            );
-        }
+            new CommonChangeRelationModel(rs1, s1, 1)
+        });
+        
+        rs2.ChangedWith.AddRange(new[]
+        {
+            new CommonChangeRelationModel(rs2, rs1, 1)
+        });
+        
+        rs3.ChangedWith.AddRange(new[]
+        {
+            new CommonChangeRelationModel(rs3, rs2, 1)
+        });
 
 
+        remainingServices.Add(rs1);
+        remainingServices.Add(rs3);
+        remainingServices.Add(rs2);
         remainingServices.Reverse();
+
         _dataProvider.Setup(d => d.GetServices()).Returns(serviceModelFactory.ServiceModels);
         var ccpScoringEngine = new CcpScoringEngine(_dataProvider.Object);
         ccpScoringEngine.SetPossiblePackages(packages);
+
         //Act 
         var result = ccpScoringEngine.DistributeRemainingServices(remainingServices);
 
@@ -239,47 +206,32 @@ public class CcpScoringEngineTest
     public void CcpScoringEngineTest_ServiceWithOutAnyConnectionAdded_NotAddedToAnything()
     {
         //Arrange
-        var serviceModelFactory = new TestServiceModelFactory();
         var packages = new List<PackageModel>();
         for (int i = 1; i < 2; i++) packages.Add(new PackageModel($"P{i}"));
-
-
-        packages.First().AddService(serviceModelFactory.CreateServiceModel("S1"));
+        
+        var serviceModelFactory = new TestServiceModelFactory();
+        var s1 = serviceModelFactory.CreateServiceModel("S1");
+        packages.First().AddService(s1);
+        
+        var iS = serviceModelFactory.CreateServiceModel("IS");
+        iS.ChangedWith.Add(new(iS, new ServiceModel("Unkown"), 1));
+        
+        var rs1 = serviceModelFactory.CreateServiceModel("RS1");
+        rs1.ChangedWith.Add(new(rs1, s1, 1));
+        
+       
 
         var remainingServices = new List<ServiceModel>();
-
-        remainingServices.Add(serviceModelFactory.CreateServiceModel("IS", sm =>
-        {
-            sm.ChangedWith.AddRange(new[]
-            {
-                new CommonChangeRelationModel()
-                {
-                    NameOfCurrentService = sm.Name,
-                    NameOfOtherService = "Unknown",
-                    NumberOfChanges = 1
-                }
-            });
-            return 0;
-        }));
-
-        for (int i = 2; i < 4; i++)
-        {
-            remainingServices.Add(serviceModelFactory.CreateServiceModel($"RS{i}", sm =>
-                {
-                    sm.ChangedWith.AddRange(new[]
-                    {
-                        new CommonChangeRelationModel()
-                        {
-                            NameOfCurrentService = sm.Name,
-                            NameOfOtherService = "S1",
-                            NumberOfChanges = 1
-                        }
-                    });
-                    return 0;
-                })
-            );
-        }
-
+        var rs2 = serviceModelFactory.CreateServiceModel($"RS2");
+        rs2.ChangedWith.Add(new(rs2, rs1, 1));
+        
+        var rs3 = serviceModelFactory.CreateServiceModel($"RS3");
+        rs3.ChangedWith.Add(new(rs3, rs2, 1));
+        
+        
+        remainingServices.Add(rs1);
+        remainingServices.Add(rs3);
+        remainingServices.Add(rs2);
         remainingServices.Reverse();
         _dataProvider.Setup(d => d.GetServices()).Returns(serviceModelFactory.ServiceModels);
         var ccpScoringEngine = new CcpScoringEngine(_dataProvider.Object);
@@ -290,7 +242,7 @@ public class CcpScoringEngineTest
 
         //Assert
         Assert.That(result.First().PackageName, Is.EqualTo("P1"));
-        Assert.That(result.First().GetServices().Count, Is.EqualTo(3));
+        Assert.That(result.First().GetServices().Count, Is.EqualTo(4));
     }
 
     [Test]
@@ -299,56 +251,33 @@ public class CcpScoringEngineTest
     {
         //Arrange
         var serviceModelFactory = new TestServiceModelFactory();
+        var s1 = serviceModelFactory.CreateServiceModel("S1");
+        var rs1 = serviceModelFactory.CreateServiceModel("RS1");
         var packages = new List<PackageModel>();
         for (int i = 1; i < 2; i++) packages.Add(new PackageModel($"P{i}"));
 
+        rs1.ChangedWith.Add(
+            new(rs1, null, 2));
+        rs1.ChangedWith.Add(new(rs1, s1, 1));
 
-        packages.First().AddService(serviceModelFactory.CreateServiceModel("S1"));
+        packages.First().AddService(s1);
 
         var remainingServices = new List<ServiceModel>();
-
-        remainingServices.Add(serviceModelFactory.CreateServiceModel("RS1", sm =>
-        {
-            sm.ChangedWith.AddRange(new[]
-            {
-                new()
-                {
-                    NameOfCurrentService = sm.Name,
-                    NameOfOtherService = "Unknown",
-                    NumberOfChanges = 2
-                },
-                new CommonChangeRelationModel
-                {
-                    NameOfCurrentService = sm.Name,
-                    NameOfOtherService = "S1",
-                    NumberOfChanges = 1
-                }
-            });
-            return 0;
-        }));
-
-        for (int i = 2; i < 4; i++)
-        {
-            remainingServices.Add(serviceModelFactory.CreateServiceModel($"RS{i}", sm =>
-                {
-                    sm.ChangedWith.AddRange(new[]
-                    {
-                        new CommonChangeRelationModel()
-                        {
-                            NameOfCurrentService = sm.Name,
-                            NameOfOtherService = "S1",
-                            NumberOfChanges = 1
-                        }
-                    });
-                    return 0;
-                })
-            );
-        }
-
+        var rs2 = serviceModelFactory.CreateServiceModel($"RS2");
+        rs2.ChangedWith.Add(new(rs2, rs1, 1));
+        
+        var rs3 = serviceModelFactory.CreateServiceModel($"RS3");
+        rs3.ChangedWith.Add(new(rs3, rs2, 1));
+        
+        
+        remainingServices.Add(rs1);
+        remainingServices.Add(rs3);
+        remainingServices.Add(rs2);
         remainingServices.Reverse();
         _dataProvider.Setup(d => d.GetServices()).Returns(serviceModelFactory.ServiceModels);
         var ccpScoringEngine = new CcpScoringEngine(_dataProvider.Object);
         ccpScoringEngine.SetPossiblePackages(packages);
+
         //Act 
         var result = ccpScoringEngine.DistributeRemainingServices(remainingServices);
 

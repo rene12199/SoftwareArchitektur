@@ -1,5 +1,6 @@
 ﻿using Moq;
 using SoftwareArchitektur.ArchitekturSuggester.GroupingEngine.Converter;
+using SoftwareArchitektur.ArchitekturSuggester.TestUtility;
 using SoftwareArchitektur.Utility.Interface;
 using SoftwareArchitektur.Utility.Models;
 
@@ -19,44 +20,23 @@ public class DependencyRelationToGroupingDependencyRelationModelTest
     [MaxTime(2000)]
     public void CommonChangeToCcpCommonChangeConverterTests_2PackagesWith3Services_Returns1CcpScoreWithValue2()
     {
+        
+        var serviceFactory = new TestServiceModelFactory();
+        var s1 = serviceFactory.CreateServiceModel("S1");
+        var s2 = serviceFactory.CreateServiceModel("S2");
+        var s3 = serviceFactory.CreateServiceModel("S3");
+        
         var commonChange = new List<DependencyRelationModel>
         {
-            new()
-            {
-                Caller = "S1",
-                Callee = "S2",
-                NumberOfCalls = 1
-            },
-            new()
-            {
-                Caller = "S1",
-                Callee = "S3",
-                NumberOfCalls = 1
-            }
+            new(s1,s2,1),
+            new(s1,s3,1)
         };
+        
+        s1.DependsOn.Add( new (s1,s2,1));
+        s1.DependsOn.Add( new (s1,s3,1));
+        s1.InPackage = "P1";
 
-        var serviceModels = new List<ServiceModel>();
-        var s1 = new ServiceModel("S1")
-        {
-            InPackage = "P1",
-            DependsOn =
-            {
-                new ()
-                {
-                    Caller = "S1",
-                    Callee = "S2",
-                    NumberOfCalls = 1
-                },
-                new()
-                {
-                    Caller = "S1",
-                    Callee = "S3",
-                    NumberOfCalls = 1
-                }
-            }
-        };
-
-        serviceModels.Add(s1);
+      
 
         var packages = new List<PackageModel>();
 
@@ -68,16 +48,13 @@ public class DependencyRelationToGroupingDependencyRelationModelTest
 
         for (int i = 2; i < 4; i++)
         {
-            var newService = new ServiceModel($"S{i}")
-            {
-                InPackage = "P2"
-            };
-            serviceModels.Add(newService);
+            var newService = serviceFactory.CreateServiceModel($"S{i}");
+            newService.InPackage = "P2";
             package2.AddService(newService);
         }
 
         //Arrange
-        _dataProvider.Setup(s => s.GetServices()).Returns(serviceModels);
+        _dataProvider.Setup(s => s.GetServices()).Returns(serviceFactory.ServiceModels);
 
         var converter = new DependencyModelToGroupingDependencyModel(_dataProvider.Object);
         //Act
@@ -94,44 +71,22 @@ public class DependencyRelationToGroupingDependencyRelationModelTest
     public void CommonChangeToCcpCommonChangeConverterTests_3PackagesWith3Services_Returns1CcpScoreWithValue3()
     {
         //Arrange
+        var serviceFactory = new TestServiceModelFactory();
+        var s1 = serviceFactory.CreateServiceModel("S1");
+        var s2 = serviceFactory.CreateServiceModel("S2");
+        s2.InPackage = "P2";
+        var s3 = serviceFactory.CreateServiceModel("S3");
+        s3.InPackage = "P3";
         var commonChange = new List<DependencyRelationModel>
         {
-            new()
-            {
-                Caller = "S1",
-                Callee = "S2",
-                NumberOfCalls = 1
-            },
-            new()
-            {
-                Caller = "S1",
-                Callee = "S3",
-                NumberOfCalls = 1
-            }
+            new(s1, s2, 1),
+            new(s1, s3, 1)
         };
 
-        var serviceModels = new List<ServiceModel>();
-        var s1 = new ServiceModel("S1")
-        {
-            InPackage = "P1",
-            DependsOn =
-            {
-                new ()
-                {
-                    Caller = "S1",
-                    Callee = "S2",
-                    NumberOfCalls = 1
-                },
-                new ()
-                {
-                    Caller = "S1",
-                    Callee = "S3",
-                    NumberOfCalls = 1
-                }
-            }
-        };
 
-        serviceModels.Add(s1);
+        s1.InPackage = "P1";
+        s1.DependsOn.Add(new(s1, s2, 1));
+        s1.DependsOn.Add(new(s1, s3, 1));
 
         var packages = new List<PackageModel>();
 
@@ -139,21 +94,13 @@ public class DependencyRelationToGroupingDependencyRelationModelTest
         package1.AddService(s1);
         packages.Add(package1);
 
+        var package2 = new PackageModel("P2");
+        package2.AddService(s2);
+        
+        var package3 = new PackageModel("P3");
+        package3.AddService(s3);
 
-        for (int i = 2; i < 4; i++)
-        {
-            var package = new PackageModel($"P{i}");
-            var newService = new ServiceModel($"S{i}")
-            {
-                InPackage = $"P{i}"
-            };
-            serviceModels.Add(newService);
-            package.AddService(newService);
-            packages.Add(package);
-        }
-
-
-        _dataProvider.Setup(s => s.GetServices()).Returns(serviceModels);
+        _dataProvider.Setup(s => s.GetServices()).Returns(serviceFactory.ServiceModels);
 
         var converter = new DependencyModelToGroupingDependencyModel(_dataProvider.Object);
         //Act
