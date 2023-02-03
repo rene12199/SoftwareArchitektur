@@ -18,9 +18,11 @@ public class CcpScoringCommonChangeClassTesting
     {
         var serviceFactory = new TestServiceModelFactory();
         var commonChange1 =
-            new CcpScoringCommonChangeClass(serviceFactory.CreateServiceModel(null,new PackageModel( commonChange1OwnService)), serviceFactory.CreateServiceModel(null  ,new PackageModel(commonChange1OtherService)), 1);
+            new CcpScoringCommonChangeClass(serviceFactory.CreateServiceModel(null, new PackageModel(commonChange1OwnService)),
+                serviceFactory.CreateServiceModel(null, new PackageModel(commonChange1OtherService)), 1);
         var commonChange2 =
-            new CcpScoringCommonChangeClass(serviceFactory.CreateServiceModel(null,new PackageModel( commonChange2OwnService)), serviceFactory.CreateServiceModel(null, new PackageModel( commonChange2OtherService)), 1);
+            new CcpScoringCommonChangeClass(serviceFactory.CreateServiceModel(null, new PackageModel(commonChange2OwnService)),
+                serviceFactory.CreateServiceModel(null, new PackageModel(commonChange2OtherService)), 1);
 
         Assert.That(commonChange1.Equals(commonChange2), Is.EqualTo(expected));
     }

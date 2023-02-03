@@ -50,7 +50,7 @@ public class PackageModel
     private IEnumerable<DependencyRelationPackageModel> GroupDependencies()
     {
         var allDependencies = _services.SelectMany(s => s.DependsOn);
-        var grouped = allDependencies.GroupBy(d => d.Callee).Select(gr =>
+        var grouped = allDependencies.GroupBy(d => d.CalleeService.InPackage).Select(gr =>
             new DependencyRelationPackageModel(gr.First().CallerService.InPackage, gr.First().CalleeService.InPackage, gr.Sum(g => g.NumberOfCalls)));
         return grouped;
     }
@@ -59,8 +59,8 @@ public class PackageModel
     private IEnumerable<CommonChangeRelationPackageModel> GroupChanges()
     {
         var allChanges = _services.SelectMany(s => s.ChangedWith);
-        var grouped = allChanges.GroupBy(d => d.OtherService).Select(gr =>
-            new CommonChangeRelationPackageModel(gr.First().OtherService.InPackage, gr.First().OtherService.InPackage, gr.Sum(g => g.NumberOfChanges)));
+        var grouped = allChanges.GroupBy(d => d.OtherService.InPackage).Select(gr =>
+            new CommonChangeRelationPackageModel(gr.First().CurrentService.InPackage, gr.First().OtherService.InPackage, gr.Sum(g => g.NumberOfChanges)));
         return grouped;
     }
 

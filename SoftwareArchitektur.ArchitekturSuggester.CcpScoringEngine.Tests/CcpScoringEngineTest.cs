@@ -91,10 +91,10 @@ public class CcpScoringEngineTest
         packages.First().AddService(s1);
         packages.Last().AddService(s2);
         packages.Last().AddService(s3);
-        
-        s1.ChangedWith.Add(new(rs1, s1, 1));
-        s1.ChangedWith.Add(new(rs1, s2, 2));
-        s1.ChangedWith.Add(new(rs1, s3, 2));
+
+        s1.ChangedWith.Add(new CommonChangeRelationServiceModel(rs1, s1, 1));
+        s1.ChangedWith.Add(new CommonChangeRelationServiceModel(rs1, s2, 2));
+        s1.ChangedWith.Add(new CommonChangeRelationServiceModel(rs1, s3, 2));
 
         var remainingServices = new List<ServiceModel>();
 
@@ -127,22 +127,22 @@ public class CcpScoringEngineTest
         for (int i = 1; i < 3; i++) packages.Add(new PackageModel($"P{i}"));
         var s1 = serviceModelFactory.CreateServiceModel("S1");
         packages.First().AddService(s1);
-        
+
         var remainingServices = new List<ServiceModel>();
         var rs1 = serviceModelFactory.CreateServiceModel("RS1");
-        var rs2 = serviceModelFactory.CreateServiceModel($"RS2");
-        var rs3 = serviceModelFactory.CreateServiceModel($"RS3");
-    
+        var rs2 = serviceModelFactory.CreateServiceModel("RS2");
+        var rs3 = serviceModelFactory.CreateServiceModel("RS3");
+
         rs1.ChangedWith.AddRange(new[]
         {
             new CommonChangeRelationServiceModel(rs1, s1, 1)
         });
-        
+
         rs2.ChangedWith.AddRange(new[]
         {
             new CommonChangeRelationServiceModel(rs2, rs1, 1)
         });
-        
+
         rs3.ChangedWith.AddRange(new[]
         {
             new CommonChangeRelationServiceModel(rs3, rs2, 1)
@@ -205,27 +205,26 @@ public class CcpScoringEngineTest
         //Arrange
         var packages = new List<PackageModel>();
         for (int i = 1; i < 2; i++) packages.Add(new PackageModel($"P{i}"));
-        
+
         var serviceModelFactory = new TestServiceModelFactory();
         var s1 = serviceModelFactory.CreateServiceModel("S1");
         packages.First().AddService(s1);
-        
+
         var iS = serviceModelFactory.CreateServiceModel("IS");
-        iS.ChangedWith.Add(new(iS, new ServiceModel("Unkown"), 1));
-        
+        iS.ChangedWith.Add(new CommonChangeRelationServiceModel(iS, new ServiceModel("Unkown"), 1));
+
         var rs1 = serviceModelFactory.CreateServiceModel("RS1");
-        rs1.ChangedWith.Add(new(rs1, s1, 1));
-        
-       
+        rs1.ChangedWith.Add(new CommonChangeRelationServiceModel(rs1, s1, 1));
+
 
         var remainingServices = new List<ServiceModel>();
-        var rs2 = serviceModelFactory.CreateServiceModel($"RS2");
-        rs2.ChangedWith.Add(new(rs2, rs1, 1));
-        
-        var rs3 = serviceModelFactory.CreateServiceModel($"RS3");
-        rs3.ChangedWith.Add(new(rs3, rs2, 1));
-        
-        
+        var rs2 = serviceModelFactory.CreateServiceModel("RS2");
+        rs2.ChangedWith.Add(new CommonChangeRelationServiceModel(rs2, rs1, 1));
+
+        var rs3 = serviceModelFactory.CreateServiceModel("RS3");
+        rs3.ChangedWith.Add(new CommonChangeRelationServiceModel(rs3, rs2, 1));
+
+
         remainingServices.Add(rs1);
         remainingServices.Add(rs3);
         remainingServices.Add(rs2);
@@ -255,19 +254,19 @@ public class CcpScoringEngineTest
         for (int i = 1; i < 2; i++) packages.Add(new PackageModel($"P{i}"));
 
         rs1.ChangedWith.Add(
-            new(rs1, s2, 2));
-        rs1.ChangedWith.Add(new(rs1, s1, 1));
+            new CommonChangeRelationServiceModel(rs1, s2, 2));
+        rs1.ChangedWith.Add(new CommonChangeRelationServiceModel(rs1, s1, 1));
 
         packages.First().AddService(s1);
 
         var remainingServices = new List<ServiceModel>();
-        var rs2 = serviceModelFactory.CreateServiceModel($"RS2");
-        rs2.ChangedWith.Add(new(rs2, rs1, 1));
-        
-        var rs3 = serviceModelFactory.CreateServiceModel($"RS3");
-        rs3.ChangedWith.Add(new(rs3, rs2, 1));
-        
-        
+        var rs2 = serviceModelFactory.CreateServiceModel("RS2");
+        rs2.ChangedWith.Add(new CommonChangeRelationServiceModel(rs2, rs1, 1));
+
+        var rs3 = serviceModelFactory.CreateServiceModel("RS3");
+        rs3.ChangedWith.Add(new CommonChangeRelationServiceModel(rs3, rs2, 1));
+
+
         remainingServices.Add(rs1);
         remainingServices.Add(rs3);
         remainingServices.Add(rs2);

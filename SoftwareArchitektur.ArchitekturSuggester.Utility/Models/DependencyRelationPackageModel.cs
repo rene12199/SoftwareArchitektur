@@ -6,7 +6,7 @@ public class DependencyRelationPackageModel
 
     public string Caller => CallerService.PackageName;
 
-    public PackageModel CalleeService { get; } 
+    public PackageModel CalleeService { get; }
 
     public string Callee => CalleeService.PackageName;
 

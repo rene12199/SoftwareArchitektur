@@ -29,8 +29,8 @@ public class CommonChangeToCcpCommonChangeConverterTests
             new(s1, s2, 1),
             new(s1, s3, 1)
         };
-        
-        
+
+
         s1.ChangedWith.Add(new CommonChangeRelationServiceModel(s1, s2, 1));
         s1.ChangedWith.Add(new CommonChangeRelationServiceModel(s1, s3, 1));
 
@@ -71,18 +71,16 @@ public class CommonChangeToCcpCommonChangeConverterTests
             new(s1, s2, 1),
             new(s1, s3, 1)
         };
-        
+
         s1.ChangedWith.Add(new CommonChangeRelationServiceModel(s1, s2, 1));
         s1.ChangedWith.Add(new CommonChangeRelationServiceModel(s1, s3, 1));
 
-    
-      
-      
+
         var p1 = new PackageModel("P1");
         p1.AddService(s1);
-        var p2 = new PackageModel($"P2");
+        var p2 = new PackageModel("P2");
         p2.AddService(s2);
-        var p3 = new PackageModel($"P3");
+        var p3 = new PackageModel("P3");
         p3.AddService(s3);
 
 

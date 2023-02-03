@@ -5,8 +5,18 @@ namespace SoftwareArchitektur.ArchitekturSuggester.GroupingEngine.Converter;
 
 public class DependencyModelToGroupingDependencyConverter
 {
-    public IList<GroupingDependendencyModel> CreateGroupingDependencyModelsList(IList<DependencyRelationPackageModel> commonChange)
+    public IList<GroupingDependendencyModel> CreateGroupingDependencyModelsList(IList<DependencyRelationPackageModel> dependencyRelations)
     {
-        throw new NotImplementedException();
+        var groupingPackageModels = new List<GroupingDependendencyModel>();
+        foreach (var commonChange in dependencyRelations)
+        {
+            var commonCcpChange = new GroupingDependendencyModel(
+                commonChange.CallerService,
+                commonChange.CalleeService,
+                commonChange.NumberOfCalls);
+            groupingPackageModels.Add(commonCcpChange);
+        }
+
+        return groupingPackageModels;
     }
 }

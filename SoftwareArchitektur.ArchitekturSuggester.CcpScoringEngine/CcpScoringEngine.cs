@@ -20,7 +20,7 @@ public class CcpScoringEngine : ICcpScoringEngine
 
     private bool _lenientMode;
 
-    private int _batchSize = 0;
+    private int _batchSize;
 
 
     public CcpScoringEngine(IDataProvider dataProvider)
@@ -36,15 +36,13 @@ public class CcpScoringEngine : ICcpScoringEngine
 
     public IList<PackageModel> DistributeRemainingServices(IList<ServiceModel> remainingServices)
     {
-        if (_packageModels == null || _packageModels.Count == 0)
-        {
-            throw new ApplicationException("No PackageModel List set");
-        }
+        if (_packageModels == null || _packageModels.Count == 0) throw new ApplicationException("No PackageModel List set");
 
         _snapShotHash = CreateShaFromRemainingServices(remainingServices.OrderBy(s => s.AverageChange).ToList());
 
-        var remainingServicesTuple = remainingServices.OrderBy(s => s.AverageChange).Select(s => new Tuple<ServiceModel, List<CcpScoringCommonChangeClass>>(s, new List<CcpScoringCommonChangeClass>())).ToList();
-        
+        var remainingServicesTuple = remainingServices.OrderBy(s => s.AverageChange)
+            .Select(s => new Tuple<ServiceModel, List<CcpScoringCommonChangeClass>>(s, new List<CcpScoringCommonChangeClass>())).ToList();
+
         var t = Task.Run(async () => await DistributePackages(remainingServicesTuple));
         Task.WaitAll(t);
         return _packageModels;
@@ -53,32 +51,28 @@ public class CcpScoringEngine : ICcpScoringEngine
     private async Task DistributePackages(List<Tuple<ServiceModel, List<CcpScoringCommonChangeClass>>> remainingServicesTuple)
     {
         int iterator = 0;
-        await CalculateChangesByPackageAsync(remainingServicesTuple.Slice(iterator,_batchSize));
+        await CalculateChangesByPackageAsync(remainingServicesTuple.Slice(iterator, _batchSize));
         int counter = 0;
         while (remainingServicesTuple.Count > 0)
         {
             //todo implement future Batching
-            counter =  await CalculateNextBatch(remainingServicesTuple, iterator,  counter);
+            counter = await CalculateNextBatch(remainingServicesTuple, iterator, counter);
             counter++;
             Console.WriteLine($"Checking Common Changes for Service {remainingServicesTuple[iterator].Item1.Name}");
-            if (CheckIfServiceHasChanges(remainingServicesTuple, iterator))
-            {
-                continue;
-            }
-            
+            if (CheckIfServiceHasChanges(remainingServicesTuple, iterator)) continue;
+
             CcpScoringCommonChangeClass bestPackage = null!;
 
             bestPackage = GetBestPackage(remainingServicesTuple, iterator);
 
             iterator = RegisterServiceInBestPackage(remainingServicesTuple, bestPackage, iterator);
-            
-             if (iterator >= remainingServicesTuple.Count)
+
+            if (iterator >= remainingServicesTuple.Count)
             {
                 await CalculateChangesByPackageAsync(remainingServicesTuple);
                 iterator = 0;
                 if (CheckIfLastRunChangedRemainingServices(remainingServicesTuple)) break;
             }
-            
         }
     }
 

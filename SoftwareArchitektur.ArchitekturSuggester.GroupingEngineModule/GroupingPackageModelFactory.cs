@@ -8,6 +8,7 @@ public class GroupingPackageModelFactory
 {
     private readonly CommonChangeToGroupingCommonChangeConverter _commonChangeConverter;
     private readonly DependencyModelToGroupingDependencyConverter _dependencyConverter;
+    private readonly IList<GroupingPackageModel> _groupingPackageModels= new List<GroupingPackageModel>();
 
     public GroupingPackageModelFactory(DependencyModelToGroupingDependencyConverter dependencyConverter, CommonChangeToGroupingCommonChangeConverter commonChangeConverter)
     {
@@ -17,20 +18,33 @@ public class GroupingPackageModelFactory
 
     public IList<GroupingPackageModel> ConvertPackageModelsToGroupingModels(IList<PackageModel> packageModels)
     {
-        var groupingPackageModels = new List<GroupingPackageModel>();
+     
         foreach (var packageModel in packageModels)
         {
             var groupingPackageModel = ConvertToGroupingModel(packageModel);
-            groupingPackageModels.Add(groupingPackageModel);
+
+            CreateCalledByRelation(groupingPackageModel);
+            
+            _groupingPackageModels.Add(groupingPackageModel);
         }
 
-        return groupingPackageModels;
+        return _groupingPackageModels;
+    }
+
+    private void CreateCalledByRelation(GroupingPackageModel groupingPackageModel)
+    {
+        foreach (var dependencyModel in groupingPackageModel.DependsOn)
+        {
+            var packageModel = _groupingPackageModels.FirstOrDefault(x => x.PackageName == dependencyModel.Caller.PackageName);
+
+            packageModel?.CalledBy.Add(dependencyModel);
+        }
     }
 
     private GroupingPackageModel ConvertToGroupingModel(PackageModel packageModel)
     {
         var groupingCommonChange = _commonChangeConverter.CreateGroupingCommonChangeModelsList(packageModel.ChangesWith);
         var groupingDependency = _dependencyConverter.CreateGroupingDependencyModelsList(packageModel.DependsOn);
-        return null;
+        return new GroupingPackageModel(packageModel, groupingDependency, groupingCommonChange);
     }
 }

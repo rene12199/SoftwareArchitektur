@@ -25,7 +25,6 @@ public class CommonChangeToCcpCommonChangeConverter
     private void ConvertCommonChangeModelToCcpCommonChangeModel(IList<CommonChangeRelationServiceModel> commonChangeList, List<CcpScoringCommonChangeClass> commonCcpChangeList)
     {
         foreach (var commonChange in commonChangeList)
-        {
             if (CcpCommonChangeExists(commonChange, commonCcpChangeList))
             {
                 var existingCommonChange = commonCcpChangeList.Single(cc => commonChange.OtherService.InPackage?.PackageName == cc.OtherPackage);
@@ -34,14 +33,12 @@ public class CommonChangeToCcpCommonChangeConverter
             }
             else
             {
-               
                 var commonCcpChange = new CcpScoringCommonChangeClass(
                     commonChange.CurrentService,
                     commonChange.OtherService,
                     commonChange.NumberOfChanges);
                 commonCcpChangeList.Add(commonCcpChange);
             }
-        }
     }
 
     private bool CcpCommonChangeExists(CommonChangeRelationServiceModel commonChange, IList<CcpScoringCommonChangeClass> commonCcpChangeList)

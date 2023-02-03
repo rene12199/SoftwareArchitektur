@@ -17,7 +17,7 @@ public class CcpScoringCommonChangeClass
 
     public CcpScoringCommonChangeClass(ServiceModel ownPackage, ServiceModel differentPackage, long numberOfChanges)
     {
-        ThisPackage =  ownPackage.InPackage != null ? ownPackage.InPackage.PackageName : string.Empty;
+        ThisPackage = ownPackage.InPackage != null ? ownPackage.InPackage.PackageName : string.Empty;
         OtherPackage = differentPackage.InPackage != null ? differentPackage.InPackage.PackageName : string.Empty;
         NumberOfChanges = numberOfChanges;
     }

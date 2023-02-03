@@ -1,5 +1,4 @@
-﻿
-using SoftwareArchitektur.Utility.Models;
+﻿using SoftwareArchitektur.Utility.Models;
 
 namespace SoftwareArchitektur.ArchitekturSuggester.GroupingEngine.Model;
 
@@ -11,8 +10,8 @@ public class GroupingCommonChangeModel
         OtherPackage = differentPackage;
         NumberOfChanges = numberOfChanges;
     }
-    
-    
+
+
     public PackageModel ThisPackage { get; private set; }
 
     public PackageModel OtherPackage { get; private set; }

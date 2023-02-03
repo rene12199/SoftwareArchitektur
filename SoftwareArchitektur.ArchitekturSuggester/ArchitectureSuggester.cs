@@ -68,10 +68,8 @@ public class ArchitectureSuggester
     private int GetAndDeleteServicesFromPackage(PackageModel package, int dupCounter, IList<ServiceModel> registeredServices)
     {
         foreach (var service in package.GetServices())
-        {
             if (CheckIfServiceIsStillRegistered(service, registeredServices))
                 dupCounter++;
-        }
 
         return dupCounter;
     }

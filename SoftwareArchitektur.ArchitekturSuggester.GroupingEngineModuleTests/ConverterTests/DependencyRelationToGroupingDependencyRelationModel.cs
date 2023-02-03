@@ -20,23 +20,14 @@ public class DependencyRelationToGroupingDependencyRelationModelTest
     [MaxTime(2000)]
     public void CommonChangeToCcpCommonChangeConverterTests_2PackagesWith3Services_Returns1CcpScoreWithValue2()
     {
-        
         var serviceFactory = new TestServiceModelFactory();
         var s1 = serviceFactory.CreateServiceModel("S1");
         var s2 = serviceFactory.CreateServiceModel("S2");
         var s3 = serviceFactory.CreateServiceModel("S3");
-        
-        var commonChange = new List<DependencyRelationServiceModel>
-        {
-            new(s1,s2,1),
-            new(s1,s3,1)
-        };
-        
-        s1.DependsOn.Add( new (s1,s2,1));
-        s1.DependsOn.Add( new (s1,s3,1));
 
+        s1.DependsOn.Add(new DependencyRelationServiceModel(s1, s2, 1));
+        s1.DependsOn.Add(new DependencyRelationServiceModel(s1, s3, 1));
 
-      
 
         var packages = new List<PackageModel>();
 
@@ -74,15 +65,9 @@ public class DependencyRelationToGroupingDependencyRelationModelTest
         var s1 = serviceFactory.CreateServiceModel("S1");
         var s2 = serviceFactory.CreateServiceModel("S2");
         var s3 = serviceFactory.CreateServiceModel("S3");
-        var commonChange = new List<DependencyRelationServiceModel>
-        {
-            new(s1, s2, 1),
-            new(s1, s3, 1)
-        };
 
-        
-        s1.DependsOn.Add(new(s1, s2, 1));
-        s1.DependsOn.Add(new(s1, s3, 1));
+        s1.DependsOn.Add(new DependencyRelationServiceModel(s1, s2, 1));
+        s1.DependsOn.Add(new DependencyRelationServiceModel(s1, s3, 1));
 
         var packages = new List<PackageModel>();
 
@@ -92,7 +77,7 @@ public class DependencyRelationToGroupingDependencyRelationModelTest
 
         var package2 = new PackageModel("P2");
         package2.AddService(s2);
-        
+
         var package3 = new PackageModel("P3");
         package3.AddService(s3);
 
@@ -107,5 +92,4 @@ public class DependencyRelationToGroupingDependencyRelationModelTest
         Assert.That(result.Count, Is.EqualTo(2));
         Assert.That(result.First().NumberOfCalls, Is.EqualTo(1));
     }
-    
 }

@@ -23,7 +23,7 @@ public class CommonChangeToGroupingCommonChangeModel
         var serviceFactory = new TestServiceModelFactory();
         var s1 = serviceFactory.CreateServiceModel("S1");
         var s2 = serviceFactory.CreateServiceModel("S2");
-      
+
         var s3 = serviceFactory.CreateServiceModel("S3");
 
         var commonChange = new List<CommonChangeRelationServiceModel>
@@ -32,9 +32,9 @@ public class CommonChangeToGroupingCommonChangeModel
             new(s1, s3, 1)
         };
 
-        
-        s1.ChangedWith.Add(new(s1, s2, 1));
-        s1.ChangedWith.Add(new(s1, s3, 1));
+
+        s1.ChangedWith.Add(new CommonChangeRelationServiceModel(s1, s2, 1));
+        s1.ChangedWith.Add(new CommonChangeRelationServiceModel(s1, s3, 1));
 
 
         var packages = new List<PackageModel>();
@@ -50,9 +50,9 @@ public class CommonChangeToGroupingCommonChangeModel
         //Arrange
         _dataProvider.Setup(s => s.GetServices()).Returns(serviceFactory.ServiceModels);
 
-        var converter = new GroupingEngine.Converter.CommonChangeToGroupingCommonChangeConverter();
+        var converter = new CommonChangeToGroupingCommonChangeConverter();
         //Act
-        var result = converter.CreateGroupingCommonChangeModelsList(packages.SelectMany(s => s.ChangesWith));
+        var result = converter.CreateGroupingCommonChangeModelsList(package1.ChangesWith);
 
         //Assert
 
@@ -69,16 +69,16 @@ public class CommonChangeToGroupingCommonChangeModel
         var s1 = serviceFactory.CreateServiceModel("S1");
         var s2 = serviceFactory.CreateServiceModel("S2");
         var s3 = serviceFactory.CreateServiceModel("S3");
-        
+
         var commonChange = new List<CommonChangeRelationServiceModel>
         {
             new(s1, s2, 1),
             new(s1, s3, 1)
         };
 
-        
-        s1.ChangedWith.Add(new(s1, s2, 1));
-        s1.ChangedWith.Add(new(s1, s3, 1));
+
+        s1.ChangedWith.Add(new CommonChangeRelationServiceModel(s1, s2, 1));
+        s1.ChangedWith.Add(new CommonChangeRelationServiceModel(s1, s3, 1));
 
         var packages = new List<PackageModel>();
 
@@ -88,16 +88,16 @@ public class CommonChangeToGroupingCommonChangeModel
 
         var package2 = new PackageModel("P2");
         package2.AddService(s2);
-        
+
         var package3 = new PackageModel("P3");
         package3.AddService(s3);
 
 
         _dataProvider.Setup(s => s.GetServices()).Returns(serviceFactory.ServiceModels);
 
-        var converter = new GroupingEngine.Converter.CommonChangeToGroupingCommonChangeConverter();
+        var converter = new CommonChangeToGroupingCommonChangeConverter();
         //Act
-        var result = converter.CreateGroupingCommonChangeModelsList(packages.SelectMany(c => c.ChangesWith));
+        var result = converter.CreateGroupingCommonChangeModelsList(package1.ChangesWith);
 
         //Assert
 

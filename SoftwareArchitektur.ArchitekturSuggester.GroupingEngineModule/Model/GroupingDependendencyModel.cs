@@ -4,9 +4,9 @@ namespace SoftwareArchitektur.ArchitekturSuggester.GroupingEngine.Model;
 
 public class GroupingDependendencyModel
 {
-    public string Caller { get; private set; }
+    public PackageModel Caller { get; private set; }
 
-    public string Callee { get; private set; }
+    public PackageModel Callee { get; private set; }
 
     public long NumberOfCalls { get; private set; }
 
@@ -17,8 +17,8 @@ public class GroupingDependendencyModel
 
     public GroupingDependendencyModel(PackageModel ownPackage, PackageModel? differentPackage, long numberOfCalls)
     {
-        Caller = ownPackage.PackageName;
-        Callee = differentPackage.PackageName;
+        Caller = ownPackage;
+        Callee = differentPackage;
         NumberOfCalls = numberOfCalls;
     }
 
