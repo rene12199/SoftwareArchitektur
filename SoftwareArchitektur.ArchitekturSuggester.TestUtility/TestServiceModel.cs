@@ -13,7 +13,7 @@ public class TestServiceModelFactory
         return newServiceModel;
     }
 
-    public ServiceModel CreateServiceModel(string name, string packageName)
+    public ServiceModel CreateServiceModel(string name, PackageModel packageName)
     {
         var newServiceModel = new ServiceModel(name)
         {

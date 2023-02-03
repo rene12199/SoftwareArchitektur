@@ -1,7 +1,9 @@
 ﻿namespace SoftwareArchitektur.Utility.Models;
 
-public class CommonChangeRelationModel
+public class CommonChangeRelationServiceModel
 {
+    
+    
     public ServiceModel OtherService { get; }
 
     public ServiceModel CurrentService { get; }
@@ -13,7 +15,7 @@ public class CommonChangeRelationModel
     public string NameOfOtherService => OtherService.Name;
     
     
-    public CommonChangeRelationModel(ServiceModel currentService, ServiceModel otherService, long numberOfChanges)
+    public CommonChangeRelationServiceModel(ServiceModel currentService, ServiceModel otherService, long numberOfChanges)
     {
         OtherService = otherService;
         CurrentService = currentService;

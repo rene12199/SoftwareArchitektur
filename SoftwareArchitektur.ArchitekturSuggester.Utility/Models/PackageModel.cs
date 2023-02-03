@@ -10,11 +10,13 @@ public class PackageModel
     public double StandardDeviationOfChangeRate =>
         Math.Sqrt(_services.Sum(sd => sd.StandardDeviationChangeRate * sd.StandardDeviationChangeRate));
 
-    public List<string> DependsOn => GetDependentPackages();
+    public List<DependencyRelationPackageModel> DependsOn => GroupDependencies().ToList();
+
+    public List<CommonChangeRelationPackageModel> ChangesWith => GroupChanges().ToList();
 
     public List<string> HasService => GetServices().Select(s => s.Name).ToList();
 
-    [JsonIgnore] public List<PackageModel> PackageDependencies = new();
+    [JsonIgnore] public List<PackageModel> PackageDependencies { get; } = new();
 
     public string PackageName { get; set; }
 
@@ -28,7 +30,7 @@ public class PackageModel
     public void AddService(ServiceModel service)
     {
         _services.Add(service);
-        service.InPackage = PackageName;
+        service.InPackage = this;
     }
 
     public void AddServiceRange(IEnumerable<ServiceModel> service)
@@ -36,7 +38,7 @@ public class PackageModel
         foreach (var s in service)
         {
             _services.Add(s);
-            s.InPackage = PackageName;
+            s.InPackage = this;
         }
     }
 
@@ -45,6 +47,22 @@ public class PackageModel
         return _services;
     }
 
+    private IEnumerable<DependencyRelationPackageModel> GroupDependencies()
+    {
+        var allDependencies = _services.SelectMany(s => s.DependsOn);
+        var grouped = allDependencies.GroupBy(d => d.Callee).Select(gr =>
+            new DependencyRelationPackageModel(gr.First().CallerService.InPackage, gr.First().CalleeService.InPackage, gr.Sum(g => g.NumberOfCalls)));
+        return grouped;
+    }
+
+
+    private IEnumerable<CommonChangeRelationPackageModel> GroupChanges()
+    {
+        var allChanges = _services.SelectMany(s => s.ChangedWith);
+        var grouped = allChanges.GroupBy(d => d.OtherService).Select(gr =>
+            new CommonChangeRelationPackageModel(gr.First().OtherService.InPackage, gr.First().OtherService.InPackage, gr.Sum(g => g.NumberOfChanges)));
+        return grouped;
+    }
 
     private List<string> GetDependentPackages()
     {

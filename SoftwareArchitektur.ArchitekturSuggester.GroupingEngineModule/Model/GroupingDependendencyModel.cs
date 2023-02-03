@@ -15,10 +15,10 @@ public class GroupingDependendencyModel
         NumberOfCalls += numberOfChanges;
     }
 
-    public GroupingDependendencyModel(ServiceModel ownPackage, ServiceModel? differentPackage, long numberOfCalls)
+    public GroupingDependendencyModel(PackageModel ownPackage, PackageModel? differentPackage, long numberOfCalls)
     {
-        Caller = ownPackage.InPackage;
-        Callee = differentPackage != null ? differentPackage.InPackage : string.Empty;
+        Caller = ownPackage.PackageName;
+        Callee = differentPackage.PackageName;
         NumberOfCalls = numberOfCalls;
     }
 

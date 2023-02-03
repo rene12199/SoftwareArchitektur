@@ -24,15 +24,15 @@ public class CommonChangeToCcpCommonChangeConverterTests
         var s1 = serviceFactory.CreateServiceModel("S1");
         var s2 = serviceFactory.CreateServiceModel("S2");
         var s3 = serviceFactory.CreateServiceModel("S3");
-        var commonChange = new List<CommonChangeRelationModel>
+        var commonChange = new List<CommonChangeRelationServiceModel>
         {
             new(s1, s2, 1),
             new(s1, s3, 1)
         };
-
-        s1.InPackage = "P1";
-        s1.ChangedWith.Add(new CommonChangeRelationModel(s1, s2, 1));
-        s1.ChangedWith.Add(new CommonChangeRelationModel(s1, s3, 1));
+        
+        
+        s1.ChangedWith.Add(new CommonChangeRelationServiceModel(s1, s2, 1));
+        s1.ChangedWith.Add(new CommonChangeRelationServiceModel(s1, s3, 1));
 
         var packages = new List<PackageModel>();
 
@@ -45,7 +45,6 @@ public class CommonChangeToCcpCommonChangeConverterTests
         for (int i = 2; i < 4; i++)
         {
             var newService = serviceFactory.CreateServiceModel($"S{i}");
-            newService.InPackage = "P2";
             package2.AddService(newService);
         }
 
@@ -71,25 +70,22 @@ public class CommonChangeToCcpCommonChangeConverterTests
         var s1 = serviceFactory.CreateServiceModel("S1");
         var s2 = serviceFactory.CreateServiceModel("S2");
         var s3 = serviceFactory.CreateServiceModel("S3");
-        var commonChange = new List<CommonChangeRelationModel>
+        var commonChange = new List<CommonChangeRelationServiceModel>
         {
             new(s1, s2, 1),
             new(s1, s3, 1)
         };
-
-        s1.InPackage = "P1";
-        s1.ChangedWith.Add(new CommonChangeRelationModel(s1, s2, 1));
-        s1.ChangedWith.Add(new CommonChangeRelationModel(s1, s3, 1));
+        
+        s1.ChangedWith.Add(new CommonChangeRelationServiceModel(s1, s2, 1));
+        s1.ChangedWith.Add(new CommonChangeRelationServiceModel(s1, s3, 1));
 
     
       
       
         var p1 = new PackageModel("P1");
         p1.AddService(s1);
-        s2.InPackage = "P2";
         var p2 = new PackageModel($"P2");
         p2.AddService(s2);
-        s3.InPackage = "P3";
         var p3 = new PackageModel($"P3");
         p3.AddService(s3);
 

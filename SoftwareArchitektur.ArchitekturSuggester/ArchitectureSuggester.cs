@@ -42,7 +42,7 @@ public class ArchitectureSuggester
     {
         _ccpScoringEngine.SetPossiblePackages(packages);
 
-        _ccpScoringEngine.DistributeRemainingServices(_dataProvider.GetServices().Where(s => s.InPackage == string.Empty).ToList());
+        _ccpScoringEngine.DistributeRemainingServices(_dataProvider.GetServices().Where(s => s.InPackage.PackageName == string.Empty).ToList());
     }
 
     private void GroupPackages(List<PackageModel> packageModels)
@@ -55,14 +55,13 @@ public class ArchitectureSuggester
         var packages = circularChecker.CreatePackages();
 
         DeleteAddedServicesFromGlobalServicePool(_dataProvider.GetServices().ToList(), packages);
-        packages.CreateDependenciesToPackages();
         return packages;
     }
 
     private void DeleteAddedServicesFromGlobalServicePool(List<ServiceModel> nonIndependentServices, List<PackageModel> packages)
     {
         var dupCounter = -nonIndependentServices.Count;
-        var registeredServices = _dataProvider.GetServices().Where(s => s.InPackage != string.Empty).ToList();
+        var registeredServices = _dataProvider.GetServices().Where(s => s.InPackage != null).ToList();
         foreach (var package in packages) dupCounter = GetAndDeleteServicesFromPackage(package, dupCounter, registeredServices);
     }
 

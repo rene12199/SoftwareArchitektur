@@ -5,6 +5,6 @@ namespace SoftwareArchitektur.Utility.Interface;
 public interface IDataProvider
 {
     IList<ServiceModel> GetServices();
-    IList<DependencyRelationModel> GetDependencyRelation();
-    IList<CommonChangeRelationModel> GetCommonChangeRelation();
+    IList<DependencyRelationServiceModel> GetDependencyRelation();
+    IList<CommonChangeRelationServiceModel> GetCommonChangeRelation();
 }

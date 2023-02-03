@@ -50,12 +50,11 @@ public class CcpScoringEngineTest
 
         remainingServices.Add(serviceModelFactory.CreateServiceModel(rs1.Name, sm =>
         {
-            sm.ChangedWith.AddRange(new List<CommonChangeRelationModel>
+            sm.ChangedWith.AddRange(new List<CommonChangeRelationServiceModel>
             {
                 new(rs1, s1, 1),
                 new(rs1, s2, 2)
             });
-            sm.InPackage = "P3";
             return 0;
         }));
 
@@ -92,8 +91,7 @@ public class CcpScoringEngineTest
         packages.First().AddService(s1);
         packages.Last().AddService(s2);
         packages.Last().AddService(s3);
-
-        s1.InPackage = "P3";
+        
         s1.ChangedWith.Add(new(rs1, s1, 1));
         s1.ChangedWith.Add(new(rs1, s2, 2));
         s1.ChangedWith.Add(new(rs1, s3, 2));
@@ -128,7 +126,6 @@ public class CcpScoringEngineTest
         var packages = new List<PackageModel>();
         for (int i = 1; i < 3; i++) packages.Add(new PackageModel($"P{i}"));
         var s1 = serviceModelFactory.CreateServiceModel("S1");
-        s1.InPackage = "P1";
         packages.First().AddService(s1);
         
         var remainingServices = new List<ServiceModel>();
@@ -138,17 +135,17 @@ public class CcpScoringEngineTest
     
         rs1.ChangedWith.AddRange(new[]
         {
-            new CommonChangeRelationModel(rs1, s1, 1)
+            new CommonChangeRelationServiceModel(rs1, s1, 1)
         });
         
         rs2.ChangedWith.AddRange(new[]
         {
-            new CommonChangeRelationModel(rs2, rs1, 1)
+            new CommonChangeRelationServiceModel(rs2, rs1, 1)
         });
         
         rs3.ChangedWith.AddRange(new[]
         {
-            new CommonChangeRelationModel(rs3, rs2, 1)
+            new CommonChangeRelationServiceModel(rs3, rs2, 1)
         });
 
 

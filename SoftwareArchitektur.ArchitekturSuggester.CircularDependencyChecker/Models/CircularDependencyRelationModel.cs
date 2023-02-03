@@ -8,10 +8,10 @@ internal class CircularDependencyRelationModel
     public readonly string Callee;
     public readonly long NumberOfCalls;
 
-    public CircularDependencyRelationModel(DependencyRelationModel dependencyRelationModel)
+    public CircularDependencyRelationModel(DependencyRelationServiceModel dependencyRelationServiceModel)
     {
-        Callee = dependencyRelationModel.Callee;
-        Caller = dependencyRelationModel.Caller;
-        NumberOfCalls = dependencyRelationModel.NumberOfCalls;
+        Callee = dependencyRelationServiceModel.Callee;
+        Caller = dependencyRelationServiceModel.Caller;
+        NumberOfCalls = dependencyRelationServiceModel.NumberOfCalls;
     }
 }

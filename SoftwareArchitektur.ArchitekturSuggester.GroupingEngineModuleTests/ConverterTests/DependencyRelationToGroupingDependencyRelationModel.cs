@@ -6,7 +6,7 @@ using SoftwareArchitektur.Utility.Models;
 
 namespace SoftwareArchitektur.ArchitekturSuggester._GroupingEngine.ConverterTests;
 
-public class CommonChangeToGroupingCommonChangeModel
+public class DependencyRelationToGroupingDependencyRelationModelTest
 {
     private Mock<IDataProvider> _dataProvider;
 
@@ -20,24 +20,23 @@ public class CommonChangeToGroupingCommonChangeModel
     [MaxTime(2000)]
     public void CommonChangeToCcpCommonChangeConverterTests_2PackagesWith3Services_Returns1CcpScoreWithValue2()
     {
+        
         var serviceFactory = new TestServiceModelFactory();
         var s1 = serviceFactory.CreateServiceModel("S1");
         var s2 = serviceFactory.CreateServiceModel("S2");
-        s2.InPackage = "P2";
         var s3 = serviceFactory.CreateServiceModel("S3");
-        s3.InPackage = "P2";
-
-        var commonChange = new List<CommonChangeRelationModel>
+        
+        var commonChange = new List<DependencyRelationServiceModel>
         {
-            new(s1, s2, 1),
-            new(s1, s3, 1)
+            new(s1,s2,1),
+            new(s1,s3,1)
         };
+        
+        s1.DependsOn.Add( new (s1,s2,1));
+        s1.DependsOn.Add( new (s1,s3,1));
 
 
-        s1.InPackage = "P1";
-        s1.ChangedWith.Add(new(s1, s2, 1));
-        s1.ChangedWith.Add(new(s1, s3, 1));
-
+      
 
         var packages = new List<PackageModel>();
 
@@ -46,20 +45,24 @@ public class CommonChangeToGroupingCommonChangeModel
         packages.Add(package1);
 
         var package2 = new PackageModel("P2");
-        package2.AddService(s2);
-        package2.AddService(s3);
+
+        for (int i = 2; i < 4; i++)
+        {
+            var newService = serviceFactory.CreateServiceModel($"S{i}");
+            package2.AddService(newService);
+        }
 
         //Arrange
         _dataProvider.Setup(s => s.GetServices()).Returns(serviceFactory.ServiceModels);
 
-        var converter = new GroupingEngine.Converter.CommonChangeToGroupingCommonChangeModel(_dataProvider.Object);
+        var converter = new DependencyModelToGroupingDependencyConverter(_dataProvider.Object);
         //Act
-        var result = converter.CreateGroupingCommonChangeModelsList(commonChange);
+        var result = converter.CreateGroupingDependencyModelsList(commonChange);
 
         //Assert
 
         Assert.That(result.Count, Is.EqualTo(1));
-        Assert.That(result.First().NumberOfChanges, Is.EqualTo(2));
+        Assert.That(result.First().NumberOfCalls, Is.EqualTo(2));
     }
 
     [Test]
@@ -70,19 +73,16 @@ public class CommonChangeToGroupingCommonChangeModel
         var serviceFactory = new TestServiceModelFactory();
         var s1 = serviceFactory.CreateServiceModel("S1");
         var s2 = serviceFactory.CreateServiceModel("S2");
-        s2.InPackage = "P2";
         var s3 = serviceFactory.CreateServiceModel("S3");
-        s3.InPackage = "P3";
-        var commonChange = new List<CommonChangeRelationModel>
+        var commonChange = new List<DependencyRelationServiceModel>
         {
             new(s1, s2, 1),
             new(s1, s3, 1)
         };
 
-
-        s1.InPackage = "P1";
-        s1.ChangedWith.Add(new(s1, s2, 1));
-        s1.ChangedWith.Add(new(s1, s3, 1));
+        
+        s1.DependsOn.Add(new(s1, s2, 1));
+        s1.DependsOn.Add(new(s1, s3, 1));
 
         var packages = new List<PackageModel>();
 
@@ -96,16 +96,16 @@ public class CommonChangeToGroupingCommonChangeModel
         var package3 = new PackageModel("P3");
         package3.AddService(s3);
 
-
         _dataProvider.Setup(s => s.GetServices()).Returns(serviceFactory.ServiceModels);
 
-        var converter = new GroupingEngine.Converter.CommonChangeToGroupingCommonChangeModel(_dataProvider.Object);
+        var converter = new DependencyModelToGroupingDependencyConverter(_dataProvider.Object);
         //Act
-        var result = converter.CreateGroupingCommonChangeModelsList(commonChange);
+        var result = converter.CreateGroupingDependencyModelsList(commonChange);
 
         //Assert
 
         Assert.That(result.Count, Is.EqualTo(2));
-        Assert.That(result.First().NumberOfChanges, Is.EqualTo(1));
+        Assert.That(result.First().NumberOfCalls, Is.EqualTo(1));
     }
+    
 }

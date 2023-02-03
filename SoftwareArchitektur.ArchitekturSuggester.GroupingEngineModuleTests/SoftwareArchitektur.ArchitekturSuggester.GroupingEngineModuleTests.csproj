@@ -22,7 +22,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.GroupingEngine\SoftwareArchitektur.ArchitekturSuggester.GroupingEngine.csproj" />
+      <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.GroupingEngineModule\SoftwareArchitektur.ArchitekturSuggester.GroupingEngineModule.csproj" />
       <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.TestUtility\SoftwareArchitektur.ArchitekturSuggester.TestUtility.csproj" />
       <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.Utility\SoftwareArchitektur.ArchitekturSuggester.Utility.csproj" />
     </ItemGroup>

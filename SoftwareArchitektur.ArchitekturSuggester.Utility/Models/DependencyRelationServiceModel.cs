@@ -1,14 +1,14 @@
 ﻿namespace SoftwareArchitektur.Utility.Models;
 
-public class DependencyRelationModel
+public class DependencyRelationServiceModel
 {
-    public DependencyRelationModel(ServiceModel callerService, ServiceModel calleeService, long numberOfCalls)
+    public DependencyRelationServiceModel(ServiceModel callerService, ServiceModel calleeService, long numberOfCalls)
     {
         CallerService = callerService;
         CalleeService = calleeService;
         NumberOfCalls = numberOfCalls;
-    }
-
+    }    
+    
     public ServiceModel CallerService { get; }
 
     public string Caller => CallerService.Name;

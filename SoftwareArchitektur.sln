@@ -26,9 +26,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.Archite
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SoftwareArchitektur.ArchitekturSuggester.Grouping", "SoftwareArchitektur.ArchitekturSuggester.Grouping", "{93E95014-65C8-4179-97A7-D64CBA45E043}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.ArchitekturSuggester.GroupingEngine", "SoftwareArchitektur.ArchitekturSuggester.GroupingEngine\SoftwareArchitektur.ArchitekturSuggester.GroupingEngine.csproj", "{D6AF99E8-E54D-4F36-8450-B4AA679A438F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.ArchitekturSuggester.GroupingEngineModule", "SoftwareArchitektur.ArchitekturSuggester.GroupingEngineModule\SoftwareArchitektur.ArchitekturSuggester.GroupingEngineModule.csproj", "{D6AF99E8-E54D-4F36-8450-B4AA679A438F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.ArchitekturSuggester.GroupingEngineTests", "SoftwareArchitektur.ArchitekturSuggester.GroupingEngineTests\SoftwareArchitektur.ArchitekturSuggester.GroupingEngineTests.csproj", "{26934381-7F94-45F4-85B9-1068A4921C83}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftwareArchitektur.ArchitekturSuggester.GroupingEngineModuleTests", "SoftwareArchitektur.ArchitekturSuggester.GroupingEngineModuleTests\SoftwareArchitektur.ArchitekturSuggester.GroupingEngineModuleTests.csproj", "{26934381-7F94-45F4-85B9-1068A4921C83}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

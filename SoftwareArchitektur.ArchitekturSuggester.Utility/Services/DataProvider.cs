@@ -8,14 +8,14 @@ namespace SoftwareArchitektur.Utility.Services;
 public class DataProvider : IDataProvider
 {
     private readonly ReadOnlyCollection<ServiceModel> _servicesLookUp;
-    private readonly ReadOnlyCollection<DependencyRelationModel> _dependencyRelations;
-    private readonly ReadOnlyCollection<CommonChangeRelationModel> _changeRelations;
+    private readonly ReadOnlyCollection<DependencyRelationServiceModel> _dependencyRelations;
+    private readonly ReadOnlyCollection<CommonChangeRelationServiceModel> _changeRelations;
 
     public DataProvider(string completeDataFileAddress, string dependencyFileAddress, string changeFileAddress)
     {
         _servicesLookUp = ReadData<ReadOnlyCollection<ServiceModel>>(completeDataFileAddress);
-        _dependencyRelations = ReadData<ReadOnlyCollection<DependencyRelationModel>>(dependencyFileAddress);
-        _changeRelations = ReadData<ReadOnlyCollection<CommonChangeRelationModel>>(changeFileAddress);
+        _dependencyRelations = ReadData<ReadOnlyCollection<DependencyRelationServiceModel>>(dependencyFileAddress);
+        _changeRelations = ReadData<ReadOnlyCollection<CommonChangeRelationServiceModel>>(changeFileAddress);
         CheckIfServiceIsLeafOrRoot();
     }
 
@@ -58,12 +58,12 @@ public class DataProvider : IDataProvider
         return _servicesLookUp.ToList();
     }
 
-    public IList<DependencyRelationModel> GetDependencyRelation()
+    public IList<DependencyRelationServiceModel> GetDependencyRelation()
     {
         return _dependencyRelations.ToList();
     }
 
-    public IList<CommonChangeRelationModel> GetCommonChangeRelation()
+    public IList<CommonChangeRelationServiceModel> GetCommonChangeRelation()
     {
         return _changeRelations.ToList();
     }
