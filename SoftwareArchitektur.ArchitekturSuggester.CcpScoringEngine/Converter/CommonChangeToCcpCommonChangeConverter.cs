@@ -47,6 +47,6 @@ public class CommonChangeToCcpCommonChangeConverter
     private bool CcpCommonChangeExists(CommonChangeRelationServiceModel commonChange, IList<CcpScoringCommonChangeClass> commonCcpChangeList)
     {
         return commonCcpChangeList.Any(cc =>
-            cc.Equals(commonChange.CurrentService.InPackage.PackageName, commonChange.OtherService.InPackage.PackageName));
+            cc.Equals(commonChange.CurrentService.InPackage?.PackageName, commonChange.OtherService.InPackage?.PackageName));
     }
 }

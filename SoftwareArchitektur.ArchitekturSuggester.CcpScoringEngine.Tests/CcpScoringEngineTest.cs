@@ -249,12 +249,13 @@ public class CcpScoringEngineTest
         //Arrange
         var serviceModelFactory = new TestServiceModelFactory();
         var s1 = serviceModelFactory.CreateServiceModel("S1");
+        var s2 = serviceModelFactory.CreateServiceModel("S2");
         var rs1 = serviceModelFactory.CreateServiceModel("RS1");
         var packages = new List<PackageModel>();
         for (int i = 1; i < 2; i++) packages.Add(new PackageModel($"P{i}"));
 
         rs1.ChangedWith.Add(
-            new(rs1, null, 2));
+            new(rs1, s2, 2));
         rs1.ChangedWith.Add(new(rs1, s1, 1));
 
         packages.First().AddService(s1);

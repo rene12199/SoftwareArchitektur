@@ -5,22 +5,23 @@ namespace SoftwareArchitektur.ArchitekturSuggester.GroupingEngine.Model;
 
 public class GroupingCommonChangeModel
 {
-    public string ThisPackage { get; private set; }
+    public GroupingCommonChangeModel(PackageModel ownPackage, PackageModel differentPackage, long numberOfChanges)
+    {
+        ThisPackage = ownPackage;
+        OtherPackage = differentPackage;
+        NumberOfChanges = numberOfChanges;
+    }
+    
+    
+    public PackageModel ThisPackage { get; private set; }
 
-    public string OtherPackage { get; private set; }
+    public PackageModel OtherPackage { get; private set; }
 
     public long NumberOfChanges { get; private set; }
 
     public void AddChanges(long numberOfChanges)
     {
         NumberOfChanges += numberOfChanges;
-    }
-
-    public GroupingCommonChangeModel(ServiceModel ownPackage, ServiceModel? differentPackage, long numberOfChanges)
-    {
-        ThisPackage = ownPackage.InPackage;
-        OtherPackage = differentPackage != null ? differentPackage.InPackage : string.Empty;
-        NumberOfChanges = numberOfChanges;
     }
 
 

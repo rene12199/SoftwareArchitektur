@@ -41,12 +41,8 @@ public class CommonChangeToCcpCommonChangeConverterTests
         packages.Add(package1);
 
         var package2 = new PackageModel("P2");
-
-        for (int i = 2; i < 4; i++)
-        {
-            var newService = serviceFactory.CreateServiceModel($"S{i}");
-            package2.AddService(newService);
-        }
+        package2.AddService(s2);
+        package2.AddService(s3);
 
         //Arrange
         _dataProvider.Setup(s => s.GetServices()).Returns(serviceFactory.ServiceModels);

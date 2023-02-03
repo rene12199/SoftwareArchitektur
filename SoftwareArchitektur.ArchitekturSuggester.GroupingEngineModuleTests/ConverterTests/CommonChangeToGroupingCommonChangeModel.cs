@@ -50,9 +50,9 @@ public class CommonChangeToGroupingCommonChangeModel
         //Arrange
         _dataProvider.Setup(s => s.GetServices()).Returns(serviceFactory.ServiceModels);
 
-        var converter = new GroupingEngine.Converter.CommonChangeToGroupingCommonChangeConverter(_dataProvider.Object);
+        var converter = new GroupingEngine.Converter.CommonChangeToGroupingCommonChangeConverter();
         //Act
-        var result = converter.CreateGroupingCommonChangeModelsList(commonChange);
+        var result = converter.CreateGroupingCommonChangeModelsList(packages.SelectMany(s => s.ChangesWith));
 
         //Assert
 
@@ -95,9 +95,9 @@ public class CommonChangeToGroupingCommonChangeModel
 
         _dataProvider.Setup(s => s.GetServices()).Returns(serviceFactory.ServiceModels);
 
-        var converter = new GroupingEngine.Converter.CommonChangeToGroupingCommonChangeConverter(_dataProvider.Object);
+        var converter = new GroupingEngine.Converter.CommonChangeToGroupingCommonChangeConverter();
         //Act
-        var result = converter.CreateGroupingCommonChangeModelsList(commonChange);
+        var result = converter.CreateGroupingCommonChangeModelsList(packages.SelectMany(c => c.ChangesWith));
 
         //Assert
 

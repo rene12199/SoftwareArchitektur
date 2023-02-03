@@ -55,9 +55,9 @@ public class DependencyRelationToGroupingDependencyRelationModelTest
         //Arrange
         _dataProvider.Setup(s => s.GetServices()).Returns(serviceFactory.ServiceModels);
 
-        var converter = new DependencyModelToGroupingDependencyConverter(_dataProvider.Object);
+        var converter = new DependencyModelToGroupingDependencyConverter();
         //Act
-        var result = converter.CreateGroupingDependencyModelsList(commonChange);
+        var result = converter.CreateGroupingDependencyModelsList(packages.SelectMany(p => p.DependsOn).ToList());
 
         //Assert
 
@@ -98,9 +98,9 @@ public class DependencyRelationToGroupingDependencyRelationModelTest
 
         _dataProvider.Setup(s => s.GetServices()).Returns(serviceFactory.ServiceModels);
 
-        var converter = new DependencyModelToGroupingDependencyConverter(_dataProvider.Object);
+        var converter = new DependencyModelToGroupingDependencyConverter();
         //Act
-        var result = converter.CreateGroupingDependencyModelsList(commonChange);
+        var result = converter.CreateGroupingDependencyModelsList(packages.SelectMany(p => p.DependsOn).ToList());
 
         //Assert
 

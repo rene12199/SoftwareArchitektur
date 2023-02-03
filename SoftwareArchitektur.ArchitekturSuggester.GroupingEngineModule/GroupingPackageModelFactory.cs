@@ -29,7 +29,8 @@ public class GroupingPackageModelFactory
 
     private GroupingPackageModel ConvertToGroupingModel(PackageModel packageModel)
     {
-        var groupingCommonChange = _commonChangeConverter.CreateGroupingCommonChangeModelsList(packageModel.);
-        var groupingDependency = _dependencyConverter.CreateGroupingDependencyModelsList(packageModel.PackageDependencies);
+        var groupingCommonChange = _commonChangeConverter.CreateGroupingCommonChangeModelsList(packageModel.ChangesWith);
+        var groupingDependency = _dependencyConverter.CreateGroupingDependencyModelsList(packageModel.DependsOn);
+        return null;
     }
 }
