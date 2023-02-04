@@ -9,6 +9,7 @@ public class GroupingPackageModelFactory
     private readonly CommonChangeToGroupingCommonChangeConverter _commonChangeConverter;
     private readonly DependencyModelToGroupingDependencyConverter _dependencyConverter;
     private readonly IList<GroupingPackageModel> _groupingPackageModels= new List<GroupingPackageModel>();
+    private readonly List<GroupingDependendencyModel> _groupingDependencyModels= new List<GroupingDependendencyModel>();
 
     public GroupingPackageModelFactory(DependencyModelToGroupingDependencyConverter dependencyConverter, CommonChangeToGroupingCommonChangeConverter commonChangeConverter)
     {
@@ -23,19 +24,19 @@ public class GroupingPackageModelFactory
         {
             var groupingPackageModel = ConvertToGroupingModel(packageModel);
 
-            CreateCalledByRelation(groupingPackageModel);
-            
             _groupingPackageModels.Add(groupingPackageModel);
         }
+        
+        CreateCalledByRelation();
 
         return _groupingPackageModels;
     }
 
-    private void CreateCalledByRelation(GroupingPackageModel groupingPackageModel)
+    private void CreateCalledByRelation()
     {
-        foreach (var dependencyModel in groupingPackageModel.DependsOn)
+        foreach (var dependencyModel in _groupingDependencyModels)
         {
-            var packageModel = _groupingPackageModels.FirstOrDefault(x => x.PackageName == dependencyModel.Caller.PackageName);
+            var packageModel = _groupingPackageModels.FirstOrDefault(x => x.PackageName == dependencyModel.Callee.PackageName);
 
             packageModel?.CalledBy.Add(dependencyModel);
         }
@@ -45,6 +46,8 @@ public class GroupingPackageModelFactory
     {
         var groupingCommonChange = _commonChangeConverter.CreateGroupingCommonChangeModelsList(packageModel.ChangesWith);
         var groupingDependency = _dependencyConverter.CreateGroupingDependencyModelsList(packageModel.DependsOn);
+        _groupingDependencyModels.AddRange(groupingDependency);
+        
         return new GroupingPackageModel(packageModel, groupingDependency, groupingCommonChange);
     }
 }

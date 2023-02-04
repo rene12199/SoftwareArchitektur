@@ -19,6 +19,7 @@ public class GroupingpPackageModelFactoryTests
         var s2 = new ServiceModel("S2");
         s1.DependsOn.Add(new DependencyRelationServiceModel(s1, s2, 1));
         s1.ChangedWith.Add(new CommonChangeRelationServiceModel(s1, s2, 1));
+        s2.ChangedWith.Add(new CommonChangeRelationServiceModel(s2, s1, 1));
         p1.AddService(s1);
         p2.AddService(s2);
 
@@ -27,8 +28,8 @@ public class GroupingpPackageModelFactoryTests
 
         var groupingPackageModelFactory = new GroupingPackageModelFactory(new DependencyModelToGroupingDependencyConverter(), new CommonChangeToGroupingCommonChangeConverter());
         var groupingPackageModel = groupingPackageModelFactory.ConvertPackageModelsToGroupingModels(packageList);
-        Assert.That(groupingPackageModel.Count, Is.EqualTo(2));
         
+        Assert.That(groupingPackageModel.Count, Is.EqualTo(2));
         var groupingPackageModel1 = groupingPackageModel.First(f => f.PackageName  == "P1");
         Assert.That(groupingPackageModel1.DependsOn.Count, Is.EqualTo(1));
         Assert.That(groupingPackageModel1.ChangesWith.Count, Is.EqualTo(1));        

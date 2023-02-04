@@ -9,7 +9,7 @@ public class GroupingPackageModel
 
     public string PackageName => _packageModel.PackageName;
 
-    public int Layer { get; private set; }
+    public int? Layer { get; private set; } = null;
 
     public ReadOnlyCollection<GroupingCommonChangeModel> ChangesWith { get;  }
 
@@ -22,5 +22,10 @@ public class GroupingPackageModel
         _packageModel = packageModel;
         DependsOn = dependsOn.ToList().AsReadOnly();
         ChangesWith = changesWith.ToList().AsReadOnly();
+    }
+    
+    public void SetLayer(int layer)
+    {
+        Layer = layer;
     }
 }
