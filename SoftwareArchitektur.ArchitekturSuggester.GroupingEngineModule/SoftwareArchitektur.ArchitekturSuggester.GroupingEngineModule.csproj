@@ -5,10 +5,15 @@
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
         <RootNamespace>SoftwareArchitektur.ArchitekturSuggester.GroupingEngine</RootNamespace>
+        <LangVersion>default</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.Utility\SoftwareArchitektur.ArchitekturSuggester.Utility.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="MNCD" Version="1.1.0" />
     </ItemGroup>
     
 </Project>

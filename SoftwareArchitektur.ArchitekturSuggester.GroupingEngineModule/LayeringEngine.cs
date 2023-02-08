@@ -4,29 +4,33 @@ namespace SoftwareArchitektur.ArchitekturSuggester.GroupingEngine;
 
 public class LayeringEngine
 {
+
+    private int _currentLayer = 0;
     public IList<GroupingPackageModel> CreateLayering(IList<GroupingPackageModel> packageModels)
     {
-        int currentLayer = 0;
+        _currentLayer = 0;
         CreateLayer0(packageModels);
 
         do
         {
-            var currentLayerModel = packageModels.Where(model => model.Layer == currentLayer);
+            var currentLayerModel = packageModels.Where(model => model.Layer == _currentLayer);
             var dependencies = currentLayerModel.SelectMany(model => model.DependsOn).ToList();
-            currentLayer++;
+            _currentLayer++;
             if (dependencies.Count == 0)
             {
                 break;
             }
             foreach (var groupingDependencyModel in dependencies)
             {
-                packageModels.First(p => p.PackageName == groupingDependencyModel.Callee.PackageName).SetLayer(currentLayer);
+                packageModels.First(p => p.PackageName == groupingDependencyModel.Callee.PackageName).SetLayer(_currentLayer);
             }
             
         } while (true);
 
         return packageModels;
     }
+
+    public int GetMaxLayer() => _currentLayer;
 
     private static void CreateLayer0(IList<GroupingPackageModel> packageModels)
     {

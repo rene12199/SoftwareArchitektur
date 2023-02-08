@@ -5,7 +5,7 @@ namespace SoftwareArchitektur.ArchitekturSuggester.GroupingEngine.Converter;
 
 public class CommonChangeToGroupingCommonChangeConverter
 {
-    public IList<GroupingCommonChangeModel> CreateGroupingCommonChangeModelsList(IEnumerable<CommonChangeRelationPackageModel> commonChanges)
+    public IList<GroupingCommonChangeModel> CreateGroupingCommonChangeModelsList(IList<CommonChangeRelationPackageModel> commonChanges)
     {
         var groupingPackageModels = new List<GroupingCommonChangeModel>();
         foreach (var commonChange in commonChanges)

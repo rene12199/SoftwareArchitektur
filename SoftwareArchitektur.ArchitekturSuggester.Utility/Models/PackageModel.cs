@@ -20,7 +20,7 @@ public class PackageModel
 
     public string PackageName { get; set; }
 
-    [JsonIgnore] private readonly HashSet<ServiceModel> _services = new();
+    [JsonIgnore] private readonly List<ServiceModel> _services = new List<ServiceModel>();
 
     public PackageModel(string packageName)
     {
@@ -42,9 +42,9 @@ public class PackageModel
         }
     }
 
-    public HashSet<ServiceModel> GetServices()
+    public List<ServiceModel> GetServices()
     {
-        return _services;
+        return _services.ToList();
     }
 
     private IEnumerable<DependencyRelationPackageModel> GroupDependencies()
@@ -63,9 +63,10 @@ public class PackageModel
             new CommonChangeRelationPackageModel(gr.First().CurrentService.InPackage, gr.First().OtherService.InPackage, gr.Sum(g => g.NumberOfChanges)));
         return grouped;
     }
-
-    private List<string> GetDependentPackages()
+    
+    //todo TestThisFunction
+    public void Merge(PackageModel packageModelByPackageName)
     {
-        return PackageDependencies.Select(d => d.PackageName).Distinct().ToList();
+        this.AddServiceRange(packageModelByPackageName._services);
     }
 }
