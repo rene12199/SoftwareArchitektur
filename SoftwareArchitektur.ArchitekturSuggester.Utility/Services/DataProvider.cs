@@ -14,8 +14,30 @@ public class DataProvider : IDataProvider
     public DataProvider(string completeDataFileAddress, string dependencyFileAddress, string changeFileAddress)
     {
         _servicesLookUp = ReadData<ReadOnlyCollection<ServiceModel>>(completeDataFileAddress);
-        _dependencyRelations = ReadData<ReadOnlyCollection<DependencyRelationServiceModel>>(dependencyFileAddress);
-        _changeRelations = ReadData<ReadOnlyCollection<CommonChangeRelationServiceModel>>(changeFileAddress);
+
+        _dependencyRelations = ReadData<ReadOnlyCollection<DependencyTemoraryHolder>>(dependencyFileAddress)
+            .Select(t =>
+                new DependencyRelationServiceModel(
+                    _servicesLookUp.First(s => s.Name == t.Caller),
+                    _servicesLookUp.First(s => s.Name == t.Callee),
+                    t.NumberOfCalls)).ToList().AsReadOnly();
+
+        _changeRelations = ReadData<ReadOnlyCollection<CommonChangeTemporaryHolder>>(changeFileAddress)
+            .Select(t =>
+                new CommonChangeRelationServiceModel(
+                    _servicesLookUp.First(s => s.Name == t.NameOfCurrentService),
+                    _servicesLookUp.First(s => s.Name == t.NameOfOtherService),
+                    t.NumberOfChanges))
+            .ToList().AsReadOnly();
+        foreach (var service in _servicesLookUp)
+        {
+            service.ChangedWith.Clear();
+            service.DependsOn.Clear();
+            
+            service.ChangedWith.AddRange(_changeRelations.Where(d => d.NameOfCurrentService == service.Name));
+            service.DependsOn.AddRange(_dependencyRelations.Where(d => d.Caller == service.Name));
+        }
+
         CheckIfServiceIsLeafOrRoot();
     }
 
@@ -48,7 +70,7 @@ public class DataProvider : IDataProvider
 
     private void CheckIfLeaf()
     {
-        var allCallees = _dependencyRelations.Select(d => d.CalleeService).Distinct().ToList();
+        var allCallees = _dependencyRelations.Select(d => d.CalleeService).ToList();
 
         foreach (var callee in allCallees) _servicesLookUp.First(s => s.Name == callee.Name).IsLeaf = false;
     }
@@ -66,5 +88,23 @@ public class DataProvider : IDataProvider
     public IList<CommonChangeRelationServiceModel> GetCommonChangeRelation()
     {
         return _changeRelations.ToList();
+    }
+
+    internal class CommonChangeTemporaryHolder
+    {
+        public long NumberOfChanges { get; set; }
+
+        public string NameOfCurrentService { get; set; }
+
+        public string NameOfOtherService { get; set; }
+    }
+
+    internal class DependencyTemoraryHolder
+    {
+        public string Caller { get; set; }
+
+        public string Callee { get; set; }
+
+        public long NumberOfCalls { get; set; }
     }
 }

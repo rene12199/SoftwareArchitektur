@@ -20,8 +20,8 @@ public class GroupingPackageModel
     public GroupingPackageModel(PackageModel packageModel, IList<GroupingDependendencyModel> dependsOn, IList<GroupingCommonChangeModel> changesWith)
     {
         _packageModel = packageModel;
-        DependsOn = dependsOn.ToList().AsReadOnly();
-        ChangesWith = changesWith.ToList().AsReadOnly();
+        DependsOn = dependsOn.Where(p => p.Callee != null && p.Callee.PackageName != PackageName  ).ToList().AsReadOnly();
+        ChangesWith = changesWith.Where(p => p.OtherPackage != null && p.OtherPackage.PackageName != PackageName  ).ToList().AsReadOnly();
     }
     
     public void SetLayer(int layer)

@@ -15,16 +15,19 @@ public class LayeringEngine
         {
             var currentLayerModel = packageModels.Where(model => model.Layer == _currentLayer);
             var dependencies = currentLayerModel.SelectMany(model => model.DependsOn).ToList();
+            Console.WriteLine($"Currentlayer {_currentLayer} with {dependencies.Count()}");
             _currentLayer++;
-            if (dependencies.Count == 0)
+            if (dependencies.Count == 0 || dependencies.All(s => s.HasBeenLookedAt  == true))
             {
                 break;
             }
             foreach (var groupingDependencyModel in dependencies)
             {
+                groupingDependencyModel.HasBeenLookedAt = true;
                 packageModels.First(p => p.PackageName == groupingDependencyModel.Callee.PackageName).SetLayer(_currentLayer);
             }
-            
+
+           
         } while (true);
 
         return packageModels;
@@ -39,5 +42,6 @@ public class LayeringEngine
         {
             layer1Model.SetLayer(0);
         }
+        Console.WriteLine($"Layer 0 Created with {layer1Models.Count()}");
     }
 }

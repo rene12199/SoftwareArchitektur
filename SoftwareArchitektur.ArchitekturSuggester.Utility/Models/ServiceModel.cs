@@ -37,6 +37,7 @@ public class ServiceModel
 
     //Root = Doesnt Depend on Anything but things Depend on it
     [JsonIgnore] public bool IsRoot = false;
+    
     public readonly List<DependencyRelationServiceModel> DependsOn = new();
 
     public readonly List<CommonChangeRelationServiceModel> ChangedWith = new();

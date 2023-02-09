@@ -10,6 +10,8 @@ public class GroupingDependendencyModel
 
     public long NumberOfCalls { get; private set; }
 
+    public bool HasBeenLookedAt { get; set; } = false;
+
     public void AddCalls(long numberOfChanges)
     {
         NumberOfCalls += numberOfChanges;

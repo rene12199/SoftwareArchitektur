@@ -1,6 +1,10 @@
 ﻿using Autofac;
+using QuikGraph;
+using QuikGraph.Algorithms;
 using SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.Interfaces;
 using SoftwareArchitektur.ArchitekturSuggester.CircularDependencyChecker.Interfaces;
+using SoftwareArchitektur.ArchitekturSuggester.GroupingEngine;
+using SoftwareArchitektur.ArchitekturSuggester.GroupingEngine.Converter;
 using SoftwareArchitektur.Utility.Interface;
 using SoftwareArchitektur.Utility.Models;
 
@@ -21,7 +25,7 @@ public class ArchitectureSuggester
         _dataProvider = container.Resolve<IDataProvider>();
         _circularDependencyChecker = container.Resolve<ICircularDependencyChecker>();
         _ccpScoringEngine = container.Resolve<ICcpScoringEngine>();
-        ;
+        
     }
 
     public List<PackageModel> CalculateArchitecture()
@@ -30,23 +34,65 @@ public class ArchitectureSuggester
 
         CreateOPackage(packages);
 
+        CheckIfPackagesHaveCycle(packages);
+
         DistributeRemainingPackagesByCcpScore(packages);
 
-        //todo Create Grouping Algorithm with focus on balancing
+        CheckIfPackagesHaveCycle(packages);
+
         GroupPackages(packages);
 
+        CheckIfPackagesHaveCycle(packages);
+
+        
+        ValidateArchitecture();
+
         return packages;
+    }
+
+    private void CheckIfPackagesHaveCycle(IList<PackageModel> models)
+    {
+        var edges = new  List<QuikGraph.SEquatableEdge<string>>();
+
+        foreach (var package in models)
+        {
+            foreach (var dependencyRelation  in package.DependsOn)
+            {
+                edges.Add(new QuikGraph.SEquatableEdge<string>(dependencyRelation.Caller, dependencyRelation.Callee));
+            }
+        }
+        var tmp = edges.ToUndirectedGraph<string>();
+
+        if (tmp.IsUndirectedAcyclicGraph())
+        {
+            throw new Exception("e");
+        };
+    }
+    private void ValidateArchitecture()
+    {
+        if (_dataProvider.GetServices().Any(s => s.InPackage == null))
+        {
+            throw new Exception("Not Every Service in Package");
+        }
+
+        ;
     }
 
     private void DistributeRemainingPackagesByCcpScore(List<PackageModel> packages)
     {
         _ccpScoringEngine.SetPossiblePackages(packages);
 
-        _ccpScoringEngine.DistributeRemainingServices(_dataProvider.GetServices().Where(s => s.InPackage.PackageName == string.Empty).ToList());
+        _ccpScoringEngine.DistributeRemainingServices(_dataProvider.GetServices().Where(s => s.InPackage == null).ToList());
     }
 
     private void GroupPackages(List<PackageModel> packageModels)
     {
+        Console.WriteLine("Starting GroupingOperation");
+        var groupingEngine =
+            new GroupingEngine.GroupingEngine(
+                new GroupingPackageModelFactory(new DependencyModelToGroupingDependencyConverter(), new CommonChangeToGroupingCommonChangeConverter()), new LayeringEngine(),
+                new CohesionAttractorEngine());
+        groupingEngine.GroupPackages(packageModels);
     }
 
     private List<PackageModel> CreateInitialPackageModels()
@@ -68,8 +114,10 @@ public class ArchitectureSuggester
     private int GetAndDeleteServicesFromPackage(PackageModel package, int dupCounter, IList<ServiceModel> registeredServices)
     {
         foreach (var service in package.GetServices())
+        {
             if (CheckIfServiceIsStillRegistered(service, registeredServices))
                 dupCounter++;
+        }
 
         return dupCounter;
     }

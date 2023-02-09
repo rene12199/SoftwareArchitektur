@@ -19,11 +19,13 @@
         <PackageReference Include="MNCD" Version="1.1.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
         <PackageReference Include="NUnit" Version="3.13.3" />
+        <PackageReference Include="QuikGraph" Version="2.5.0" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine\SoftwareArchitektur.ArchitekturSuggester.CcpScoringEngine.csproj" />
         <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.CircularDependencyChecker\SoftwareArchitektur.ArchitekturSuggester.CircularDependencyChecker.csproj" />
+        <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.GroupingEngineModule\SoftwareArchitektur.ArchitekturSuggester.GroupingEngineModule.csproj" />
         <ProjectReference Include="..\SoftwareArchitektur.ArchitekturSuggester.Utility\SoftwareArchitektur.ArchitekturSuggester.Utility.csproj" />
     </ItemGroup>
 
