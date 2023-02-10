@@ -14,7 +14,7 @@ public class PackageModel
 
     public List<CommonChangeRelationPackageModel> ChangesWith => GroupChanges().ToList();
 
-    public List<string> HasService => GetServices().Select(s => s.Name).ToList();
+    public bool HasServices => GetServices().Count > 0;
 
     [JsonIgnore] public List<PackageModel> PackageDependencies { get; } = new();
 

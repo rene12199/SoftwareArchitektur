@@ -43,7 +43,7 @@ public class GroupingEngine
         foreach (var mergeRequestModel in mergeRequests)
         {
             MergePackages(mergeRequestModel);
-        };
+        }
     }
 
     private void MergePackages(MergeRequestModel models)

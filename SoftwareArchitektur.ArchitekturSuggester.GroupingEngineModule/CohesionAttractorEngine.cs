@@ -1,82 +1,85 @@
-using MNCD.CommunityDetection.SingleLayer;
-using MNCD.Core;
+using LouvainCommunityPL;
 using SoftwareArchitektur.ArchitekturSuggester.GroupingEngine.Model;
-using SoftwareArchitektur.Utility.Models;
 
 namespace SoftwareArchitektur.ArchitekturSuggester.GroupingEngine;
 
 public class CohesionAttractorEngine
 {
     private IList<GroupingPackageModel> _packageLookup = new List<GroupingPackageModel>();
-    
+
+    private readonly Dictionary<int, GroupingPackageModel> _packageToNodeDict = new();
+
+    private int _counter;
     public void SetPackageLookup(IList<GroupingPackageModel> packageLookup)
     {
         _packageLookup = packageLookup;
     }
-    
+
     public IList<MergeRequestModel> GroupPackages(IList<GroupingPackageModel> models)
     {
-        if(_packageLookup.Count == 0)
+        if (_packageLookup.Count == 0)
         {
             throw new Exception("Package Lookup is not set");
         }
-        var packageName = models.Select(m => m.PackageName);
-        var commonChanges = models.SelectMany(m => m.ChangesWith).Where(c => packageName.Any(n => n == c.OtherPackage.PackageName));
 
-        var vertices = models.Select(package => new Actor(package.PackageName));
+        var graph = new Graph();
 
-        var edge = NormalizeChangeCallsToWeights(commonChanges, ref vertices);
-        
-        var layer = new List<Layer>
+        foreach (var groupingPackageModel in models)
         {
-            new("Layer0") { Edges = edge.ToList() }
-        };
-
-        var network = new Network(layer.ToList(), vertices.ToList());
-
-        var louvain = new FluidC();
-        var communities = louvain.Compute(network, 1);
-
-        if (communities.ToList().Count == vertices.ToList().Count)
-        {
-            throw new Exception("No Communities found");
+            _packageToNodeDict.Add(_counter, groupingPackageModel);
+            graph.AddNode(_counter);
+            _counter++;
         }
+
+        var commonChanges = models.SelectMany(m => m.ChangesWith).Where(c => _packageToNodeDict.Any(n => n.Value.PackageName == c.OtherPackage.PackageName));
+
+        NormalizeChangeCallsToWeights(commonChanges, graph);
+
+        var partition = Community.BestPartition(graph).GroupBy(x => x.Value);
         var mergeRequests = new List<MergeRequestModel>();
 
-        foreach (var community in communities)
+        foreach (var community in partition)
         {
             mergeRequests.AddRange(CreateMergeRequestFromCommunity(community));
         }
 
+        ResetState();
+        
         return mergeRequests;
     }
-    
-    private IEnumerable<Edge> NormalizeChangeCallsToWeights(IEnumerable<GroupingCommonChangeModel> changes, ref IEnumerable<Actor> vertices)
+
+    private void ResetState()
+    {
+        _packageToNodeDict.Clear();
+        _counter = 0;
+    }
+
+    private void NormalizeChangeCallsToWeights(IEnumerable<GroupingCommonChangeModel> changes, Graph graph)
     {
         var highestCallNumber = changes.Max(m => m.NumberOfChanges);
 
-        var edgeList = new List<Edge>();
-        foreach (var change in changes)
+        foreach (var commonChangeModel in changes)
         {
-            var current = vertices.First(m => m.Name == change.ThisPackage.PackageName);
-            var other = vertices.First(m => m.Name == change.OtherPackage.PackageName);
-            edgeList.Add(new Edge(current,other, highestCallNumber - change.NumberOfChanges + 1));
+            graph.AddEdge(
+                _packageToNodeDict.First(x => x.Value.PackageName == commonChangeModel.ThisPackage.PackageName).Key,
+                _packageToNodeDict.First(x => x.Value.PackageName == commonChangeModel.OtherPackage.PackageName).Key,
+                highestCallNumber - commonChangeModel.NumberOfChanges + 1);
         }
-        
-        return edgeList;
     }
 
-    private IList<MergeRequestModel> CreateMergeRequestFromCommunity(Community community)
+    private IList<MergeRequestModel> CreateMergeRequestFromCommunity(IGrouping<int, KeyValuePair<int, int>> community)
     {
         var mergeRequests = new List<MergeRequestModel>();
-        var baseActor = _packageLookup.First(m => m.PackageName == community.Actors.First().Name);
 
-        foreach (var actor in community.Actors)
+        var baseActor = _packageToNodeDict[community.First().Key];
+
+        foreach (var package in community)
         {
-            var package = _packageLookup.First(m => m.PackageName == actor.Name);
-            if (package != baseActor)
+            var toBeMerged = _packageToNodeDict[package.Key];
+
+            if (toBeMerged != baseActor)
             {
-                mergeRequests.Add(new MergeRequestModel(baseActor, package));
+                mergeRequests.Add(new MergeRequestModel(baseActor, toBeMerged));
             }
         }
 
