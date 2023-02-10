@@ -26,7 +26,9 @@ var suggester = new ArchitectureSuggester(builder.Build());
 
 var bestArchitecture = suggester.CalculateArchitecture();
 
-var content = JsonConvert.SerializeObject(bestArchitecture);
+var exportModels = new ExportFactory().ConvertPackagesToExportPackages(bestArchitecture.Where(f => f.HasServices).ToList());
+
+var content = JsonConvert.SerializeObject(exportModels);
 using (var fp = File.Open(@"../../../../SoftwareArchitektur.UMLVisualizer/BestArchitecture.json", FileMode.OpenOrCreate))
 {
     fp.Write(Encoding.ASCII.GetBytes(content));

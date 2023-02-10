@@ -2,6 +2,7 @@
 using SoftwareArchitektur.Utility.Models;
 
 namespace SoftwareArchitektur.ArchitekturSuggester.GroupingEngine;
+//todo make new GroupingEngine Which groups by Calledby and Calls
 
 public class GroupingEngine
 {

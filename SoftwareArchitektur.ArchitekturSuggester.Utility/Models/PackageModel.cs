@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.ObjectModel;
+using Newtonsoft.Json;
 
 namespace SoftwareArchitektur.Utility.Models;
 
@@ -6,6 +7,7 @@ public class PackageModel
 {
     public double AverageChangeRate => _services.Where(s => !double.IsNaN(s.AverageChange)).Sum(s => s.AverageChange) / _services.Count;
 
+    public ReadOnlyCollection<ServiceModel> Services => _services.ToList().AsReadOnly();
     //Sourcehttps://socratic.org/statistics/random-variables/addition-rules-for-variances
     public double StandardDeviationOfChangeRate =>
         Math.Sqrt(_services.Sum(sd => sd.StandardDeviationChangeRate * sd.StandardDeviationChangeRate));
@@ -64,9 +66,9 @@ public class PackageModel
         return grouped;
     }
     
-    //todo TestThisFunction
     public void Merge(PackageModel packageModelByPackageName)
     {
         this.AddServiceRange(packageModelByPackageName._services);
+        packageModelByPackageName._services.Clear();
     }
 }

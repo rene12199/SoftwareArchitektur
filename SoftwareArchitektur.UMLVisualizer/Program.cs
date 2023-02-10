@@ -2,9 +2,9 @@
 
 using System.Text;
 using Newtonsoft.Json;
-using SoftwareArchitektur.UMLVisualizer;
+using SoftwareArchitektur.Utility.Models.ExportModels;
 
-StringBuilder CreateClassDiagram(List<PackageVisualizerModel> packageVisualizerModels)
+StringBuilder CreateClassDiagram(List<ExportPakageModel> packageVisualizerModels)
 {
     var stringBuilder = new StringBuilder();
 
@@ -14,7 +14,7 @@ StringBuilder CreateClassDiagram(List<PackageVisualizerModel> packageVisualizerM
     {
         stringBuilder.Append($"class {package.PackageName}" + "{" + Environment.NewLine);
 
-        foreach (var service in package.HasService) stringBuilder.Append($"string {service}" + Environment.NewLine);
+        foreach (var service in package.Services) stringBuilder.Append($"string {service}" + Environment.NewLine);
 
         stringBuilder.Append("}" + Environment.NewLine);
     }
@@ -23,7 +23,7 @@ StringBuilder CreateClassDiagram(List<PackageVisualizerModel> packageVisualizerM
     return stringBuilder;
 }
 
-StringBuilder CreateDeploymentDiagram(List<PackageVisualizerModel> packageVisualizerModels)
+StringBuilder CreateDeploymentDiagram(List<ExportPakageModel> packageVisualizerModels)
 {
     var dependencyUmlBuilder = new StringBuilder();
 
@@ -33,7 +33,7 @@ StringBuilder CreateDeploymentDiagram(List<PackageVisualizerModel> packageVisual
 
     foreach (var model in packageVisualizerModels)
     foreach (var dependency in model.DependsOn)
-        dependencyUmlBuilder.Append($"{model.PackageName} --> {dependency}" + Environment.NewLine);
+        dependencyUmlBuilder.Append($"{model.PackageName} --> {dependency.Callee}" + Environment.NewLine);
 
     dependencyUmlBuilder.Append("@enduml");
 
@@ -43,7 +43,7 @@ StringBuilder CreateDeploymentDiagram(List<PackageVisualizerModel> packageVisual
 Console.WriteLine("Creating UML");
 
 var file = File.ReadAllText(@"./BestArchitecture.json");
-var models = JsonConvert.DeserializeObject<List<PackageVisualizerModel>>(file)!;
+var models = JsonConvert.DeserializeObject<List<ExportPakageModel>>(file)!;
 
 var dependencyUmlBuilder = CreateDeploymentDiagram(models);
 

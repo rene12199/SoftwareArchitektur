@@ -25,7 +25,6 @@ public class ArchitectureSuggester
         _dataProvider = container.Resolve<IDataProvider>();
         _circularDependencyChecker = container.Resolve<ICircularDependencyChecker>();
         _ccpScoringEngine = container.Resolve<ICcpScoringEngine>();
-        
     }
 
     public List<PackageModel> CalculateArchitecture()
@@ -36,49 +35,50 @@ public class ArchitectureSuggester
 
         CheckIfPackagesHaveCycle(packages);
 
-        DistributeRemainingPackagesByCcpScore(packages);
+        DistributePackagesByCcpScore(packages);
 
         CheckIfPackagesHaveCycle(packages);
 
         GroupPackages(packages);
 
         CheckIfPackagesHaveCycle(packages);
-
         
-        ValidateArchitecture();
+        DistributeRemainingPackages(_dataProvider.GetServices().Where(s => s.InPackage == null), packages);
 
+        ValidateArchitecture();
+        
         return packages;
+    }
+
+    private void DistributeRemainingPackages(IEnumerable<ServiceModel> serviceModels, IList<PackageModel> packageModels)
+    {
+        foreach (var service in serviceModels)
+        {
+            packageModels.OrderBy(p => p.Services.Count);
+            packageModels.First().AddService(service);
+        }
     }
 
     private void CheckIfPackagesHaveCycle(IList<PackageModel> models)
     {
-        var edges = new  List<QuikGraph.SEquatableEdge<string>>();
+        var edges = new List<SEquatableEdge<string>>();
 
         foreach (var package in models)
         {
-            foreach (var dependencyRelation  in package.DependsOn)
-            {
-                edges.Add(new QuikGraph.SEquatableEdge<string>(dependencyRelation.Caller, dependencyRelation.Callee));
-            }
+            foreach (var dependencyRelation in package.DependsOn) edges.Add(new SEquatableEdge<string>(dependencyRelation.Caller, dependencyRelation.Callee));
         }
-        var tmp = edges.ToUndirectedGraph<string>();
 
-        if (tmp.IsUndirectedAcyclicGraph())
-        {
-            throw new Exception("e");
-        };
+        var tmp = edges.ToUndirectedGraph();
+
+        if (tmp.IsUndirectedAcyclicGraph()) throw new Exception("e");
     }
+
     private void ValidateArchitecture()
     {
-        if (_dataProvider.GetServices().Any(s => s.InPackage == null))
-        {
-            throw new Exception("Not Every Service in Package");
-        }
-
-        ;
+        if (_dataProvider.GetServices().Any(s => s.InPackage == null)) throw new Exception("Not Every Service in Package");
     }
 
-    private void DistributeRemainingPackagesByCcpScore(List<PackageModel> packages)
+    private void DistributePackagesByCcpScore(List<PackageModel> packages)
     {
         _ccpScoringEngine.SetPossiblePackages(packages);
 

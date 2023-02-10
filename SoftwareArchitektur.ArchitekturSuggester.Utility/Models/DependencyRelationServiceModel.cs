@@ -1,4 +1,6 @@
-﻿namespace SoftwareArchitektur.Utility.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace SoftwareArchitektur.Utility.Models;
 
 public class DependencyRelationServiceModel
 {
@@ -9,11 +11,11 @@ public class DependencyRelationServiceModel
         NumberOfCalls = numberOfCalls;
     }
 
-    public ServiceModel CallerService { get; }
+    [JsonIgnore] public ServiceModel CallerService { get; }
 
     public string Caller => CallerService.Name;
 
-    public ServiceModel CalleeService { get; }
+    [JsonIgnore] public ServiceModel CalleeService { get; }
 
     public string Callee => CalleeService.Name;
 

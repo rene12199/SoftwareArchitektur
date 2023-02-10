@@ -1,10 +1,12 @@
-﻿namespace SoftwareArchitektur.Utility.Models;
+﻿using Newtonsoft.Json;
+
+namespace SoftwareArchitektur.Utility.Models;
 
 public class CommonChangeRelationPackageModel
 {
-    public PackageModel OtherPackage { get; }
+    [JsonIgnore] public PackageModel OtherPackage { get; }
 
-    public PackageModel CurrentPackage { get; }
+    [JsonIgnore] public PackageModel CurrentPackage { get; }
 
     public long NumberOfChanges { get; }
 
