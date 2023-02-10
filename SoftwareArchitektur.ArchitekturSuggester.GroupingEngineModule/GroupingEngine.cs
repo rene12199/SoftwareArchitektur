@@ -29,10 +29,17 @@ public class GroupingEngine
         _layeringEngine.CreateLayering(groupingPackageModels);
 
         var mergeRequests = new List<MergeRequestModel>();
+        _cohesionAttractorEngine.SetPackageLookup(groupingPackageModels);
 
         for (int i = 0; i <= _layeringEngine.GetMaxLayer(); i++)
-            mergeRequests.AddRange(_cohesionAttractorEngine.GroupPackages(groupingPackageModels.Where(m => m.Layer == i).ToList()));
-
+        {
+            var layerPackage = groupingPackageModels.Where(m => m.Layer == i).ToList();
+            if (layerPackage.Count > 0)
+            {
+                mergeRequests.AddRange(_cohesionAttractorEngine.GroupPackages(layerPackage));
+            }
+        }
+        
         foreach (var mergeRequestModel in mergeRequests)
         {
             MergePackages(mergeRequestModel);
