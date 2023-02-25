@@ -68,7 +68,7 @@ public class PackageModel
     
     public void Merge(PackageModel packageModelByPackageName)
     {
-        this.AddServiceRange(packageModelByPackageName._services);
+        AddServiceRange(packageModelByPackageName._services);
         packageModelByPackageName._services.Clear();
     }
 }

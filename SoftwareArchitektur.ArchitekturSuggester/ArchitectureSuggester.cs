@@ -92,7 +92,7 @@ public class ArchitectureSuggester
             new GroupingEngine.GroupingEngine(
                 new GroupingPackageModelFactory(new DependencyModelToGroupingDependencyConverter(), new CommonChangeToGroupingCommonChangeConverter()), new LayeringEngine(),
                 new CohesionAttractorEngine());
-        groupingEngine.GroupPackages(packageModels);
+       groupingEngine.GroupPackages(packageModels);
     }
 
     private List<PackageModel> CreateInitialPackageModels()

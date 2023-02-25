@@ -33,7 +33,7 @@ public class GroupingEngine
         _cohesionAttractorEngine.SetPackageLookup(groupingPackageModels);
 
         mergeRequests.AddRange(_cohesionAttractorEngine.GroupPackages(groupingPackageModels));
-        
+
         mergeRequests.AddRange(MergePackagesWithOnlyOneDependency(groupingPackageModels));
 
         foreach (var mergeRequestModel in mergeRequests)
@@ -49,7 +49,7 @@ public class GroupingEngine
         {
             mergeRequests.Add(new MergeRequestModel(package, groupingPackageModels.First(p => p.PackageName == package.DependsOn.Single().Callee.PackageName)));
         }
-        
+
         return mergeRequests;
     }
 
