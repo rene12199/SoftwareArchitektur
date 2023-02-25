@@ -8,8 +8,19 @@ public class MergeRequestModel
         {
             throw new ArgumentException("Cant  Merge and ToBeMerged can not be the same");
         }
-        BasePackageModel = basePackageModel;
-        ToBeMergedModel = toBeMergedModel;
+
+        if (basePackageModel.Layer > toBeMergedModel.Layer)
+        {
+            BasePackageModel = basePackageModel;
+            ToBeMergedModel = toBeMergedModel;
+        }
+        else
+        {
+            ToBeMergedModel = basePackageModel;
+            BasePackageModel = toBeMergedModel;
+        }
+        
+        
     }
 
     public GroupingPackageModel BasePackageModel { get; set; }

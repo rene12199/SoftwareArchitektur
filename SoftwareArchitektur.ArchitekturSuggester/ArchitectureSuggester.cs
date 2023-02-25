@@ -44,7 +44,7 @@ public class ArchitectureSuggester
         CheckIfPackagesHaveCycle(packages);
         
         DistributeRemainingPackages(_dataProvider.GetServices().Where(s => s.InPackage == null), packages);
-
+        
         ValidateArchitecture();
         
         return packages;
@@ -54,7 +54,7 @@ public class ArchitectureSuggester
     {
         foreach (var service in serviceModels)
         {
-            packageModels.OrderBy(p => p.Services.Count);
+            packageModels.Where(p => p.HasServices).OrderBy(p => p.Services.Count);
             packageModels.First().AddService(service);
         }
     }

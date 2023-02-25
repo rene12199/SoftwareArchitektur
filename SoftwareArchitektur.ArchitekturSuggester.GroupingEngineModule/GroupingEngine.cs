@@ -32,19 +32,25 @@ public class GroupingEngine
         var mergeRequests = new List<MergeRequestModel>();
         _cohesionAttractorEngine.SetPackageLookup(groupingPackageModels);
 
-        for (int i = 0; i <= _layeringEngine.GetMaxLayer(); i++)
-        {
-            var layerPackage = groupingPackageModels.Where(m => m.Layer == i).ToList();
-            if (layerPackage.Count > 0)
-            {
-                mergeRequests.AddRange(_cohesionAttractorEngine.GroupPackages(layerPackage));
-            }
-        }
+        mergeRequests.AddRange(_cohesionAttractorEngine.GroupPackages(groupingPackageModels));
         
+        mergeRequests.AddRange(MergePackagesWithOnlyOneDependency(groupingPackageModels));
+
         foreach (var mergeRequestModel in mergeRequests)
         {
             MergePackages(mergeRequestModel);
         }
+    }
+
+    private IEnumerable<MergeRequestModel> MergePackagesWithOnlyOneDependency(IList<GroupingPackageModel> groupingPackageModels)
+    {
+        var mergeRequests = new List<MergeRequestModel>();
+        foreach (var package in groupingPackageModels.Where(p => p.DependsOn.Count == 1))
+        {
+            mergeRequests.Add(new MergeRequestModel(package, groupingPackageModels.First(p => p.PackageName == package.DependsOn.Single().Callee.PackageName)));
+        }
+        
+        return mergeRequests;
     }
 
     private void MergePackages(MergeRequestModel models)
